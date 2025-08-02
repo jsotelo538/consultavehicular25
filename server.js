@@ -154,10 +154,9 @@ app.post('/consultar', async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      headless: 'new',
-      slowMo: 100,
-      defaultViewport: null,
-    });
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
     const page = await browser.newPage();
 
     await page.goto('https://webexterno.sutran.gob.pe/WebExterno/Pages/frmRecordInfracciones.aspx', {
@@ -215,11 +214,10 @@ app.post('/consultar', async (req, res) => {
 });
 
 async function consultarOrdenCapturaSAT(placa) {
-  const browser = await puppeteer.launch({
-    headless: "new",
-    slowMo: 100,
-    defaultViewport: null,
-  });
+   const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
   const page = await browser.newPage();
   await page.goto('https://www.sat.gob.pe/VirtualSAT/modulos/Capturas.aspx', { waitUntil: 'networkidle2' });
@@ -822,7 +820,10 @@ app.post("/api/atu", async (req, res) => {
 });
 
 async function consultarPapeletasChiclayo(placa) {
-const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
   const page = await browser.newPage();
 
   try {
@@ -860,10 +861,9 @@ const browser = await puppeteer.launch({ headless: true });
 }
 async function consultarPapeletasHuanuco(placa) {
   const browser = await puppeteer.launch({
-    headless: true, // pon false si quieres ver visualmente
-    slowMo: 50,
-    defaultViewport: null
-  });
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
   const page = await browser.newPage();
 
@@ -904,10 +904,9 @@ async function consultarPapeletasHuanuco(placa) {
 }
 async function consultarPapeletasChachapoyas(placa) {
   const browser = await puppeteer.launch({
-    headless: true,
-    slowMo: 50,
-    defaultViewport: null
-  });
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
   const page = await browser.newPage();
 
@@ -940,7 +939,10 @@ async function consultarPapeletasChachapoyas(placa) {
   }
 }
 async function consultarPapeletasPucallpa(placa) {
-  const browser = await puppeteer.launch({ headless: true });
+   const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
   const page = await browser.newPage();
 
   try {
@@ -1001,7 +1003,10 @@ async function consultarPapeletasPucallpa(placa) {
 }
 
  async function consultarPapeletasCajamarca(placa) {
-  const browser = await puppeteer.launch({ headless: true });
+   const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
   const page = await browser.newPage();
 
   try {
@@ -1060,7 +1065,10 @@ async function consultarPapeletasPucallpa(placa) {
   }
 }
 async function consultarPapeletasCusco(placa) {
-  const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
   const page = await browser.newPage();
 
   try {
@@ -1114,10 +1122,9 @@ async function consultarPapeletasCusco(placa) {
 }
 async function consultarPapeletasIca(placa) {
   const browser = await puppeteer.launch({
-    headless: true,
-    slowMo: 100,
-    defaultViewport: null,
-  });
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
   const page = await browser.newPage();
 
@@ -1177,7 +1184,10 @@ async function resolverCapt(imageBase64) {
  
 
  async function consultarAndahuaylas(placa) {
- const browser = await puppeteer.launch({ headless:true });
+   const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
    const page = await browser.newPage();
  
    try {
@@ -1237,7 +1247,10 @@ if (tablaHTML) {
 
   
 async function consultarPapeletasPuno(placa) {
-const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
   const page = await browser.newPage();
 
@@ -1355,7 +1368,10 @@ app.post('/consultarpiura', async (req, res) => {
 
   try {
     console.log('Lanzando navegador piiiurra...');
-    const browser = await puppeteer.launch({ headless: "new" });
+     const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
     const page = await browser.newPage(); // ← FALTABA ESTA LÍNEA
 

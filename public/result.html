@@ -348,6 +348,8 @@ th {
   return;
 }
 sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
+
+
         NProgress.start(); // 👉 Inicia la barra de progreso
       const placa = document.getElementById("placa").value.trim().toUpperCase();
        const resultadoSutran = document.getElementById('resultadoSutran');
@@ -358,8 +360,8 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
       const callaoDiv = document.getElementById("resultado-callao");
         const resultado = document.getElementById('resultado');
       
-        limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="spinner"><div class="loader"></div></div>';
-    callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="spinner"><div class="loader"></div></div>';
+        limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class=" mensaje-infoo"><div class="loader"></div></div>';
+    callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class=" mensaje-infoo"><div class="loader"></div></div>';
   
       if (!placa) {
         NProgress.done(); // 👉 Detenemos si hay error temprano
@@ -513,7 +515,7 @@ fetch('/orden-captura', {
 
   
 
-     piuraDiv.innerHTML = '<h2>Resultados SAT Piura</h2><div class="spinner"><div class="loader"></div></div>';
+     piuraDiv.innerHTML = '<h2>Resultados SAT Piura</h2><div class="mensaje-infoo"><div class="loader"></div></div>';
 
 fetch('/consultarpiura', {
   method: 'POST',
@@ -630,6 +632,7 @@ Promise.allSettled(promesas);
       consultarATU(placa);
         
       NProgress.done(); // 👉 Detenemos la barra cuando todo ha terminado
+  
 } 
 async function consultarInfogas(placa) {
   const infogasDiv = document.getElementById("resultado-infogas");
@@ -1097,7 +1100,7 @@ async function descargarPDF() {
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
 
   window.open(url, "_blank");
-}
+}     sessionStorage.removeItem("yaConsultado");
   </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
