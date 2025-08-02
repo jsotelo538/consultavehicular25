@@ -37,7 +37,7 @@
     }
 
     .header img {
-      width: 180px;
+      width:380px;
       margin-bottom: 0px;
     }
 
@@ -80,28 +80,37 @@
     .section {
       margin-top: 30px;
     }
-
-   .tarjeta {
-  background: #f9fcff;
-  border-left: 5px solid #3498db;
-  padding: 20px 25px;
-  margin-top: 20px;
+.tarjeta {
+  background: #f0f8ff;
+  border: 2px solid #007bff;
+  border-left: 8px solid #0056b3;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  transition: transform 0.2s ease;
+  padding: 15px 25px;
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  color: #003366;
+  white-space: pre-line;
+   line-height: 0.6;
+  transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 .tarjeta:hover {
-  transform: scale(1.01);
+  background-color: #e6f2ff;
+  border-color: #3498db;
 }
 .section h2 {
-  color: #007bff;
+  
   font-size: 22px;
-  border-left: 4px solid #007bff;
+   
   padding-left: 10px;
   margin-top: 30px;
-}
 
+   margin-bottom: 4px;
+ 
+  color: #2a4d69;
+}
+ 
     .tabla-responsive {
       overflow-x: auto;
       border-radius: 8px;
@@ -174,6 +183,39 @@
       text-decoration: underline;
     }
    .mensaje-info {
+  background-color: #088ff6;
+  color: #007bff;
+   padding: 10px 12px;
+  margin-bottom: 16px;
+  background-color: #f4f4f4;
+  border-left: 4px solid #2a4d69;
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+ 
+#btn-whatsapp {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+#btn-whatsapp:hover {
+  background-color: #1ebc5c;
+}
+  table {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+   .mensaje-infoo {
   background-color: #e8f4fd;
   color: #007bff;
   padding: 15px;
@@ -183,16 +225,23 @@
   border: 1px solid #b3daff;
   font-weight: 500;
 }
-#btn-whatsapp {
+th {
+  background-color: #007bff;
   color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 50px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  } to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+.tarjeta {
+  animation: fadeInUp 0.4s ease;
+}
     @media (max-width: 600px) {
       input[type="text"], button {
         width: 100%;
@@ -204,13 +253,57 @@
         min-width: unset;
       }
     }
+    .whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #25d366;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 1000;
+  transform: scale(1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  background-color: #128c7e;
+}
+
+.whatsapp-icon {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+.whatsapp-content {
+  display: flex;
+  align-items: center;
+}
   </style>
 </head>
 <body>
+  <a href="https://wa.me/51949319753?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular"
+   class="whatsapp-float" target="_blank" title="¿Necesitas ayuda?">
+  <div class="whatsapp-content">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="whatsapp-icon">
+      <path fill="white" d="M380.9 97.1C339.3 55.5 282.4 32 222.6 32c-121.1 0-219.6 98.5-219.6 219.6 0 38.6 10 76.3 29 109.3L4.4 480l123.4-32.4c31.9 17.5 67.8 26.8 104.8 26.8h.1c121.1 0 219.6-98.5 219.6-219.6 0-59.8-23.5-116.7-66.4-158.7zM222.6 438.6c-30.2 0-59.9-8.1-85.7-23.4l-6.1-3.6-73.2 19.2 19.5-71.1-4.5-7c-17.8-27.7-27.1-59.9-27.1-93 0-94.2 76.6-170.8 170.8-170.8 45.7 0 88.7 17.8 121 50.1s50.1 75.3 50.1 121c0 94.1-76.6 170.6-170.8 170.6zm101.2-130.1c-5.5-2.8-32.7-16.1-37.8-17.9-5.1-1.9-8.8-2.8-12.5 2.8s-14.4 17.9-17.7 21.6c-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66.1-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7s-12.5-30-17.1-41.1c-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2s-9.7 1.4-14.8 6.9c-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.7 57.4c2.8 3.7 39.2 60 95.1 84.2 13.3 5.7 23.7 9.1 31.8 11.6 13.4 4.3 25.6 3.7 35.2 2.2 10.7-1.6 32.7-13.4 37.3-26.4 4.6-13.1 4.6-24.3 3.2-26.3-1.3-2.1-5-3.3-10.5-6.1z"/>
+    </svg>
+    <span>¿Necesitas ayuda?</span>
+  </div>
+</a>
   <div class="container">
     <div class="header">
-      <img src="logo3.png" alt="Logo Consulta Vehicular">
-      <h1>Consulta Vehicular Integral</h1>
+      <img src="principal.png" alt="Logo Consulta Vehicular">
+      <h1> </h1>
       <p> ¡Consulta en segundos el historial de cualquier vehículo con solo su placa!     </p>
     </div>
 <input type="text" id="placa" placeholder="Ejemplo: ABC123" />
@@ -220,21 +313,26 @@
 <button id="btn-whatsapp" onclick="compartirWhatsApp()" style="background-color: #25d366;">
   📲 Compartir por WhatsApp
 </button>
- 
-    <div id="resultado-lima" class="section"></div>
-    <div id="resultado-callao" class="section"></div>
-    <div id="resultado-revision" class="section"></div>
-    <div id="resultado-infogas" class="section"></div>
-    <div id="resultado-tarapoto" class="section"></div>
-    <div id="resultado-atu" class="section"></div>
-<div id="resultado-huancayo" class="section"></div>
-    <div id="soat-vehiculo" class="section" style="display:none;">
-      <h2>Información del SOAT</h2>
+     <div id="soat-vehiculo"   style="display:none;">
+       
       <div id="soat-info" class="tarjeta"></div>
-
-      <h2 style="margin-top: 30px;">Información del Vehículo</h2>
+       
       <div id="vehiculo-info" class="tarjeta"></div>
     </div>
+    <div id="resultado-revision" class="tarjeta"></div>
+    <div id="resultadoSiniestro" class="tarjeta"></div>
+    <div id="resultadoSutran" class="tarjeta"></div>
+    
+     <div id="resultadoOrdenCaptura" class="tarjeta"></div>
+     <div id="resultado-atu" class="section"></div>
+    <div id="resultado-infogas" class="section"></div>
+     <div id="resultado-lima" class="section"></div>
+    <div id="resultado-callao" class="section"></div>
+   <div id="resultado-piura" class="section"></div>
+    <div id="resultado-huancayo" class="section"></div>
+    <div id="resultado-tarapoto" class="section"></div>
+     <div id="resultado" class="section"></div>
+    
   </div>
   
   <div class="footer">
@@ -244,29 +342,125 @@
 
   <script>
     async function consultar() {
+      if (sessionStorage.getItem("yaConsultado")) {
+  alert("Solo se permite una consulta por sesión. Serás redirigido al inicio.");
+  window.location.href = "index.html"; // Redirige al inicio
+  return;
+}
+sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
         NProgress.start(); // 👉 Inicia la barra de progreso
       const placa = document.getElementById("placa").value.trim().toUpperCase();
-      const limaDiv = document.getElementById("resultado-lima");
+       const resultadoSutran = document.getElementById('resultadoSutran');
+      const resultadoSiniestro = document.getElementById('resultadoSiniestro');
+    const piuraDiv = document.getElementById('resultado-piura');
+         
+    const limaDiv = document.getElementById("resultado-lima");
       const callaoDiv = document.getElementById("resultado-callao");
-
-       limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="spinner"><div class="loader"></div></div>';
+        const resultado = document.getElementById('resultado');
+      
+        limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="spinner"><div class="loader"></div></div>';
     callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="spinner"><div class="loader"></div></div>';
-
+  
       if (!placa) {
         NProgress.done(); // 👉 Detenemos si hay error temprano
            limaDiv.innerHTML = '<div class="mensaje-error">Ingrese una placa válida.</div>';
         callaoDiv.innerHTML = "";
         return;
       }
+      
 
-      // SAT Lima
+ resultadoSutran.textContent = 'Consultando infracciones SUTRAN...';
+      resultadoSiniestro.textContent = 'Consultando siniestros SBS...';
+ resultadoSiniestro.innerHTML = '<h2>🚧 Resultados SBS (Siniestros)</h2><div class="mensaje-info">Consultando siniestros SBS...</div>';
+
+fetch('/siniestro', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ placa })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.resultado) {
+    const { placa, fechaConsulta, actualizadoA, cantidadAccidentes } = data.resultado;
+    resultadoSiniestro.innerHTML = `
+      <h2>🚧 Resultados SBS (Siniestros)</h2>
+      <div class="mensaje-info">
+        <strong>🚘 Placa:</strong> ${placa}<br>
+        <strong>📅 Fecha de Consulta:</strong> ${fechaConsulta}<br>
+        <strong>📌 Actualizado a:</strong> ${actualizadoA}<br>
+        <strong>⚠️ Accidentes Reportados:</strong> ${cantidadAccidentes}
+      </div>`;
+  } else {
+    resultadoSiniestro.innerHTML = `
+      <h2>🚧 Resultados SBS (Siniestros)</h2>
+      <div class="mensaje-info">No se encontró información en SBS.</div>`;
+  }
+})
+.catch(err => {
+  resultadoSiniestro.innerHTML = '<h2>🚧 Resultados SBS (Siniestros)</h2><div class="mensaje-info">Error al consultar siniestros SBS.</div>';
+  console.error(err);
+});
+
+// Consultar SUTRAN
+resultadoSutran.innerHTML = '<h2>🚌 Resultados SUTRAN</h2><div class="mensaje-info">Consultando infracciones SUTRAN...</div>';
+
+fetch('/consultar', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ placa })
+})
+.then(res => res.json())
+.then(data => {
+  resultadoSutran.innerHTML = `
+    <h2>🚌 Resultados SUTRAN</h2>
+    <div class="mensaje-info">
+      ${data.resultado || 'No se encontró información en SUTRAN.'}
+    </div>`;
+})
+.catch(err => {
+  resultadoSutran.innerHTML = '<h2>🚌 Resultados SUTRAN</h2><div class="mensaje-info">Error al consultar SUTRAN.</div>';
+  console.error(err);
+});
+
+// Consultar Órdenes de Captura
+resultadoOrdenCaptura.innerHTML = '<h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">⏳ Consultando...</div>';
+
+fetch('/orden-captura', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ placa })
+})
+.then(res => res.json())
+.then(data => {
+  if (Array.isArray(data.resultado)) {
+    resultadoOrdenCaptura.innerHTML = `
+      <h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
+      <div class="mensaje-info">
+        ${data.resultado.map(r => `
+          <strong>📅 Fecha:</strong> ${r.fecha}<br>
+          <strong>📄 Descripción:</strong> ${r.descripcion}<br>
+          <strong>🏢 Dependencia:</strong> ${r.dependencia}<br>
+          <strong>🔒 Estado:</strong> ${r.estado}
+        `).join('<hr>')}
+      </div>`;
+  } else {
+    resultadoOrdenCaptura.innerHTML = `
+      <h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
+      <div class="mensaje-info">${data.resultado}</div>`;
+  }
+})
+.catch(err => {
+  resultadoOrdenCaptura.innerHTML = '<h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
+  console.error(err);
+});
+// SAT Lima
       fetch("/api/consultar-lima", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ placa })
       }).then(res => res.json()).then(data => {
         if (!data.success || !data.results?.length) {
-     limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-info">ℹ️ No se encontraron papeletas.</div>';
+     limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-error">ℹ️ No se encontraron papeletas.</div>';
           return;
         }
  let html = '<h2>Resultados SAT Lima</h2><div class="tabla-responsive"><table><tr>' +
@@ -285,7 +479,6 @@
     }).catch(() => {
       limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-error">Error al consultar.</div>';
     });
-
       // SAT Callao
      fetch("/api/consultar-callao", {
       method: "POST",
@@ -293,7 +486,7 @@
       body: JSON.stringify({ placa })
     }).then(res => res.json()).then(data => {
       if (!data.success || !data.resultados?.length) {
-        callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="mensaje-info">ℹ️ No se encontraron papeletas.</div>';
+        callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="mensaje-error">ℹ️ No se encontraron papeletas.</div>';
         return;
       }
 
@@ -316,114 +509,131 @@
     }).catch(() => {
       callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="mensaje-error">Error al consultar.</div>';
     });
+ 
 
+  
+
+     piuraDiv.innerHTML = '<h2>Resultados SAT Piura</h2><div class="spinner"><div class="loader"></div></div>';
+
+fetch('/consultarpiura', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ placa })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.error) {
+    piuraDiv.innerHTML = `<h2>Resultados SAT Piura</h2><div class="mensaje-error">${data.error}</div>`;
+    return;
+  }
+
+  if (data.sinPapeletas) {
+    piuraDiv.innerHTML = `<h2>Resultados SAT Piura</h2><div class="mensaje-infoo">${data.data}</div>`;
+    return;
+  }
+
+  const encabezados = data.data[0];
+  const filas = data.data.slice(1);
+
+  let tabla = `<h2>Resultados SAT Piura</h2><div class="tabla-responsive"><table><thead><tr>${encabezados.map(e => `<th>${e}</th>`).join('')}</tr></thead><tbody>`;
+  filas.forEach(fila => {
+    tabla += `<tr>${fila.map(d => `<td>${d}</td>`).join('')}</tr>`;
+  });
+  tabla += `</tbody></table></div>`;
+
+  piuraDiv.innerHTML = tabla;
+})
+.catch(err => {
+  console.error('Error en consulta Piura:', err);
+  piuraDiv.innerHTML = `<h2>Resultados SAT Piura</h2><div class="mensaje-error">❌ Error al consultar Piura.</div>`;
+}); 
+
+
+      resultado.innerHTML = 'Consultando...';
+
+      const endpoints = [
+        { ciudad: 'Chiclayo', url: '/api/chiclayo' },
+        { ciudad: 'Huánuco', url: '/api/huanuco' },
+          { ciudad: 'Chachapoyas', url: '/api/chachapoyas' }, // ✅ Nuevo
+           { ciudad: 'Pucallpa', url: '/api/pucallpa' },
+           { ciudad: 'Cajamarca', url: '/api/cajamarca' },
+           { ciudad: 'Cusco', url: '/api/cusco' }, // ✅ Nuevo
+             { ciudad: 'Ica', url: "/api/ica" },
+            
+           { ciudad: 'Andahuaylas',url: "/api/andahuaylas"},
+             { ciudad: 'Puno', url: '/api/puno' }, 
+      ];
+
+      resultado.innerHTML = '';
+
+      const contenedores = {};
+endpoints.forEach(endpoint => {
+  const div = document.createElement('div');
+  div.className = 'result-box';
+  div.innerHTML = `<h2>${endpoint.ciudad}</h2><div class="tarjeta"><div class="loader"></div></div>`;
+  resultado.appendChild(div);
+  contenedores[endpoint.ciudad] = div;
+});
+
+// Lanzar todas las consultas en paralelo
+const promesas = endpoints.map(endpoint =>
+  fetch(endpoint.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ placa })
+  })
+  .then(async res => {
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return await res.json();
+  } else {
+    const text = await res.text();
+    return { html: text }; // lo tratamos como si viniera en formato html directo
+  }
+})
+.then(data => {
+  const contenedor = contenedores[endpoint.ciudad];
+
+  if (data.tienePapeletas === false) {
+    contenedor.innerHTML = `<h2>Resultados SAT ${endpoint.ciudad}</h2><div class="mensaje-infoo">ℹ️ No tiene papeletas registradas.</p>`;
+  } else if (data.tienePapeletas === true) {
+    contenedor.innerHTML = `<h2>${endpoint.ciudad}</h2><p style="color: red;">🚨 Tiene papeletas registradas.</p>`;
+  } else if (data.html) {
+    // Si contiene HTML como respuesta
+    if (
+      data.html.includes("No hay papeletas") ||
+      data.html.includes("no se encontraron resultados")
+    ) {
+      contenedor.innerHTML = `<h2>Resultados SAT  ${endpoint.ciudad}</h2><div class="mensaje-infoo">ℹ️ No tiene papeletas registradas.</p>`;
+    } else {
+      contenedor.innerHTML = `${data.html}`;
+    } 
+  } else {
+    contenedor.innerHTML = `<h2>${endpoint.ciudad}</h2><p style="color: orange;">⚠️ No se pudo determinar el resultado.</p>`;
+  }
+})
+.catch(err => {
+  contenedores[endpoint.ciudad].innerHTML = `<h3>${endpoint.ciudad}</h3><p style="color: red;">❌ Error consultando.</p>`;
+})
+);
+
+Promise.allSettled(promesas);
+ 
+    
+   
+    
       // SOAT + Info técnica
       consultarSOATyVehiculo(placa);
       consultarRevisionTecnica(placa);
       consultarInfogas(placa);
       consultarSatProvincias(placa); // Tarapoto y Huancayo
       consultarATU(placa);
+        
       NProgress.done(); // 👉 Detenemos la barra cuando todo ha terminado
-    }
-
-    async function consultarSOATyVehiculo(placa) {
-      const soatCont = document.getElementById("soat-info");
-      const vehiculoCont = document.getElementById("vehiculo-info");
- document.getElementById("soat-vehiculo").style.display = "block";
-      soatCont.innerHTML = "<p>Consultando SOAT...</p>";
-      vehiculoCont.innerHTML = "<p>Consultando datos técnicos...</p>";
-
-   
-  const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzOTEyMSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.WA0AKHrDEe61gBbS4UERoVQlu9cDR0CRf4sJImTbbn8";
-
-  try {
-    const [soatRes, infoRes] = await Promise.all([
-      fetch(`https://api.factiliza.com/v1/placa/soat/${placa}`, { headers: { Authorization: token } }).then(r => r.json()),
-      fetch(`https://api.factiliza.com/v1/placa/info/${placa}`, { headers: { Authorization: token } }).then(r => r.json())
-    ]);
-
-        const soat = soatRes.data;
-        const info = infoRes.data;
-
-        if (soat && soat.placa) {
-          const estadoIcon = soat.estado === "VIGENTE"
-            ? "<span style='color:green;font-weight:bold;'>&#9989; VIGENTE</span>"
-            : "<span style='color:red;font-weight:bold;'>&#10060; NO VIGENTE</span>";
-
-         soatCont.innerHTML = `
-        <p><strong>Placa:</strong> ${soat.placa}</p>
-        <p><strong>Aseguradora:</strong> ${soat.nombre_compania}</p>
-        <p><strong>Inicio:</strong> ${soat.fecha_inicio}</p>
-        <p><strong>Fin:</strong> ${soat.fecha_fin}</p>
-        <p><strong>Estado:</strong> ${estadoIcon}</p>
-        <p><strong>N° de Póliza:</strong> ${soat.numero_poliza}</p>
-      `;
-    } else {
-      soatCont.innerHTML = '<p style="color:red">❌ No se encontró información del SOAT.</p>';
-    }
-
-       if (info && info.placa) {
-      vehiculoCont.innerHTML = `
-        <p><strong>Placa:</strong> ${info.placa}</p>
-        <p><strong>Marca:</strong> ${info.marca}</p>
-        <p><strong>Modelo:</strong> ${info.modelo}</p>
-        <p><strong>Color:</strong> ${info.color}</p>
-        <p><strong>Serie:</strong> ${info.serie}</p>
-        <p><strong>Motor:</strong> ${info.motor}</p>
-        <p><strong>VIN:</strong> ${info.vin}</p>
-      `;
-    } else {
-      vehiculoCont.innerHTML = '<p style="color:red">❌ No se encontró información técnica del vehículo.</p>';
-    }
-
-  } catch (error) {
-    soatCont.innerHTML = `<p style="color:red">❌ Error SOAT: ${error.message}</p>`;
-    vehiculoCont.innerHTML = `<p style="color:red">❌ Error Vehículo: ${error.message}</p>`;
-  }
-}
-
-
- async function consultarRevisionTecnica(placa) {
-  const revisionDiv = document.getElementById("resultado-revision");
-  revisionDiv.innerHTML = `<h2>Revisión Técnica MTC</h2><div class="spinner"><div class="loader"></div></div>`;
-
-  try {
-    const res = await fetch("/api/consultar-revision", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ placa })
-    });
-
-    const data = await res.json();
-
-    if (data.error || !data.resultados || data.resultados.length === 0) {
-      revisionDiv.innerHTML = `<h2>Revisión Técnica MTC</h2><div class="mensaje-error">❌ No se encontraron resultados.</div>`;
-      return;
-    }
-
-    const r = data.resultados[0];
-    const estadoColor = (r.resultado || "").toLowerCase().includes("aprobado") ? "green" : "red";
-
-    const html = `
-      <div class="tarjeta">
-        <p><strong>Placa:</strong> ${r.placa}</p>
-        <p><strong>Certificado:</strong> ${r.certificado}</p>
-        <p><strong>Fecha de Revisión:</strong> ${r.fechaRevision}</p>
-        <p><strong>Fecha de Vencimiento:</strong> ${r.fechaVencimiento}</p>
-        <p><strong>Resultado:</strong> <span style="color:${estadoColor};font-weight:bold;">${r.resultado}</span></p>
-        <p><strong>Planta:</strong> ${r.planta}</p>
-      </div>
-    `;
-
-    revisionDiv.innerHTML = `<h2>Revisión Técnica MTC</h2>${html}`;
-  } catch (err) {
-    revisionDiv.innerHTML = `<h2>Revisión Técnica MTC</h2><div class="mensaje-error">❌ Error al consultar revisión técnica.</div>`;
-  }
-}
-
+} 
 async function consultarInfogas(placa) {
   const infogasDiv = document.getElementById("resultado-infogas");
-  infogasDiv.innerHTML = `<h2>Infogas GNV</h2><div class="spinner"><div class="loader"></div></div>`;
+  infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
   setTimeout(() => {
     if (document.querySelector("#resultado-infogas .loader")) {
@@ -441,14 +651,14 @@ async function consultarInfogas(placa) {
     const data = await res.json();
 
     if (!data.success || !data.resultados) {
-      infogasDiv.innerHTML = `<h2>Infogas GNV</h2><div class="mensaje-error">❌ No se encontraron datos de Infogas.</div>`;
+      infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="mensaje-error">❌ No se encontraron datos de Infogas.</div>`;
       return;
     }
 
     const r = data.resultados;
 
     const html = `
-      <div class="tarjeta">
+      <div class="mensaje-info">
         <p><strong>Placa:</strong> ${placa}</p>
         <p><strong>Tipo de Combustible:</strong> ${r.tipoCombustible || '-'}</p>
         <p><strong>Habilitado para consumir:</strong> ${r.habilitado || '-'}</p>
@@ -458,18 +668,133 @@ async function consultarInfogas(placa) {
       </div>
     `;
 
-    infogasDiv.innerHTML = `<h2>Infogas GNV</h2>${html}`;
+    infogasDiv.innerHTML = `<div class="tarjeta"><h2>⛽ Infogas GNV</h2>${html}</div>`;
   } catch (error) {
     infogasDiv.innerHTML = `<h2>Infogas GNV</h2><div class="mensaje-error">❌ Error al consultar Infogas.</div>`;
   }
 }
 
+  async function consultarSOATyVehiculo(placa) {
+  const soatCont = document.getElementById("soat-info");
+  const vehiculoCont = document.getElementById("vehiculo-info");
+  document.getElementById("soat-vehiculo").style.display = "block";
+
+  // Mostrar mensajes de carga
+  soatCont.innerHTML = `
+    <h2>📄 Resultados SOAT</h2>
+    <div class="mensaje-info">⏳ Consultando SOAT...</div>`;
+  vehiculoCont.innerHTML = `
+    <h2>🚘 Resultados del Vehículo</h2>
+    <div class="mensaje-info">⏳ Consultando datos técnicos...</div>`;
+
+  const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODkyMiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.kcxt3XYtXWWgNZdMnaENUZj-568RMkDRAVqV-DRk73I";
+
+  try {
+    const [soatRes, infoRes] = await Promise.all([
+      fetch(`https://api.factiliza.com/v1/placa/soat/${placa}`, { headers: { Authorization: token } }).then(r => r.json()),
+      fetch(`https://api.factiliza.com/v1/placa/info/${placa}`, { headers: { Authorization: token } }).then(r => r.json())
+    ]);
+
+    const soat = soatRes.data;
+    const info = infoRes.data;
+
+    // Mostrar resultados SOAT
+    if (soat && soat.placa) {
+      const estadoIcon = soat.estado === "VIGENTE"
+        ? "<span style='color:green;font-weight:bold;'>✅ VIGENTE</span>"
+        : "<span style='color:red;font-weight:bold;'>❌ NO VIGENTE</span>";
+
+      soatCont.innerHTML = `
+        <h2>📄 Resultados SOAT</h2>
+        <div class="mensaje-info">
+          <strong>🚘 Placa:</strong> ${soat.placa}<br>
+          <strong>🏢 Aseguradora:</strong> ${soat.nombre_compania}<br>
+          <strong>📅 Inicio:</strong> ${soat.fecha_inicio}<br>
+          <strong>📅 Fin:</strong> ${soat.fecha_fin}<br>
+          <strong>📌 Estado:</strong> ${estadoIcon}<br>
+          <strong>🔖 N° de Póliza:</strong> ${soat.numero_poliza}
+        </div>`;
+    } else {
+      soatCont.innerHTML = `
+        <h2>📄 Resultados SOAT</h2>
+        <div class="mensaje-info">❌ No se encontró información del SOAT.</div>`;
+    }
+
+    // Mostrar resultados del vehículo
+    if (info && info.placa) {
+      vehiculoCont.innerHTML = `
+        <h2>🚘 Resultados del Vehículo</h2>
+        <div class="mensaje-info">
+          <strong>🚘 Placa:</strong> ${info.placa}<br>
+          <strong>🏷️ Marca:</strong> ${info.marca}<br>
+          <strong>🧾 Modelo:</strong> ${info.modelo}<br>
+          <strong>🎨 Color:</strong> ${info.color}<br>
+          <strong>🔢 Serie:</strong> ${info.serie}<br>
+          <strong>🛠️ Motor:</strong> ${info.motor}<br>
+          <strong>🔍 VIN:</strong> ${info.vin}
+        </div>`;
+    } else {
+      vehiculoCont.innerHTML = `
+        <h2>🚘 Resultados del Vehículo</h2>
+        <div class="mensaje-info">❌ No se encontró información técnica del vehículo.</div>`;
+    }
+
+  } catch (error) {
+    soatCont.innerHTML = `
+      <h2>📄 Resultados SOAT</h2>
+      <div class="mensaje-info">❌ Error SOAT: ${error.message}</div>`;
+    vehiculoCont.innerHTML = `
+      <h2>🚘 Resultados del Vehículo</h2>
+      <div class="mensaje-info">❌ Error Vehículo: ${error.message}</div>`;
+  }
+}
+ async function consultarRevisionTecnica(placa) {
+  const revisionDiv = document.getElementById("resultado-revision");
+
+  // Mostrar estado "Consultando..."
+  revisionDiv.innerHTML = `<h2>🔧Revisión Técnica MTC</h2><div class="mensaje-info">⏳ Consultando...</div>`;
+
+  try {
+    const res = await fetch("/api/consultar-revision", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ placa })
+    });
+
+    const data = await res.json();
+
+    if (data.error || !data.resultados || data.resultados.length === 0) {
+      revisionDiv.innerHTML = `<h2>Revisión Técnica MTC</h2><div class="mensaje-error">❌ No se encontró información en Revisión Técnica.</div>`;
+      return;
+    }
+
+    const r = data.resultados[0];
+    const estadoColor = (r.resultado || "").toLowerCase().includes("aprobado") ? "green" : "red";
+
+    revisionDiv.innerHTML = `
+      <h2>🔧 Revisión Técnica MTC</h2>
+      <div class="mensaje-info">
+         <strong>🚗 Placa:</strong> ${r.placa} 
+         <strong>📄 Certificado:</strong> ${r.certificado} 
+         <strong>📅 Fecha de Revisión:</strong> ${r.fechaRevision} 
+         <strong>📆 Fecha de Vencimiento:</strong> ${r.fechaVencimiento} 
+        <strong>✅ Resultado:</strong> <span style="color:${estadoColor}; font-weight:bold;">${r.resultado}</span> 
+         <strong>🏭 Planta:</strong> ${r.planta} 
+      </div>
+    `;
+  } catch (err) {
+    revisionDiv.innerHTML = `<h2>🔧 Revisión Técnica MTC</h2><div class="mensaje-error">❌ Error al consultar revisión técnica.</div>`;
+    console.error(err);
+  }
+}
+ 
+
 async function consultarSatProvincias(placa) {
   const tarapotoDiv = document.getElementById("resultado-tarapoto");
   const huancayoDiv = document.getElementById("resultado-huancayo");
 
-  tarapotoDiv.innerHTML = `<h2>Resultados SAT Tarapoto</h2><div class="spinner"><div class="loader"></div></div>`;
-  huancayoDiv.innerHTML = `<h2>Resultados SAT Huancayo</h2><div class="spinner"><div class="loader"></div></div>`;
+  tarapotoDiv.innerHTML = `<h2>Resultados SAT Tarapoto</h2><div class="tarjeta"><div class="loader"></div></div>`;
+  huancayoDiv.innerHTML = `<h2>Resultados SAT Huancayo</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
   try {
     const res = await fetch("/api/consultar", {
@@ -484,14 +809,14 @@ async function consultarSatProvincias(placa) {
     if (Array.isArray(data.tarapoto)) {
       tarapotoDiv.innerHTML = `<h2>Resultados SAT Tarapoto</h2>` + generarTablaProvincias(data.tarapoto);
     } else {
-      tarapotoDiv.innerHTML = `<h2>Resultados SAT Tarapoto</h2><div class="mensaje-info">ℹ️ ${data.tarapoto}</div>`;
+      tarapotoDiv.innerHTML = `<h2>Resultados SAT Tarapoto</h2><div class="mensaje-infoo">ℹ️ ${data.tarapoto}</div>`;
     }
 
     // Huancayo
     if (Array.isArray(data.huancayo)) {
       huancayoDiv.innerHTML = `<h2>Resultados SAT Huancayo</h2>` + generarTablaProvincias(data.huancayo);
     } else {
-      huancayoDiv.innerHTML = `<h2>Resultados SAT Huancayo</h2><div class="mensaje-info">ℹ️ ${data.huancayo}</div>`;
+      huancayoDiv.innerHTML = `<h2>Resultados SAT Huancayo</h2><div class="mensaje-infoo">ℹ️ ${data.huancayo}</div>`;
     }
 
   } catch (err) {
@@ -519,7 +844,7 @@ function generarTablaProvincias(datos) {
 }
 async function consultarATU(placa) {
   const atuDiv = document.getElementById("resultado-atu");
-  atuDiv.innerHTML = `<h2>Consulta ATU</h2><div class="spinner"><div class="loader"></div></div>`;
+  atuDiv.innerHTML = `<h2>🚌 Consulta ATU</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
   try {
     const res = await fetch("/api/atu", {
@@ -531,7 +856,7 @@ async function consultarATU(placa) {
     const data = await res.json();
 
     if (!data.registrado) {
-      atuDiv.innerHTML = `<h2>Consulta ATU</h2><div class="mensaje-error">❌ Vehículo no registrado en ATU.</div>`;
+      atuDiv.innerHTML = `<h2>🚌 Consulta ATU</h2><div class="mensaje-error">❌ Vehículo no registrado en ATU.</div>`;
       return;
     }
 
@@ -574,92 +899,132 @@ async function descargarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-  const logoUrl = "logo3.png";
-  const img = new Image();
-  img.src = logoUrl;
-  await new Promise((resolve) => (img.onload = resolve));
+  // Logo
+  const logoUrl = "principal.png";
+  const logo = new Image();
+  logo.src = logoUrl;
+  await new Promise(resolve => logo.onload = resolve);
 
-  // Logo y encabezado
-  doc.addImage(img, "PNG", 15, 10, 40, 20);
+  doc.addImage(logo, "PNG", 15, 10, 30, 20);
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text("Consulta Vehicular Integral", 60, 20);
+  doc.setFontSize(18);
+  doc.setTextColor(33, 37, 41); // Gris oscuro
+  doc.text("Consulta Vehicular Integral", 105, 20, null, null, "center");
 
   const fecha = new Date().toLocaleString("es-PE");
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Fecha de consulta: ${fecha}`, 60, 27); // ✅ Corregido
+  doc.setTextColor(100);
+  doc.text(`Fecha de consulta: ${fecha}`, 105, 27, null, null, "center");
 
-  doc.setLineWidth(0.5);
+  doc.setLineWidth(0.3);
+  doc.setDrawColor(180);
   doc.line(10, 32, 200, 32);
 
   let y = 40;
 
-  function agregarSeccion(titulo, elementoHTML) {
-    const textoPlano = elementoHTML.innerText.trim();
+  function limpiarTexto(texto) {
+    return texto
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/?[^>]+(>|$)/g, "")
+      .replace(/[^\x20-\x7E\n\r]/g, "");
+  }
+
+  async function agregarSeccion(titulo, elementoHTML, color = [245, 245, 245]) {
+    const textoPlano = limpiarTexto(elementoHTML.innerHTML.trim());
     if (!textoPlano) return;
 
+    // Título de sección
+    doc.setFillColor(...color);
+    doc.setDrawColor(220);
+    doc.roundedRect(10, y, 190, 10, 2, 2, "F");
+
     doc.setFontSize(13);
-    doc.setTextColor(0, 102, 204);
     doc.setFont("helvetica", "bold");
-    doc.text(titulo, 15, y);
-    y += 7;
+    doc.setTextColor(0, 102, 204);
+    doc.text(titulo, 15, y + 7);
+
+    y += 14;
 
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(33);
+    doc.setTextColor(33, 37, 41);
 
     const lineas = doc.splitTextToSize(textoPlano, 180);
-    lineas.forEach((line) => {
+    const startY = y;
+
+    for (const line of lineas) {
       if (y > 270) {
         doc.addPage();
         y = 20;
       }
       doc.text(line, 15, y);
       y += 6;
-    });
+    }
 
-    y += 5;
+    const imgTag = elementoHTML.querySelector("img");
+    if (imgTag) {
+      const imgData = await cargarImagenComoBase64(imgTag.src);
+      if (imgData) {
+        if (y > 220) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.addImage(imgData, "JPEG", 60, y, 90, 50);
+        y += 55;
+      }
+    }
+
+    // Borde externo de sección
+    doc.setDrawColor(220);
+    doc.roundedRect(10, startY - 14, 190, y - startY + 24, 2, 2, "S");
+
+    y += 10;
+  }
+
+  async function cargarImagenComoBase64(url) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      console.error("Error cargando imagen:", e);
+      return null;
+    }
   }
 
   const secciones = [
-    { titulo: "SAT Lima", id: "resultado-lima" },
-    { titulo: "SAT Callao", id: "resultado-callao" },
-    { titulo: "SAT Tarapoto", id: "resultado-tarapoto" },
-    { titulo: "SAT Huancayo", id: "resultado-huancayo" },
-    { titulo: "SOAT", id: "soat-info" },
-    { titulo: "Datos del Vehículo", id: "vehiculo-info" },
-    { titulo: "ATU", id: "resultado-atu" },
-    { titulo: "Revisión Técnica MTC", id: "resultado-revision" },
-    { titulo: "Infogas GNV", id: "resultado-infogas" }
-  ];
+    { titulo: "SOAT", id: "soat-info", color: [230, 245, 255] },
+    { titulo: "Datos del Vehículo", id: "vehiculo-info", color: [240, 250, 255] },
+    { titulo: "SAT Lima", id: "resultado-lima", color: [235, 245, 255] },
+    { titulo: "SAT Callao", id: "resultado-callao", color: [240, 250, 255] },
+    { titulo: "SAT Tarapoto", id: "resultado-tarapoto", color: [230, 240, 250] },
+    { titulo: "SAT Huancayo", id: "resultado-huancayo", color: [240, 250, 255] },
+    { titulo: "ATU", id: "resultado-atu", color: [230, 240, 255] },
+    { titulo: "Revisión Técnica MTC", id: "resultado-revision", color: [235, 245, 255] },
+    { titulo: "Infogas GNV", id: "resultado-infogas", color: [240, 250, 255] },
+    { titulo: "Resultados SBS (Siniestros)", id: "resultadoSiniestro", color: [240, 250, 255] },
+        { titulo: " Resultados SUTRAN", id: "resultadoSutran", color: [240, 250, 255] },
+     { titulo: " Resultados SAT Órdenes de Captura(Gravamen)", id: "resultadoOrdenCaptura", color: [240, 250, 255] },
+     
+     { titulo: " Resultados SAT Piura", id: "resultado-piura", color: [240, 250, 255] },
+       { titulo: " Resultados SAT Provincia", id: "resultado", color: [240, 250, 255] },
+ 
+    ];
 
   for (const s of secciones) {
     const el = document.getElementById(s.id);
-    if (el) agregarSeccion(s.titulo, el);
+    if (el) await agregarSeccion(s.titulo, el, s.color);
   }
 
   doc.save("consulta-vehicular.pdf");
 }
 
-function compartirWhatsApp() {
-  const placa = document.getElementById("placa").value.trim().toUpperCase();
-
-  if (!placa) {
-    alert("Por favor, ingresa una placa para compartir.");
-    return;
-  }
-
-  const mensaje = `Hola, consulta vehicular para la placa *${placa}*: https://tusitio.com/?placa=${placa}`;
-  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
-
-  window.open(url, "_blank");
-}
- 
-   
-  
-    let datosCompletos = "";
-  let placa = "";
 
   
 
@@ -720,20 +1085,19 @@ function compartirWhatsApp() {
   window.addEventListener("error", function (e) {
     console.error("👉 Error atrapado:", e.error);
   });
- Culqi.publicKey = 'pk_test_HVJ7ATpAkgpHW4ki'; // reemplaza con tu clave pública real
-  Culqi.options({
-    lang: 'auto',
-    installments: false,
-    modal: true
-  });
- Culqi.settings({
-  title: 'Consulta Vehicular',
-  currency: 'PEN',
-  description: 'Pago para consulta por placa',
-  amount: 1200 // Monto en céntimos (S/10.00)
-});
+  function compartirWhatsApp() {
+  const placa = document.getElementById("placa").value.trim().toUpperCase();
 
- 
-  </script>
+  if (!placa) {
+    alert("Por favor, ingresa una placa para compartir.");
+    return;
+  }
+
+  const mensaje = `Hola, consulta vehicular para la placa *${placa}*: https://www.consultavehicular.services/?placa=${placa}`;
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(url, "_blank");
+}
+  </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>

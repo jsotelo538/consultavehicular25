@@ -5,15 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Consulta Vehicular</title>
   <header class="navbar">
-  <div class="navbar-container">
-    <div class="logo">VALHAR</div>
-    <nav>
-      <a href="#inicio">Inicio</a>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+ <div class="navbar-container">
+  <!-- Logo visible siempre -->
+  <a href="#"><img class="prin" src="principal.png" alt="Logo"></a>
+
+  <!-- Botón de hamburguesa -->
+  <div class="menu-toggle" id="menuToggle">&#9776;</div>
+
+  <!-- Menú lateral para móviles -->
+  <div class="sidebar-menu" id="sidebarMenu">
+    <button class="close-btn" id="closeMenu">&times;</button>
+
+    <!-- Logo centrado -->
+    <div class="sidebar-logo">
+      <img src="principal.png" alt="Logo">
+    </div>
+
+    <!-- Navegación lateral -->
+    <nav class="sidebar-nav">
+      <a href="#">Inicio</a>
       <a href="#quienes-somos">Quiénes Somos</a>
-      <a href="#precios">Mision</a>
-      <a href="#contacto">vision</a>
+      <a href="#servi">Informe</a>
+      <a href="#pre">Preguntas</a>
     </nav>
   </div>
+
+  <!-- Menú escritorio -->
+  <div class="menu-y-boton">
+    <nav class="desktop-menu">
+      <a href="#">Inicio</a>
+      <a href="#quienes-somos">Quiénes Somos</a>
+      <a href="#servi">Informe</a>
+      <a href="#pre">Preguntas</a>
+    </nav>
+    <a class="btn-navbar  btn-navbarrr" href="#">Pedir Informe</a>
+  </div>
+</div>
 </header>
   <style>
     body {
@@ -22,9 +51,38 @@
       background-color: #f9fbff;
       color: #002d5f;
     }
-.navbar {
-  background: linear-gradient(90deg, #007bff, #0056b3);
+    .menu-y-boton {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* separa solo un poco el botón de los enlaces */
+}
+
+.menu-y-boton nav a {
+  margin-left: 15px;
+}
+    .btn-navbar {
+  background-color: #007bff;
   color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 20px;
+  white-space: nowrap;
+}
+
+.btn-navbar:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+    .prin{
+      width: 250px;
+    }
+.navbar {
+  background: linear-gradient(90deg, #e1f0ff, #bcdfff);
+  color: rgb(255, 255, 255);
   padding: 15px 0;
   border-radius: 0 0 15px 15px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -36,7 +94,8 @@
 .navbar-container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 20px;
+   position: relative;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,15 +108,28 @@
 }
 
 .navbar nav a {
-  color: white;
+ position: relative;
+  color: #003366;
   text-decoration: none;
   margin-left: 20px;
   font-size: 16px;
+  font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.navbar nav a:hover {
-  color: #ffeecc;
+.navbar nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px; /* distancia debajo del texto */
+  width: 0;
+  height: 2px;
+  background-color: #0056b3; /* color de la barra */
+  transition: width 0.3s ease;
+}
+
+.navbar nav a:hover::after {
+  width: 100%;
 }
 
 @media (max-width: 600px) {
@@ -115,7 +187,7 @@
 
     .form-box button {
       width: 100%;
-      background-color: #ff4500;
+       background-color: #007bff;
       color: white;
       padding: 12px;
       border: none;
@@ -123,10 +195,12 @@
       font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.3s ease;
+        font-weight: bold;
+          box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
     }
 
     .form-box button:hover {
-      background-color: #e03e00;
+       background-color: #0056b3;
     }
 
     .info-box {
@@ -156,36 +230,102 @@
   background: linear-gradient(135deg, #f0f8ff, #e6f0ff);
   padding: 60px 20px;
   color: #1e2f45;
+
+   position: relative;
+  background: url('2.png') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed; /* opcional para efecto parallax */
+  z-index: 1;
+}
+.section-quienes-somos::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.85); /* suaviza el fondo si es muy notorio */
+  z-index: 2;
 }
 
+.section-quienes-somos .container,
+.section-quienes-somos .bloques-info {
+  position: relative;
+  z-index: 3;
+}
 .section-quienes-somos .container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: auto;
 }
-
+.quienes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+.quienes-imagen img {
+    max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 .titulo-seccion {
   font-size: 28px;
   color: #007bff;
   border-left: 5px solid #007bff;
   padding-left: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-weight: 700;
 }
-
+.quienes-texto p {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
 .section-quienes-somos p {
-  font-size: 17px;
+ font-size: 17px;
   line-height: 1.7;
   margin-bottom: 20px;
 }
 
 .section-quienes-somos .bloque h3 {
   color: #0056b3;
-  margin-top: 30px;
-  font-size: 20px;
+  font-size: 22px;
+  margin-bottom: 10px;
+  position: relative;
 }
-
+.bloque {
+  flex: 1;
+  min-width: 250px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+ 
 .section-quienes-somos .bloque p {
   margin-top: 10px;
+    font-size: 16px;
 }
+.bloque h3 {
+  color: #004a8f;
+  margin-bottom: 10px;
+}
+
+.bloque p {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.bloques-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
 .footer {
   margin-top: 60px;
   background: linear-gradient(90deg, #007bff, #0056b3);
@@ -232,7 +372,15 @@
   flex: 2;
   min-width: 300px;
 }
-
+.faq-answer ol {
+  padding-left: 20px;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.faq-item.active .faq-answer {
+  max-height: 1000px; /* o más si la lista es más larga */
+  padding: 20px;
+}
 @media (max-width: 768px) {
   .quienes-grid {
     flex-direction: column;
@@ -257,82 +405,733 @@
         max-width: 100%;
       }
     }
+ .faq-section {
+  background: #f8fbff;
+  padding: 60px 20px;
+  color: #002d5f;
+  border-top: 1px solid #d0e3ff;
+}
+
+.faq-section .container {
+  max-width: 800px;
+  margin: auto;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.faq-item {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 15px 20px;
+  background-color: #fff;
+  border: none;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: left;
+  color: #0056b3;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+  background-color: #f0f4ff;
+}
+
+.faq-answer {
+  max-height: 0;
+    
+ overflow: hidden;
+  padding: 0 20px;
+  background-color: #f9fcff;
+  color: #333;
+  font-size: 15px;
+  line-height: 1.6;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 300px;
+  padding: 15px 20px;
+}
+
+    #preloader {
+background: linear-gradient(135deg, #d6eaff, #eaf4ff);
+      position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.loader-logo img {
+  width: 210px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+.loader-logo {
+  animation: zoomIn 1s ease forwards;
+  opacity: 0;
+}
+.logo{
+  width: 300px;
+  margin: auto;
+}
+.titu img{
+  width: 280px;
+}
+@keyframes zoomIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #25d366;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 1000;
+  transform: scale(1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  background-color: #128c7e;
+}
+
+.whatsapp-icon {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+.whatsapp-content {
+  display: flex;
+  align-items: center;
+}
+ 
+.seccion-servicios {
+  background: #f0f6ff;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.servicio-box {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  padding: 25px;
+  transition: transform 0.3s ease;
+}
+
+.servicio-box:hover {
+  transform: translateY(-5px);
+}
+
+.servicio-box img {
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.servicio-box h3 {
+  color: #0056b3;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.servicio-box p {
+  font-size: 15px;
+  color: #333;
+}
+
+
+.hero-informe {
+  background: linear-gradient(135deg, #f1f8ff, #eaf4ff);
+  padding: 80px 20px;
+}
+
+.container-hero {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.hero-card {
+  display: flex;
+  flex-wrap: wrap;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  padding: 40px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.hero-left {
+  flex: 1;
+  min-width: 280px;
+}
+
+.hero-left h1 {
+  font-size: 32px;
+  color: #004b99;
+  margin-bottom: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+.descripcion-hero {
+    font-family: 'Poppins', sans-serif;
+  font-size: 17px;
+  color: #444;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.pasos-hero {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 25px;
+}
+
+.pasos-hero li {
+   font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #0056b3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pasos-hero li span {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 50%;
+  font-size: 15px;
+}
+
+.hero-right {
+  flex: 1;
+  min-width: 250px;
+  text-align: center;
+}
+
+.img-informe {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+/* Menú móvil */
+.menu-toggle {
+  font-size: 28px;
+  cursor: pointer;
+  display: none;
+  margin-left: auto;
+   color: #007bff;
+}
+
+/* Sidebar lateral */
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+   width: 280px;
+  max-width: 280px;
+  height: 100vh;
+ background: rgba(255, 255, 255, 0.9);
+  transition: right 0.3s ease;
+  z-index: 2000;
+  padding: 20px;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+}
+
+.sidebar-menu.open {
+  right: 0;
+}
+
+.sidebar-logo {
+    text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+ 
+}
+
+.sidebar-logo img {
+  max-width: 150px;
+  
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-nav a {
+  color: #333;
+  font-size: 18px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 25px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .desktop-menu,
+  .btn-navbarrr {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+}
+@media (max-width: 768px) {
+  .hero-card {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+  .hero-left h1 {
+    font-size: 26px;
+  }
+}
+
+.beneficios-section {
+  padding: 60px 20px;
+  background: #ffffff;
+}
+
+.beneficios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.beneficio {
+  background: #f4f9ff;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.beneficio:hover {
+  transform: translateY(-5px);
+}
+
+.beneficio img {
+  width: 50px;
+  margin-bottom: 15px;
+}
+
+.beneficio h4 {
+  font-size: 17px;
+  color: #0056b3;
+  margin-bottom: 10px;
+}
+
+.beneficio p {
+  font-size: 14px;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+.beneficios {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: #f1f5f9;
+  font-family: 'Poppins', sans-serif;
+}
+.beneficios h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #003366;
+  font-family: 'Poppins', sans-serif;
+}
+.beneficios-lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+.beneficio {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 300px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.beneficio img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+.beneficio h3 {
+  font-size: 1.2rem;
+  color: #2563eb;
+  margin-bottom: 0.5rem;
+}
+.beneficio p {
+  font-size: 0.95rem;
+  color: #333;
+}
+/* Barra flotante lateral */
+.barra-redes-flotante {
+  position: fixed;
+  top: 40%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.barra-redes-flotante a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  margin: 5px 0;
+  color: #fff;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  border-radius: 0 8px 8px 0;
+}
+
+.barra-redes-flotante a.facebook {
+  background-color: #3b5998;
+}
+
+.barra-redes-flotante a.instagram {
+  background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.barra-redes-flotante a.tiktok {
+  background-color: #010101;
+}
+
+.barra-redes-flotante a:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.modal {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-contenido {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  animation: zoomIn 0.3s ease;
+}
+
+.modal-contenido img {
+  width: 60%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.cerrar {
+  position: absolute;
+  top: -10px;
+  right: 180px;
+  background: #fff;
+  border: none;
+  font-size: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 5px 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+@media (max-width: 480px) {
+  .modal-contenido {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .modal-contenido img {
+    width: 100%;
+    max-height: 75vh;
+  }
+
+  .cerrar {
+    font-size: 16px;
+    padding: 5px 10px;
+     right: 10px;
+       top: -20px;
+  }
+}
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
   </style>
 </head>
 <body>
+<a href="https://wa.me/51949319753?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular"
+   class="whatsapp-float" target="_blank" title="¿Necesitas ayuda?">
+  <div class="whatsapp-content">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="whatsapp-icon">
+      <path fill="white" d="M380.9 97.1C339.3 55.5 282.4 32 222.6 32c-121.1 0-219.6 98.5-219.6 219.6 0 38.6 10 76.3 29 109.3L4.4 480l123.4-32.4c31.9 17.5 67.8 26.8 104.8 26.8h.1c121.1 0 219.6-98.5 219.6-219.6 0-59.8-23.5-116.7-66.4-158.7zM222.6 438.6c-30.2 0-59.9-8.1-85.7-23.4l-6.1-3.6-73.2 19.2 19.5-71.1-4.5-7c-17.8-27.7-27.1-59.9-27.1-93 0-94.2 76.6-170.8 170.8-170.8 45.7 0 88.7 17.8 121 50.1s50.1 75.3 50.1 121c0 94.1-76.6 170.6-170.8 170.6zm101.2-130.1c-5.5-2.8-32.7-16.1-37.8-17.9-5.1-1.9-8.8-2.8-12.5 2.8s-14.4 17.9-17.7 21.6c-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66.1-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7s-12.5-30-17.1-41.1c-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2s-9.7 1.4-14.8 6.9c-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.7 57.4c2.8 3.7 39.2 60 95.1 84.2 13.3 5.7 23.7 9.1 31.8 11.6 13.4 4.3 25.6 3.7 35.2 2.2 10.7-1.6 32.7-13.4 37.3-26.4 4.6-13.1 4.6-24.3 3.2-26.3-1.3-2.1-5-3.3-10.5-6.1z"/>
+    </svg>
+    <span>¿Necesitas ayuda?</span>
+  </div>
+</a>
 
-   
-   <div class="titu"><h1 class="asv">Consulta Vehicular</h1></div> 
-  <div class="container">
-    <div class="form-box">
-      <label for="placa">Ingrese la placa:</label>
-      <input type="text" id="placa" placeholder="ABC123" />
-      <button id="btn-pagar">Solicitar Informe - S/ 12.00</button>
-    </div>
-
-    <div class="info-box">
-      <h2>Pedir informe vehicular</h2>
-      <div class="info-item">
-        <strong>1. Ingresa a pagar  </strong>
-        Presione solicitar y luego llene sus datos y su tarjeta y pague s/12 por consulta.
+<div id="preloader">
+  <div class="loader-logo">
+    <img src="principal.png" alt="Logo de VALHAR">
+  </div>
+</div>
+  
+ 
+  <section class="hero-informe">
+  <div class="container-hero">
+    <div class="hero-card">
+      <div class="hero-left">
+        <h1>Solicita tu Informe Vehicular</h1>
+        <p class="descripcion-hero">
+          Recibe un informe completo y detallado al instante desde fuentes oficiales: papeletas lima y provincia, SOAT, revisión técnica, y más. Contamos con mas de 18 consultas. 
+        </p>
+        <ul class="pasos-hero">
+          <li><span>1.</span> Paga S/18.00</li>
+          <li><span>2.</span> Llena tus datos</li>
+          <li><span>3.</span> Visualiza o descarga tu informe en PDF</li>
+        </ul>
+        <button class="btn-navbar   btn-navbarr" id="btn-pagar"  >Solicitar Informe - S/ 18.00</button>
       </div>
-      <div class="info-item">
-        <strong>2. Completa el formulario</strong>
-        Ingresa la placa del vehículo y sigue las instrucciones.
-      </div>
-      <div class="info-item">
-        <strong>3. Reunimos toda la información</strong>
-        Nos conectamos a fuentes oficiales para crear el informe.
-      </div>
-      <div class="info-item">
-        <strong>4. ¡Informe listo!</strong>
-        Consulta el informe en línea o recíbelo por correo.
+      <div class="hero-right">
+        <img src="image-consultas-soat.png" alt="Informe vehicular" class="img-informe">
       </div>
     </div>
   </div>
+</section>
+<section class="beneficios">
+  <h2>¿Por qué elegirnos?</h2>
+  <div class="beneficios-lista">
+    <div class="beneficio">
+      <img src="https://cdn-icons-png.flaticon.com/512/2936/2936885.png" alt="Rápido">
+      <h3>Rápido y en línea</h3>
+      <p>Recibe tu informe al instante, sin papeleo.</p>
+    </div>
+    <div class="beneficio">
+      <img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png"  alt="Completo">
+      <h3>Fuentes oficiales</h3>
+      <p>Incluye papeletas SAT, SOAT ,ATU , Revisión técnica, SUNARP y más.</p>
+    </div>
+    <div class="beneficio">
+      <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="Confiable">
+      <h3>Formato PDF</h3>
+      <p>Descarga o revisa el informe desde cualquier dispositivo.</p>
+    </div>
+    <div class="beneficio">
+      <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Confiable">
+      <h3>Seguro y confidencial</h3>
+      <p>Tu información está protegida con protocolos seguros.</p>
+    </div>
+  </div>
+ 
   <section class="section-quienes-somos" id="quienes-somos">
   <div class="container quienes-grid">
     <div class="quienes-imagen">
-      <img src="Imagen1.png" alt="Quiénes Somos - VALHAR">
+      <img src="principal.png" alt="Quiénes Somos - VALHAR">
     </div>
     <div class="quienes-texto">
-      <h2 class="titulo-seccion">QUIÉNES SÓMOS</h2>
+      <h2 class="titulo-seccion">¿Quiénes Somos?</h2>
       <p>
-        En <strong>VALHAR</strong> no solo te ofrecemos un informe vehicular detallado, sino también la seguridad y tranquilidad que necesitas para tomar decisiones inteligentes y acertadas al comprar un vehículo usado.
-        Sabemos que adquirir un auto es una inversión importante, y por eso nos dedicamos a brindarte información veraz, actualizada y confiable, para que puedas evitar riesgos y elegir con total confianza.
+        En <strong>Consulta Vehiculares</strong> no solo te ofrecemos un informe vehicular detallado, sino también la seguridad y tranquilidad que necesitas para tomar decisiones inteligentes al comprar un vehículo usado.
       </p>
       <p>
-        Desde nuestros inicios, nos hemos comprometido con la transparencia y la honestidad en el mercado automotriz peruano, posicionándonos como líderes en la consulta de historial vehicular.
-        Hemos ayudado a miles de clientes a identificar autos con antecedentes, multas pendientes o papeletas, evitando así pérdidas económicas y problemas legales.
+        Sabemos que adquirir un auto es una inversión importante, y por eso nos dedicamos a brindarte información veraz, actualizada y confiable para que puedas evitar riesgos y elegir con total confianza.
+      </p>
+      <p>
+        Desde nuestros inicios, nos hemos comprometido con la transparencia y honestidad en el mercado automotriz peruano, ayudando a miles de clientes a identificar autos con papeletas, deudas o antecedentes.
       </p>
     </div>
   </div>
 
+  <div class="container bloques-info">
+    <div class="bloque">
+      <h3>Misión</h3>
+      <p>Brindar informes vehiculares detallados, precisos y confiables, para que nuestros clientes puedan tomar decisiones de compra seguras y bien informadas.</p>
+    </div>
+    <div class="bloque">
+      <h3>Visión</h3>
+      <p>Ser el referente líder en historial vehicular en Perú, reconocidos por nuestra exactitud, transparencia y tecnología.</p>
+    </div>
+    <div class="bloque">
+      <h3>Filosofía</h3>
+      <p>Nos regimos por principios de transparencia, precisión y compromiso. Entregamos reportes respaldados por datos oficiales con un enfoque ético y personalizado.</p>
+    </div>
+  </div>
+</section>
+<section class="seccion-servicios" id="servi">
   <div class="container">
-    <div class="bloque">
-      <h3>MISIÓN</h3>
-      <p>
-        Nuestra misión es brindar informes vehiculares detallados, precisos y confiables, para que nuestros clientes puedan tomar decisiones de compra seguras y con total conocimiento.
-        Nos comprometemos a ofrecer el historial de cada vehículo, garantizando transparencia, confianza y tranquilidad en cada transacción.
-      </p>
+    <h2 class="titulo-seccion">¿Qué contiene el informe vehicular?</h2>
+    <div class="servicios-grid">
+      <div class="servicio-box">
+        <img src="proy/satlima.webp" alt="Papeletas">
+        <h3>Papeletas</h3>
+        <p>Consulta de infracciones pendientes en Lima, Callao y otras ciudades.</p>
+      </div>
+      <div class="servicio-box">
+        <img src="proy/soat.jpg" alt="SOAT">
+        <h3>SOAT</h3>
+        <p>Verifica si el vehículo cuenta con un SOAT vigente, compañía y vigencia.</p>
+      </div>
+      <div class="servicio-box">
+        <img src="proy/revision.png" alt="Revisión Técnica">
+        <h3>Revisión Técnica</h3>
+        <p>Revisa si el vehículo pasó la revisión técnica obligatoria del MTC.</p>
+      </div>
+      <div class="servicio-box">
+        <img src="proy/sunarp.jpg" alt="Datos del vehículo">
+        <h3>Datos SUNARP</h3>
+        <p>Incluye información del propietario, placa, modelo, VIN, motor y más.</p>
+      </div>
+      
     </div>
+  </div>
+</section>
+<section class="mensaje-info">
+  ¿Tienes dudas? Haz clic en el botón de WhatsApp o contáctanos para más información. ¡Estamos para ayudarte!
+</section>
+<section class="faq-section" id="pre">
+  <div class="container">
+    <h2 class="titulo-seccion">Preguntas Frecuentes</h2>
 
-    <div class="bloque">
-      <h3>VISIÓN</h3>
-      <p>
-        Ser el referente líder en informes de historial vehicular en Perú, reconocidos por nuestra exactitud, transparencia y tecnología innovadora.
-        Aspiramos a transformar la experiencia de compra y venta de vehículos, brindando información confiable y accesible que empodere a nuestros clientes para tomar decisiones seguras e informadas.
-        Nos comprometemos a ser el aliado estratégico del mercado automotriz peruano, impulsando la digitalización y la confianza en cada transacción.
-      </p>
-    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">¿Qué incluye el informe vehicular?</button>
+        <div class="faq-answer">
+<ol>
+        <li>SOAT</li>
+        <li>ORDEN DE CAPTURA POR GRAVAMEN</li>
+        <li>SINIESTROS</li>
+        <li>REVISION TECNICA MTC</li>
+        <li>INFOGAS GNV</li>
+        <li>SUTRAN</li>
+        <li>ATU</li>
+        <li>SAT A NIVEL NACIONAL</li>
+        <li>SAT LIMA</li>
+        <li>SAT CALLAO</li>
+        <li>SAT CHICLAYO</li>
+        <li>SAT TRUJILLO</li>
+        <li>SAT TACNA</li>
+        <li>SAT AREQUIPA</li>
+        <li>SAT PIURA</li>
+        <li>SAT ICA</li>
+        <li>SAT CUSCO</li>
+        <li>SAT PUNO</li>
+        <li>SAT CAJAMARCA</li>
+        <li>SAT ANDAHUAYLAS</li>
+        <li>SAT PUCALLPA</li>
+        <li>SAT CHACHAPOYAS</li>
+        <li>SAT HUANUCO</li>
+        <li>SAT TARAPOTO</li>
+        <li>SAT HUANCAYO</li>
+      </ol>
+        </div>
+      </div>
 
-    <div class="bloque">
-      <h3>NUESTRA FILOSOFÍA</h3>
-      <p>
-        En <strong>VALHAR</strong>, nos regimos por los principios de transparencia, precisión y compromiso con nuestros clientes.
-        Nos especializamos en entregar reportes vehiculares, respaldados por datos actualizados y fuentes confiables del sistema peruano.
-        Nuestro compromiso es superar expectativas mediante tecnología avanzada, rigor ético y un servicio personalizado.
-      </p>
+      <div class="faq-item">
+        <button class="faq-question">¿Cuánto demora en llegar el informe?</button>
+        <div class="faq-answer">
+          <p>El trámite solicitado es rápido y sencillo, con un tiempo máximo de procesamiento de 3 minutos. Agradecemos su paciencia mientras completamos el proceso.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">¿Qué formas de pago aceptan?</button>
+        <div class="faq-answer">
+          <p>Puedes realizar tu pago de manera segura y rápida a través de los siguientes medios: tarjeta Débito, tarjeta de Crédito o Yape. Elige la opción que más te convenga y completa tu compra sin complicaciones.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">¿Cómo recibo el informe?</button>
+        <div class="faq-answer">
+          <p>Puedes visualizar el informe directamente en esta página, además de tener la opción de descargarlo en tu dispositivo o compartirlo fácilmente por WhatsApp con solo un clic.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -340,9 +1139,43 @@
     <p>© 2025 Consulta Vehicular. Todos los derechos reservados.</p>
     <p>Contacto: <a href="mailto:soporte@consultavehicular.pe">soporte@consultavehicular.pe</a></p>
   </div>
- 
-
+ <div class="barra-redes-flotante">
+  <a href="https://www.facebook.com/tu_pagina" target="_blank" class="facebook" title="Facebook">
+    <i class="fab fa-facebook-f"></i>
+  </a>
+  <a href="https://www.instagram.com/tu_pagina" target="_blank" class="instagram" title="Instagram">
+    <i class="fab fa-instagram"></i>
+  </a>
+  <a href="https://www.tiktok.com/@consulta.vehicula?_t=ZS-8yWGxK3ENZx&_r=1" target="_blank" class="tiktok" title="TikTok">
+    <i class="fab fa-tiktok"></i>
+  </a>
+</div>
+<!-- Modal -->
+<div id="modalImagen" class="modal">
+  <div class="modal-contenido">
+    <img src="proy/Sin título-111111.jpg" alt="Imagen Modal">
+    <button class="cerrar" onclick="cerrarModal()">✖</button>
+  </div>
+</div>
   <script>
+   const MIN_DISPLAY_TIME = 2500; // en milisegundos = 2.5 segundos
+  const preloader = document.getElementById('preloader');
+  const startTime = Date.now();
+
+  window.addEventListener('load', () => {
+    const elapsed = Date.now() - startTime;
+    const remaining = MIN_DISPLAY_TIME - elapsed;
+
+    setTimeout(() => {
+      preloader.style.opacity = '0';
+      setTimeout(() => {
+        preloader.style.display = 'none';
+      }, 500); // Esperar la transición
+    }, remaining > 0 ? remaining : 0);
+  });
+
+
+
     document.getElementById("btn-pagar").addEventListener("click", async () => {
       try {
         const response = await fetch("/crear-preferencia", {
@@ -363,6 +1196,79 @@
         alert("Hubo un problema al procesar el pago");
       }
     });
+
+     document.querySelectorAll(".faq-question").forEach(button => {
+    button.addEventListener("click", () => {
+      const faqItem = button.parentElement;
+      const answer = faqItem.querySelector(".faq-answer");
+
+      const isActive = faqItem.classList.contains("active");
+
+      // Cierra todos
+      document.querySelectorAll(".faq-item").forEach(item => {
+        item.classList.remove("active");
+        item.querySelector(".faq-answer").style.maxHeight = null;
+        item.querySelector(".faq-answer").style.paddingTop = "0";
+        item.querySelector(".faq-answer").style.paddingBottom = "0";
+      });
+
+      if (!isActive) {
+        faqItem.classList.add("active");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        answer.style.paddingTop = "20px";
+        answer.style.paddingBottom = "20px";
+      }
+    });
+  });
+
+
+ const modal = document.getElementById("modalImagen");
+
+  function abrirModal() {
+    modal.style.display = "flex";
+  }
+
+  function cerrarModal() {
+    modal.style.display = "none";
+  }
+
+  // Cerrar si se hace clic fuera del contenido
+  window.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      cerrarModal();
+    }
+  });
+
+  // Mostrar solo una vez por sesión
+  document.addEventListener("DOMContentLoaded", () => {
+    const yaMostrado = sessionStorage.getItem("modalMostrado");
+
+    if (!yaMostrado) {
+      setTimeout(() => {
+        abrirModal();
+        sessionStorage.setItem("modalMostrado", "true");
+      }, 3000);
+    }
+  });
+   // Menu 
+   const menuToggle = document.getElementById('menuToggle');
+  const sidebarMenu = document.getElementById('sidebarMenu');
+  const closeMenu = document.getElementById('closeMenu');
+  const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+
+  menuToggle.addEventListener('click', () => {
+    sidebarMenu.classList.add('open');
+  });
+
+  closeMenu.addEventListener('click', () => {
+    sidebarMenu.classList.remove('open');
+  });
+
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      sidebarMenu.classList.remove('open');
+    });
+  });
   </script>
 </body>
 </html>
