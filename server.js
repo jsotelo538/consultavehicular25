@@ -87,12 +87,20 @@ app.post('/siniestro', async (req, res) => {
   const placa = req.body.placa;
 
   try {
-    const browser = await puppeteer.launch({
-      headless: 'new',
-      slowMo: 50,
-      defaultViewport: null,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+  const puppeteer = require("puppeteer");
+
+const browser = await puppeteer.launch({
+  headless: true,
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-accelerated-2d-canvas",
+    "--no-zygote",
+    "--single-process",
+    "--disable-gpu",
+  ],
+});
 
     const page = await browser.newPage();
 
@@ -153,9 +161,9 @@ app.post('/consultar', async (req, res) => {
   const placa = req.body.placa;
 
   try {
-    const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+ const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
     const page = await browser.newPage();
 
