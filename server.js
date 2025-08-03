@@ -90,16 +90,8 @@ app.post('/siniestro', async (req, res) => {
   const puppeteer = require("puppeteer");
 
 const browser = await puppeteer.launch({
-  headless: true,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-accelerated-2d-canvas",
-    "--no-zygote",
-    "--single-process",
-    "--disable-gpu",
-  ],
+  headless: false,
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
 
     const page = await browser.newPage();
@@ -381,7 +373,7 @@ async function consultarInfogas(placa) {
 
 async function consultarLima(placa) {
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
