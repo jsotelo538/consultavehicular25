@@ -90,7 +90,7 @@ app.post('/siniestro', async (req, res) => {
   const puppeteer = require("puppeteer");
 
 const browser = await puppeteer.launch({
-  headless: false,
+  headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
 
@@ -373,7 +373,7 @@ async function consultarInfogas(placa) {
 
 async function consultarLima(placa) {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
@@ -518,9 +518,9 @@ async function consultarLima(placa) {
   }
 }
 async function consultarCallao(placa) {
- const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
   const result = { success: false, resultados: [] };
@@ -598,9 +598,9 @@ async function consultarCallao(placa) {
 // ---------- FUNCIÓN PRINCIPAL ----------
 
 async function consultarRevisionTecnica(placa) {
- const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
   try {
@@ -820,9 +820,9 @@ app.post("/api/atu", async (req, res) => {
 });
 
 async function consultarPapeletasChiclayo(placa) {
-  const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
 
@@ -903,9 +903,9 @@ async function consultarPapeletasHuanuco(placa) {
   }
 }
 async function consultarPapeletasChachapoyas(placa) {
-  const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
 
   const page = await browser.newPage();
@@ -939,9 +939,9 @@ async function consultarPapeletasChachapoyas(placa) {
   }
 }
 async function consultarPapeletasPucallpa(placa) {
-   const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+ const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
 
@@ -1003,9 +1003,9 @@ async function consultarPapeletasPucallpa(placa) {
 }
 
  async function consultarPapeletasCajamarca(placa) {
-   const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+ const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
 
@@ -1065,9 +1065,9 @@ async function consultarPapeletasPucallpa(placa) {
   }
 }
 async function consultarPapeletasCusco(placa) {
-    const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
 
@@ -1121,9 +1121,9 @@ async function consultarPapeletasCusco(placa) {
   }
 }
 async function consultarPapeletasIca(placa) {
-  const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
 
   const page = await browser.newPage();
@@ -1184,9 +1184,9 @@ async function resolverCapt(imageBase64) {
  
 
  async function consultarAndahuaylas(placa) {
-   const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
    const page = await browser.newPage();
  
@@ -1247,9 +1247,9 @@ if (tablaHTML) {
 
   
 async function consultarPapeletasPuno(placa) {
-  const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
 
   const page = await browser.newPage();
