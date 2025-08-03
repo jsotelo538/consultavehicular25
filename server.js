@@ -376,7 +376,7 @@ async function consultarLima(placa) {
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
-
+ 
   const page = await browser.newPage();
   const result = { success: false, results: [] };
 
@@ -1368,9 +1368,9 @@ app.post('/consultarpiura', async (req, res) => {
 
   try {
     console.log('Lanzando navegador piiiurra...');
-     const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
 
     const page = await browser.newPage(); // ← FALTABA ESTA LÍNEA
