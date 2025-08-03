@@ -90,8 +90,8 @@ app.post('/siniestro', async (req, res) => {
   const puppeteer = require("puppeteer");
 
 const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  headless: 'new', // o true si usas versión antigua
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
 
     const page = await browser.newPage();
@@ -372,10 +372,10 @@ async function consultarInfogas(placa) {
 }
 
 async function consultarLima(placa) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+ const browser = await puppeteer.launch({
+  headless: 'new', // o true si usas versión antigua
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
+});
  
   const page = await browser.newPage();
   const result = { success: false, results: [] };
@@ -385,7 +385,7 @@ async function consultarLima(placa) {
     await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
       waitUntil: "domcontentloaded"
     });
-
+console.log("Página cargada.");
     // Esperar frame con los inputs
     console.log("🔍 Paso 2: Buscando frame...");
     let frame;
@@ -1368,8 +1368,8 @@ app.post('/consultarpiura', async (req, res) => {
 
   try {
     console.log('Lanzando navegador piiiurra...');
-  const browser = await puppeteer.launch({
-  headless: true,
+ const browser = await puppeteer.launch({
+  headless: 'new', // o true si usas versión antigua
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
 
@@ -1430,8 +1430,14 @@ app.post('/consultarpiura', async (req, res) => {
 app.post("/api/consultar-lima", async (req, res) => {
   const placa = req.body.placa;
   if (!placa) return res.json({ success: false, message: "Placa requerida" });
-  const data = await consultarLima(placa);
-  res.json(data);
+
+  try {
+    const data = await consultarLima(placa);
+    res.json(data);
+  } catch (err) {
+    console.error("Error en consultarLima:", err);
+    res.json({ success: false, message: "Error interno en SAT Lima" });
+  }
 });
 
 app.post("/api/consultar-callao", async (req, res) => {
