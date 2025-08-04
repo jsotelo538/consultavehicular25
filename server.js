@@ -373,7 +373,7 @@ async function consultarInfogas(placa) {
 
 async function consultarLima(placa) {
  const browser = await puppeteer.launch({
-  headless: true, // o true si usas versión antigua
+  headless: false, // o true si usas versión antigua
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
  
@@ -1503,6 +1503,6 @@ const browser = await puppeteer.launch({
  
 // --------- INICIO ---------
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor activo en http://localhost:${PORT}`);
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Servidor activo en http://0.0.0.0:3000');
 });
