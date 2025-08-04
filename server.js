@@ -1386,17 +1386,8 @@ app.post('/consultarpiura', async (req, res) => {
   try {
     console.log('Lanzando navegador piiiurra...');
 const browser = await puppeteer.launch({
-  headless: 'new', // o true si usas puppeteer-core
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-accelerated-2d-canvas',
-    '--no-zygote',
-    '--disable-gpu',
-    '--single-process'
-  ],
-  executablePath: '/usr/bin/chromium-browser', // o path correcto de Chromium en tu VPS
+  headless: 'new', // o true
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
 
     const page = await browser.newPage(); // ← FALTABA ESTA LÍNEA
@@ -1468,7 +1459,7 @@ app.post("/api/consultar-lima", async (req, res) => {
     console.log("✅ Respuesta SAT Lima:", data);
     res.json(data);
   } catch (err) {
-    console.error("❌ Error en consultarLima:", err); // imprime todo el error
+    console.error("❌ Error en consultarLima:", err.stack || err);// imprime todo el error
     res.status(500).json({ success: false, message: "Error interno en SAT Lima", error: err.message });
   }
 });
