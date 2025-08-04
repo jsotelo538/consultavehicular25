@@ -90,8 +90,17 @@ app.post('/siniestro', async (req, res) => {
   const puppeteer = require("puppeteer");
 
 const browser = await puppeteer.launch({
-  headless: true, // o true si usas versión antigua
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
+  headless: 'new', // o true si usas puppeteer-core
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--no-zygote',
+    '--disable-gpu',
+    '--single-process'
+  ],
+  executablePath: '/usr/bin/chromium-browser', // o path correcto de Chromium en tu VPS
 });
 
     const page = await browser.newPage();
@@ -373,10 +382,18 @@ async function consultarInfogas(placa) {
 
 async function consultarLima(placa) {
  const browser = await puppeteer.launch({
-  headless: false, // o true si usas versión antigua
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
+  headless: 'new', // o true si usas puppeteer-core
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--no-zygote',
+    '--disable-gpu',
+    '--single-process'
+  ],
+  executablePath: '/usr/bin/chromium-browser', // o path correcto de Chromium en tu VPS
 });
- 
   const page = await browser.newPage();
   const result = { success: false, results: [] };
 
@@ -1368,9 +1385,18 @@ app.post('/consultarpiura', async (req, res) => {
 
   try {
     console.log('Lanzando navegador piiiurra...');
- const browser = await puppeteer.launch({
-  headless: true, // o true si usas versión antigua
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
+const browser = await puppeteer.launch({
+  headless: 'new', // o true si usas puppeteer-core
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--no-zygote',
+    '--disable-gpu',
+    '--single-process'
+  ],
+  executablePath: '/usr/bin/chromium-browser', // o path correcto de Chromium en tu VPS
 });
 
     const page = await browser.newPage(); // ← FALTABA ESTA LÍNEA
