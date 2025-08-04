@@ -382,7 +382,7 @@ async function consultarInfogas(placa) {
 
 async function consultarLima(placa) {
  const browser = await puppeteer.launch({
-  headless: 'new', // o true si usas puppeteer-core
+  headless: true, // o true si usas puppeteer-core
   args: [
     '--no-sandbox',
     '--disable-setuid-sandbox',
