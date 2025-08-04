@@ -1455,17 +1455,23 @@ const browser = await puppeteer.launch({
 
 app.post("/api/consultar-lima", async (req, res) => {
   const placa = req.body.placa;
-  if (!placa) return res.json({ success: false, message: "Placa requerida" });
+
+  if (!placa) {
+    console.warn("🚫 No se recibió placa");
+    return res.json({ success: false, message: "Placa requerida" });
+  }
+
+  console.log("🔎 Consultando Lima para placa:", placa);
 
   try {
     const data = await consultarLima(placa);
+    console.log("✅ Respuesta SAT Lima:", data);
     res.json(data);
   } catch (err) {
-    console.error("Error en consultarLima:", err);
-    res.json({ success: false, message: "Error interno en SAT Lima" });
+    console.error("❌ Error en consultarLima:", err); // imprime todo el error
+    res.status(500).json({ success: false, message: "Error interno en SAT Lima", error: err.message });
   }
 });
-
 app.post("/api/consultar-callao", async (req, res) => {
   const placa = req.body.placa;
   if (!placa) return res.json({ success: false, message: "Placa requerida" });
