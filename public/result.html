@@ -462,7 +462,7 @@ fetch('/orden-captura', {
         body: JSON.stringify({ placa })
       }).then(res => res.json()).then(data => {
         if (!data.success || !data.results?.length) {
-     limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-error">ℹ️ No se encontraron papeletas.</div>';
+     limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</div>';
           return;
         }
  let html = '<h2>Resultados SAT Lima</h2><div class="tabla-responsive"><table><tr>' +
@@ -488,7 +488,7 @@ fetch('/orden-captura', {
       body: JSON.stringify({ placa })
     }).then(res => res.json()).then(data => {
       if (!data.success || !data.resultados?.length) {
-        callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="mensaje-error">ℹ️ No se encontraron papeletas.</div>';
+        callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</div>';
         return;
       }
 
@@ -859,7 +859,7 @@ async function consultarATU(placa) {
     const data = await res.json();
 
     if (!data.registrado) {
-      atuDiv.innerHTML = `<h2>🚌 Consulta ATU</h2><div class="mensaje-error">❌ Vehículo no registrado en ATU.</div>`;
+      atuDiv.innerHTML = `<h2>🚌 Consulta ATU</h2><div class="mensaje-infoo">❌ Vehículo no registrado en ATU.</div>`;
       return;
     }
 
