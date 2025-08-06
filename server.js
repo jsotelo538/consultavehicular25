@@ -85,7 +85,7 @@ async function resolverCaptt(base64Image) {
 }
 async function consultarInfogas(placa) {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
@@ -481,7 +481,7 @@ async function consultarInfogas(placa) {
 
  async function consultarLima(placa) {
  const browser = await puppeteer.launch({
-  headless: false,
+  headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
    const page = await browser.newPage();
