@@ -37,7 +37,7 @@
     }
 
     .header img {
-      width:380px;
+      width:350px;
       margin-bottom: 0px;
     }
 
@@ -288,6 +288,20 @@ th {
   display: flex;
   align-items: center;
 }
+.bloque-siniestro {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  
+}
+
+/* Mayor separación en móviles */
+@media (max-width: 768px) {
+  .bloque-siniestro {
+    margin-top: 60px;
+    margin-bottom: 60px;
+     line-height:    1.3;
+  }
+}
   </style>
 </head>
 <body>
@@ -373,7 +387,7 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
 
  resultadoSutran.textContent = 'Consultando infracciones SUTRAN...';
       resultadoSiniestro.textContent = 'Consultando siniestros SBS...';
- resultadoSiniestro.innerHTML = '<h2>🚧 Resultados SBS (Siniestros)</h2><div class="mensaje-info">Consultando siniestros SBS...</div>';
+ resultadoSiniestro.innerHTML = ' <div class="bloque-siniestro"><h2>🚧 Resultados SBS (Siniestros)</h2><div class="mensaje-info">Consultando siniestros SBS...</div>';
 
 fetch('/siniestro', {
   method: 'POST',
@@ -385,7 +399,7 @@ fetch('/siniestro', {
   if (data.resultado) {
     const { placa, fechaConsulta, actualizadoA, cantidadAccidentes } = data.resultado;
     resultadoSiniestro.innerHTML = `
-      <h2>🚧 Resultados SBS (Siniestros)</h2>
+       <div class="bloque-siniestro"><h2>🚧 Resultados SBS (Siniestros)</h2>
       <div class="mensaje-info">
         <strong>🚘 Placa:</strong> ${placa}<br>
         <strong>📅 Fecha de Consulta:</strong> ${fechaConsulta}<br>
@@ -394,17 +408,17 @@ fetch('/siniestro', {
       </div>`;
   } else {
     resultadoSiniestro.innerHTML = `
-      <h2>🚧 Resultados SBS (Siniestros)</h2>
+       <div class="bloque-siniestro"><h2>🚧 Resultados SBS (Siniestros)</h2>
       <div class="mensaje-info">No se encontró información en SBS.</div>`;
   }
 })
 .catch(err => {
-  resultadoSiniestro.innerHTML = '<h2>🚧 Resultados SBS (Siniestros)</h2><div class="mensaje-info">Error al consultar siniestros SBS.</div>';
+  resultadoSiniestro.innerHTML = ' <div class="bloque-siniestro"><h2>🚧 Resultados SBS (Siniestros)</h2><div class="mensaje-info">Error al consultar siniestros SBS.</div>';
   console.error(err);
 });
 
 // Consultar SUTRAN
-resultadoSutran.innerHTML = '<h2>🚌 Resultados SUTRAN</h2><div class="mensaje-info">Consultando infracciones SUTRAN...</div>';
+resultadoSutran.innerHTML = ' <div class="bloque-siniestro"><h2>🚌 Resultados SUTRAN</h2><div class="mensaje-info">Consultando infracciones SUTRAN...</div>';
 
 fetch('/consultar', {
   method: 'POST',
@@ -425,7 +439,7 @@ fetch('/consultar', {
 });
 
 // Consultar Órdenes de Captura
-resultadoOrdenCaptura.innerHTML = '<h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">⏳ Consultando...</div>';
+resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">⏳ Consultando...</div>';
 
 fetch('/orden-captura', {
   method: 'POST',
@@ -436,7 +450,7 @@ fetch('/orden-captura', {
 .then(data => {
   if (Array.isArray(data.resultado)) {
     resultadoOrdenCaptura.innerHTML = `
-      <h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
+       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
       <div class="mensaje-info">
         ${data.resultado.map(r => `
           <strong>📅 Fecha:</strong> ${r.fecha}<br>
@@ -447,12 +461,12 @@ fetch('/orden-captura', {
       </div>`;
   } else {
     resultadoOrdenCaptura.innerHTML = `
-      <h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
+       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
       <div class="mensaje-info">${data.resultado}</div>`;
   }
 })
 .catch(err => {
-  resultadoOrdenCaptura.innerHTML = '<h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
+  resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
   console.error(err);
 });
 // SAT Lima
@@ -625,9 +639,10 @@ Promise.allSettled(promesas);
    
     
       // SOAT + Info técnica
+       consultarInfogas(placa);
       consultarSOATyVehiculo(placa);
       consultarRevisionTecnica(placa);
-      consultarInfogas(placa);
+     
       consultarSatProvincias(placa); // Tarapoto y Huancayo
       consultarATU(placa);
         
@@ -654,7 +669,7 @@ async function consultarInfogas(placa) {
     const data = await res.json();
 
     if (!data.success || !data.resultados) {
-      infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="mensaje-error">❌ No se encontraron datos de Infogas.</div>`;
+      infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="mensaje-infoo">❌ No se encontraron datos de Infogas.</div>`;
       return;
     }
 
@@ -673,7 +688,7 @@ async function consultarInfogas(placa) {
 
     infogasDiv.innerHTML = `<div class="tarjeta"><h2>⛽ Infogas GNV</h2>${html}</div>`;
   } catch (error) {
-    infogasDiv.innerHTML = `<h2>Infogas GNV</h2><div class="mensaje-error">❌ Error al consultar Infogas.</div>`;
+    infogasDiv.innerHTML = `<h2>Infogas GNV</h2><div class="mensaje-infoo">❌ No se encontraron datos de Infogas.</div>`;
   }
 }
 
@@ -687,7 +702,7 @@ async function consultarInfogas(placa) {
     <h2>📄 Resultados SOAT</h2>
     <div class="mensaje-info">⏳ Consultando SOAT...</div>`;
   vehiculoCont.innerHTML = `
-    <h2>🚘 Resultados del Vehículo</h2>
+    <div class="bloque-siniestro"> <h2>🚘 Resultados del Vehículo</h2>
     <div class="mensaje-info">⏳ Consultando datos técnicos...</div>`;
 
   const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODkyMiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.kcxt3XYtXWWgNZdMnaENUZj-568RMkDRAVqV-DRk73I";
@@ -726,7 +741,7 @@ async function consultarInfogas(placa) {
     // Mostrar resultados del vehículo
     if (info && info.placa) {
       vehiculoCont.innerHTML = `
-        <h2>🚘 Resultados del Vehículo</h2>
+       <div class="bloque-siniestro">  <h2>🚘 Resultados del Vehículo</h2>
         <div class="mensaje-info">
           <strong>🚘 Placa:</strong> ${info.placa}<br>
           <strong>🏷️ Marca:</strong> ${info.marca}<br>
@@ -738,16 +753,16 @@ async function consultarInfogas(placa) {
         </div>`;
     } else {
       vehiculoCont.innerHTML = `
-        <h2>🚘 Resultados del Vehículo</h2>
+        <div class="bloque-siniestro"> <h2>🚘 Resultados del Vehículo</h2>
         <div class="mensaje-info">❌ No se encontró información técnica del vehículo.</div>`;
     }
 
   } catch (error) {
     soatCont.innerHTML = `
-      <h2>📄 Resultados SOAT</h2>
+      <div class="bloque-siniestro"> <h2>📄 Resultados SOAT</h2>
       <div class="mensaje-info">❌ Error SOAT: ${error.message}</div>`;
     vehiculoCont.innerHTML = `
-      <h2>🚘 Resultados del Vehículo</h2>
+      <div class="bloque-siniestro"> <h2>🚘 Resultados del Vehículo</h2>
       <div class="mensaje-info">❌ Error Vehículo: ${error.message}</div>`;
   }
 }
@@ -755,7 +770,7 @@ async function consultarInfogas(placa) {
   const revisionDiv = document.getElementById("resultado-revision");
 
   // Mostrar estado "Consultando..."
-  revisionDiv.innerHTML = `<h2>🔧Revisión Técnica MTC</h2><div class="mensaje-info">⏳ Consultando...</div>`;
+  revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>🔧Revisión Técnica (MTC)</h2><div class="mensaje-info">⏳ Consultando...</div>`;
 
   try {
     const res = await fetch("/api/consultar-revision", {
@@ -767,7 +782,7 @@ async function consultarInfogas(placa) {
     const data = await res.json();
 
     if (data.error || !data.resultados || data.resultados.length === 0) {
-      revisionDiv.innerHTML = `<h2>Revisión Técnica MTC</h2><div class="mensaje-error">❌ No se encontró información en Revisión Técnica.</div>`;
+      revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>Revisión Técnica ()MTC)</h2><div class="mensaje-error">❌ No se encontró información en Revisión Técnica.</div>`;
       return;
     }
 
@@ -775,18 +790,18 @@ async function consultarInfogas(placa) {
     const estadoColor = (r.resultado || "").toLowerCase().includes("aprobado") ? "green" : "red";
 
     revisionDiv.innerHTML = `
-      <h2>🔧 Revisión Técnica MTC</h2>
+       <div class="bloque-siniestro"><h2>🔧 Revisión Técnica (MTC)</h2>
       <div class="mensaje-info">
-         <strong>🚗 Placa:</strong> ${r.placa} 
-         <strong>📄 Certificado:</strong> ${r.certificado} 
-         <strong>📅 Fecha de Revisión:</strong> ${r.fechaRevision} 
-         <strong>📆 Fecha de Vencimiento:</strong> ${r.fechaVencimiento} 
-        <strong>✅ Resultado:</strong> <span style="color:${estadoColor}; font-weight:bold;">${r.resultado}</span> 
+         <strong>🚗 Placa:</strong> ${r.placa} <br>
+         <strong>📄 Certificado:</strong> ${r.certificado} <br>
+         <strong>📅 Fecha de Revisión:</strong> ${r.fechaRevision} <br>
+         <strong>📆 Fecha de Vencimiento:</strong> ${r.fechaVencimiento} <br>
+        <strong>✅ Resultado:</strong> <span style="color:${estadoColor}; font-weight:bold;">${r.resultado}</span> <br>
          <strong>🏭 Planta:</strong> ${r.planta} 
       </div>
     `;
   } catch (err) {
-    revisionDiv.innerHTML = `<h2>🔧 Revisión Técnica MTC</h2><div class="mensaje-error">❌ Error al consultar revisión técnica.</div>`;
+    revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>🔧 Revisión Técnica MTC</h2><div class="mensaje-error">❌ Error al consultar revisión técnica.</div>`;
     console.error(err);
   }
 }
