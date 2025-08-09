@@ -40,7 +40,7 @@
       <a href="#servi">Informe</a>
       <a href="#pre">Preguntas</a>
     </nav>
-    <a class="btn-navbar  btn-navbarrr" href="#">Pedir Informe</a>
+    <a class="btn-navbar  btn-navbarrr" href="#" id="btnLoginOpen">Pedir Informe</a>
   </div>
 </div>
 </header>
@@ -943,9 +943,107 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
     opacity: 1;
   }
 }
+.video-tutorial {
+  background: linear-gradient(135deg, #f0f8ff, #e6f0ff);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.video-tutorial .container {
+  max-width: 1000px; /* Ajuste para que siga el mismo ancho que tu contenido */
+  margin: auto;
+}
+
+.video-tutorial p {
+  font-size: 16px;
+  color: #444;
+  max-width: 700px;
+  margin: 10px auto 30px;
+}
+
+.video-wrapper {
+  width: 100%;
+  max-width: 800px; /* Limita el ancho máximo del video */
+  margin: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.video-wrapper video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.modall {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center; align-items: center;
+}
+
+/* Contenido del modal */
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 350px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.modal-content button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #45a049;
+}
+
+.close {
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
   </style>
 </head>
 <body>
+  <!-- MODAL LOGIN -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Usuario" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+      <button type="submit">Ingresar</button>
+    </form>
+  </div>
+</div>
+
 <a href="https://wa.me/51949319753?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular"
    class="whatsapp-float" target="_blank" title="¿Necesitas ayuda?">
   <div class="whatsapp-content">
@@ -1043,6 +1141,22 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
     </div>
   </div>
 </section>
+
+<!-- Sección Video Tutorial -->
+<section class="video-tutorial" id="video-tutorial">
+  <div class="container">
+    <h2 class="titulo-seccion">Video Tutorial</h2>
+    <p>Mira este video para aprender cómo usar nuestra plataforma de consulta vehicular.</p>
+    <div class="video-wrapper">
+      <video controls>
+        <source src="Video de WhatsApp 2025-08-06 a las 18.41.51_fe76a799.mp4" type="video/mp4">
+        Tu navegador no soporta la reproducción de video.
+      </video>
+    </div>
+  </div>
+</section>
+
+
 <section class="seccion-servicios" id="servi">
   <div class="container">
     <h2 class="titulo-seccion">¿Qué contiene el informe vehicular?</h2>
@@ -1151,7 +1265,7 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
   </a>
 </div>
 <!-- Modal -->
-<div id="modalImagen" class="modal">
+<div id="modalImagen" class="modall">
   <div class="modal-contenido">
     <img src="proy/Sin título-111111.jpg" alt="Imagen Modal">
     <button class="cerrar" onclick="cerrarModal()">✖</button>
@@ -1269,6 +1383,48 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
       sidebarMenu.classList.remove('open');
     });
   });
+
+
+// Referencias
+const modall = document.getElementById("loginModal");
+const btnOpen = document.getElementById("btnLoginOpen");
+const spanClose = document.querySelector(".close");
+const form = document.getElementById("loginForm");
+
+// Abrir modal
+btnOpen.onclick = function(e) {
+  e.preventDefault();
+  modall.style.display = "flex";
+}
+
+// Cerrar modal
+spanClose.onclick = function() {
+  modall.style.display = "none";
+}
+
+// Cerrar al hacer click fuera
+window.onclick = function(event) {
+  if (event.target == modall) {
+    modall.style.display = "none";
+  }
+}
+
+// Procesar login
+form.onsubmit = function(e) {
+  e.preventDefault();
+
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+
+  // Aquí validas datos reales, por ejemplo con AJAX al servidor
+  if (user === "admin" && pass === "1234") {
+    window.location.href = "https://www.consultavehicular.services/result.html";
+  } else {
+    alert("Usuario o contraseña incorrectos");
+  }
+}
+
+  
   </script>
 </body>
 </html>

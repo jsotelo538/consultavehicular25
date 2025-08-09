@@ -13,92 +13,107 @@
   <style>
     * { box-sizing: border-box; }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #e0f2ff, #f7faff);
-  margin: 0;
-  padding: 0;
-  color: #333;
-    }
+/* ---------- ESTILO GENERAL ---------- */
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #d9f0ff, #f9fbfd);
+  color: #2c3e50;
+  line-height: 1.6;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-    }
+/* ---------- CONTENEDOR PRINCIPAL ---------- */
+.container {
+  max-width: 1100px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.6s ease;
+}
 
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .header img {
-      width:350px;
-      margin-bottom: 0px;
-    }
-
+/* ---------- CABECERA ---------- */
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+.header img {
+  width: 320px;
+}
     .header h1 {
       margin: 0;
       color: #1e2f45;
     }
 
     .header p {
-      font-size: 18px;
-      color: #555;
-      margin-top: 5px;
-    }
+  font-size: 18px;
+  color: #555;
+}
+.input-search {
+  position: relative;
+}
+.input-search input {
+  padding-left: 40px;
+}
+.input-search::before {
+  content: "🔍";
+  position: absolute;
+  left: 8px;
+  top: 38%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  opacity: 0.5;
+}
+/* ---------- INPUTS Y BOTONES ---------- */
+input[type="text"] {
+  width: 100%;
+  padding: 14px 18px;
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52,152,219,0.3);
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+input[type="text"]:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52,152,219,0.3);
+  outline: none;
+}
 
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
- 
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 50px;
-      cursor: pointer;
-      margin-right: 10px;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
+button {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  font-size: 15px;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 5px;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #0056b3, #003f88);
+}
 
     .section {
       margin-top: 30px;
     }
+/* ---------- TARJETAS DE RESULTADOS ---------- */
 .tarjeta {
-  background: #f0f8ff;
-  border: 2px solid #007bff;
-  border-left: 8px solid #0056b3;
+  background: #f8fbff;
+  border-left: 6px solid #3498db;
   border-radius: 12px;
-  padding: 15px 25px;
-  margin-top: 20px;
-  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.1);
-  font-family: 'Segoe UI', sans-serif;
-  color: #003366;
-  white-space: pre-line;
-   line-height: 0.6;
-  transition: transform 0.2s ease, background-color 0.3s ease;
+  padding: 18px 22px;
+  margin-top: 18px;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.05);
+  animation: slideUp 0.4s ease;
+}
+.tarjeta:hover {
+  background-color: #eef6ff;
 }
 
-.tarjeta:hover {
-  background-color: #e6f2ff;
-  border-color: #3498db;
-}
 .section h2 {
   
   font-size: 22px;
@@ -111,29 +126,51 @@
   color: #2a4d69;
 }
  
-    .tabla-responsive {
-      overflow-x: auto;
-      border-radius: 8px;
-    }
+ 
+/* ---------- TABLAS ---------- */
+.tabla-responsive {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.table-responsive tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.table-responsive tr:hover {
+  background-color: #eaf4ff;
+  transition: background-color 0.2s ease;
+}
+.table-responsive table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+.table-responsive th {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.table-responsive td {
+  text-align: center; /* Para datos cortos */
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      min-width: 900px;
-    }
-
-    th, td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    th {
-      background-color: #f9fafb;
-    }
-
+.table-responsive td:first-child {
+  text-align: left; /* Para la primera columna */
+}
+ th {
+  background: #007bff;
+  color: white;
+  padding: 12px;
+}
+td {
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+}
     .spinner {
       display: flex;
       justify-content: center;
@@ -159,14 +196,13 @@
       to { transform: rotate(360deg); }
     }
 
-    .mensaje-error {
-      background-color: #fdecea;
-      color: #e74c3c;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 8px;
-      text-align: center;
-    }
+   .mensaje-error {
+  background: #fdecea;
+  color: #e74c3c;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
 
   .footer {
   margin-top: 60px;
@@ -215,15 +251,13 @@
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-   .mensaje-infoo {
-  background-color: #e8f4fd;
+.mensaje-infoo {
+  background: #e8f4fd;
   color: #007bff;
   padding: 15px;
-  margin-top: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   text-align: center;
   border: 1px solid #b3daff;
-  font-weight: 500;
 }
 th {
   background-color: #007bff;
@@ -293,7 +327,42 @@ th {
   margin-bottom: 40px;
   
 }
+.mensaje-mantenimiento {
+  text-align: center;
+  padding: 20px;
+  border: 2px dashed #e74c3c;
+  border-radius: 10px;
+  background: #fff3f3;
+  max-width: 500px;
+  margin: 20px auto;
+  font-family: sans-serif;
+}
+.mensaje-mantenimiento .icono {
+  font-size: 50px;
+  color: #e74c3c;
+}
+.mensaje-mantenimiento h2 {
+  color: #e74c3c;
+  margin: 10px 0;
+}
+.mensaje-mantenimiento p {
+  color: #333;
+  font-size: 16px;
+}
+.mensaje-mantenimiento a {
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: bold;
+}
 
+@keyframes zoomFade {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.tarjeta {
+  animation: zoomFade 0.4s ease forwards;
+}
 /* Mayor separación en móviles */
 @media (max-width: 768px) {
   .bloque-siniestro {
@@ -301,6 +370,54 @@ th {
     margin-bottom: 60px;
      line-height:    1.3;
   }
+}button:hover {
+  box-shadow: 0 4px 15px rgba(0, 91, 187, 0.4);
+}.container {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+.badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.estado-resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: #fff;
+  display: inline-block;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Estados */
+.badge-ok {
+  background: #28a745; /* verde */
+}
+
+.badge-expired {
+  background: #dc3545; /* rojo */
+}
+
+.badge-alert {
+  background: #ffc107; /* amarillo */
+  color: #333;
+}
+
+.badge-clear {
+  background: #007bff; /* azul */
 }
   </style>
 </head>
@@ -320,13 +437,27 @@ th {
       <h1> </h1>
       <p> ¡Consulta en segundos el historial de cualquier vehículo con solo su placa!     </p>
     </div>
-<input type="text" id="placa" placeholder="Ejemplo: ABC123" />
+<div class="input-search">
+  <input type="text" id="placa" placeholder="    Ejemplo: ABC123" />
+</div>
 <button onclick="consultar()">Consultar</button>
  
 <button onclick="descargarPDF()">📄 Descargar PDF</button>
 <button id="btn-whatsapp" onclick="compartirWhatsApp()" style="background-color: #25d366;">
   📲 Compartir por WhatsApp
-</button>
+</button><div class="estado-resumen">
+  <!-- SOAT -->
+  <span class="badge badge-ok">SOAT Vigente</span>
+  <span class="badge badge-expired">SOAT Vencido</span>
+
+  <!-- Revisión Técnica -->
+  <span class="badge badge-ok">Revisión Vigente</span>
+  <span class="badge badge-expired">Revisión Vencida</span>
+
+  <!-- Papeletas -->
+  <span class="badge badge-alert">Multas Pendientes</span>
+  <span class="badge badge-clear">Sin Multas</span>
+</div>
      <div id="soat-vehiculo"   style="display:none;">
        
       <div id="soat-info" class="tarjeta"></div>
@@ -350,8 +481,8 @@ th {
   </div>
   
   <div class="footer">
-    <p>© 2025 Consulta Vehicular. Todos los derechos reservados.</p>
-    <p>Contacto: <a href="mailto:soporte@consultavehicular.pe">soporte@consultavehicular.pe</a></p>
+    <p>© 2025 Consulta Vehicular. Todos los derechos reservados By PaginasWebPro.</p>
+    <p>Contacto: <a href="https://wa.me/51926838543?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular">israelsq03@gmail.com</a></p>
   </div>
 
   <script>
@@ -551,7 +682,7 @@ fetch('/consultarpiura', {
   const encabezados = data.data[0];
   const filas = data.data.slice(1);
 
-  let tabla = `<h2>Resultados SAT Piura</h2><div class="tabla-responsive"><table><thead><tr>${encabezados.map(e => `<th>${e}</th>`).join('')}</tr></thead><tbody>`;
+  let tabla = `<h2>Resultados SAT Piura</h2><div class="table-responsive"><table><thead><tr>${encabezados.map(e => `<th>${e}</th>`).join('')}</tr></thead><tbody>`;
   filas.forEach(fila => {
     tabla += `<tr>${fila.map(d => `<td>${d}</td>`).join('')}</tr>`;
   });
@@ -571,13 +702,14 @@ fetch('/consultarpiura', {
         { ciudad: 'Chiclayo', url: '/api/chiclayo' },
         { ciudad: 'Huánuco', url: '/api/huanuco' },
           { ciudad: 'Chachapoyas', url: '/api/chachapoyas' }, // ✅ Nuevo
-           { ciudad: 'Pucallpa', url: '/api/pucallpa' },
+          
            { ciudad: 'Cajamarca', url: '/api/cajamarca' },
            { ciudad: 'Cusco', url: '/api/cusco' }, // ✅ Nuevo
              { ciudad: 'Ica', url: "/api/ica" },
             
            { ciudad: 'Andahuaylas',url: "/api/andahuaylas"},
              { ciudad: 'Puno', url: '/api/puno' }, 
+              { ciudad: 'Pucallpa', url: '/api/pucallpa' },
       ];
 
       resultado.innerHTML = '';
@@ -677,12 +809,12 @@ async function consultarInfogas(placa) {
 
     const html = `
       <div class="mensaje-info">
-        <p><strong>Placa:</strong> ${placa}</p>
-        <p><strong>Tipo de Combustible:</strong> ${r.tipoCombustible || '-'}</p>
-        <p><strong>Habilitado para consumir:</strong> ${r.habilitado || '-'}</p>
-        <p><strong>¿Tiene Crédito?:</strong> ${r.tieneCredito || '-'}</p>
-        <p><strong>Vencimiento Revisión Anual:</strong> ${r.vencimientoRevisionAnual || '-'}</p>
-        <p><strong>Vencimiento de Cilindro:</strong> ${r.vencimientoCilindro || '-'}</p>
+        <strong>🚗 Placa:</strong> ${placa} <br>
+         <strong>⛽ Tipo de Combustible:</strong> ${r.tipoCombustible || '-'} <br>
+         <strong>✅ Habilitado para consumir:</strong> ${r.habilitado || '-'} <br>
+         <strong>📄 ¿Tiene Crédito?:</strong> ${r.tieneCredito || '-'} <br>
+        <strong>📅 Vencimiento Revisión Anual:</strong> ${r.vencimientoRevisionAnual || '-'} <br>
+        <strong>📅 Vencimiento de Cilindro:</strong> ${r.vencimientoCilindro || '-'} 
       </div>
     `;
 
@@ -792,8 +924,8 @@ async function consultarInfogas(placa) {
     revisionDiv.innerHTML = `
        <div class="bloque-siniestro"><h2>🔧 Revisión Técnica (MTC)</h2>
       <div class="mensaje-info">
-         <strong>🚗 Placa:</strong> ${r.placa} <br>
-         <strong>📄 Certificado:</strong> ${r.certificado} <br>
+         <strong>📄 Certificado:</strong> ${r.placa} <br>
+         <strong>🚗 Placa:</strong> ${r.certificado} <br>
          <strong>📅 Fecha de Revisión:</strong> ${r.fechaRevision} <br>
          <strong>📆 Fecha de Vencimiento:</strong> ${r.fechaVencimiento} <br>
         <strong>✅ Resultado:</strong> <span style="color:${estadoColor}; font-weight:bold;">${r.resultado}</span> <br>

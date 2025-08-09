@@ -1,10 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const app = express(); 
-const path = require("path");
+ 
 const puppeteer = require("puppeteer");
 const axios = require("axios");
- const router = express.Router();
+ 
 const FormData = require("form-data");
  
 const bodyParser = require("body-parser");
@@ -38,7 +38,7 @@ app.use(bodyParser.json());
           ],
           back_urls: {
             success: "https://www.consultavehicular.services/result.html",
-            failure: "https://www.consultavehicular.services/error",
+            failure: "https://www.consultavehicular.services",
             pending: "https://www.consultavehicular.services/pendiente",
           },
           auto_return: "approved",
@@ -83,98 +83,7 @@ async function resolverCaptt(base64Image) {
     if (res.data.request !== 'CAPCHA_NOT_READY') throw new Error('Error resolviendo captcha');
   }
 }
-async function consultarInfogas(placa) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-
-  const page = await browser.newPage();
-  const result = { success: false, resultados: {} };
-
-  try {
-    page.setDefaultTimeout(60000);
-
-    console.log('🌐 Cargando página de Infogas...');
-    await page.goto('https://vh.infogas.com.pe/', { waitUntil: 'networkidle2' });
-
-    await page.waitForSelector('#inp_ck_plate');
-    await page.type('#inp_ck_plate', placa);
-
-    // 🔐 Captcha
-    const siteKey = '6LctjAQoAAAAAKxodrxo3QPm033HbyDrLf9N7x7P';
-    const pageUrl = 'https://vh.infogas.com.pe/';
-    const API_KEY = process.env.CAPTCHA_API_KEY;
-
-    console.log('🔄 Solicitando resolución del captcha...');
-    const { data: request } = await axios.get(`https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&googlekey=${siteKey}&pageurl=${pageUrl}&json=1`);
-    const requestId = request.request;
-
-    // Esperar token resuelto
-    const waitForCaptcha = async (requestId) => {
-      const maxAttempts = 30;
-      for (let i = 0; i < maxAttempts; i++) {
-        await new Promise(r => setTimeout(r, 2000)); // 2 segundos por intento
-        const { data: response } = await axios.get(`https://2captcha.com/res.php?key=${API_KEY}&action=get&id=${requestId}&json=1`);
-        if (response.status === 1) return response.request;
-      }
-      throw new Error('⏱️ Captcha Infogas no resuelto a tiempo');
-    };
-
-    const token = await waitForCaptcha(requestId);
-    console.log('✅ Captcha resuelto');
-
-    // Inyectar token
-    await page.evaluate((token) => {
-      const textarea = document.querySelector('#g-recaptcha-response');
-      textarea.value = token;
-      textarea.dispatchEvent(new Event('change', { bubbles: true }));
-    }, token);
-
-    await page.waitForTimeout(1000); // Esperar a que el sitio procese el token
-
-    // Enviar formulario
-    await Promise.all([
-      page.click('#btn_ck_plate'),
-      page.waitForNavigation({ waitUntil: 'networkidle0' }) // esperar cambio de página
-    ]);
-
-  // Esperar que aparezcan resultados o el mensaje de error
-await page.waitForFunction(() => {
-  return document.querySelector('.plate_item_pran') ||
-         document.querySelector('.alert.alert-danger');
-}, { timeout: 30000 });
-
-// Verificar si salió "Vehículo no encontrado"
-const vehiculoNoEncontrado = await page.evaluate(() => {
-  const alerta = document.querySelector('.alert.alert-danger');
-  return alerta && alerta.innerText.includes('Vehiculo no encontrado');
-});
-
-if (vehiculoNoEncontrado) {
-  throw new Error("Vehículo no encontrado en Infogas");
-}
-
-    // Extraer datos
-    const data = await page.evaluate(() => ({
-      vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
-      vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
-      tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
-      habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
-      tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
-    }));
-
-    result.success = true;
-    result.resultados = data;
-    console.log('📦 Datos extraídos correctamente:', data);
-  } catch (error) {
-    console.error('❌ Error en la consulta Infogas:', error.message);
-    result.error = error.message;
-  } finally {
-    await browser.close();
-    return result;
-  }
-}
+ 
 app.post('/siniestro', async (req, res) => {
   const placa = req.body.placa;
 
@@ -396,234 +305,183 @@ async function resolverCao(imageBuffer) {
   }
 });
 
-async function consultarInfogas(placa) {
+
+async function consultarLima(placa) {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
-
   const page = await browser.newPage();
-  const result = { success: false, resultados: {} };
+  const result = { success: false, results: [] };
 
   try {
-    page.setDefaultTimeout(60000);
+    console.log("🚀 Iniciando consulta...");
 
-    console.log('🌐 Cargando página de Infogas...');
-    await page.goto('https://vh.infogas.com.pe/', { waitUntil: 'networkidle2' });
+    let frame, recaptchaOk = false;
 
-    await page.waitForSelector('#inp_ck_plate');
-    await page.type('#inp_ck_plate', placa);
+    // 🔁 REINTENTO para cargar correctamente la página y el CAPTCHA
+    for (let intentos = 0; intentos < 5; intentos++) {
+      console.log(`🔄 Intento ${intentos + 1}: cargando página SAT...`);
+      await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
+        waitUntil: "domcontentloaded"
+      });
 
-    // 🔐 Captcha
-    const siteKey = '6LctjAQoAAAAAKxodrxo3QPm033HbyDrLf9N7x7P';
-    const pageUrl = 'https://vh.infogas.com.pe/';
-    const API_KEY = process.env.CAPTCHA_API_KEY;
+      // Esperar unos milisegundos para que cargue bien
+      await page.waitForTimeout(1500);
 
-    console.log('🔄 Solicitando resolución del captcha...');
-    const { data: request } = await axios.get(`https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&googlekey=${siteKey}&pageurl=${pageUrl}&json=1`);
-    const requestId = request.request;
-
-    // Esperar token resuelto
-    const waitForCaptcha = async (requestId) => {
-      const maxAttempts = 30;
-      for (let i = 0; i < maxAttempts; i++) {
-        await new Promise(r => setTimeout(r, 2000)); // 2 segundos por intento
-        const { data: response } = await axios.get(`https://2captcha.com/res.php?key=${API_KEY}&action=get&id=${requestId}&json=1`);
-        if (response.status === 1) return response.request;
+      // Buscar el frame que contiene el formulario
+      for (let i = 0; i < 20; i++) {
+        await page.waitForTimeout(500);
+        const frames = page.frames();
+        for (const f of frames) {
+          const el = await f.$("#tipoBusquedaPapeletas").catch(() => null);
+          if (el) {
+            frame = f;
+            break;
+          }
+        }
+        if (frame) break;
       }
-      throw new Error('⏱️ Captcha Infogas no resuelto a tiempo');
-    };
 
-    const token = await waitForCaptcha(requestId);
-    console.log('✅ Captcha resuelto');
+      if (!frame) {
+        console.log("❌ No se encontró el frame. Reintentando...");
+        continue;
+      }
 
-    // Inyectar token
-    await page.evaluate((token) => {
-      const textarea = document.querySelector('#g-recaptcha-response');
-      textarea.value = token;
-      textarea.dispatchEvent(new Event('change', { bubbles: true }));
-    }, token);
+      // Verificar que el CAPTCHA esté presente en el frame
+      const captchaExists = await frame.$('.g-recaptcha').catch(() => null);
+      if (captchaExists) {
+        console.log("✅ CAPTCHA detectado correctamente.");
+        recaptchaOk = true;
+        break;
+      } else {
+        console.warn("⚠️ CAPTCHA no detectado, recargando...");
+        frame = null; // reiniciar frame
+      }
+    }
 
-    await page.waitForTimeout(1000); // Esperar a que el sitio procese el token
+    if (!recaptchaOk) throw new Error("No se pudo cargar el CAPTCHA después de varios intentos");
 
-    // Enviar formulario
-    await Promise.all([
-      page.click('#btn_ck_plate'),
-      page.waitForNavigation({ waitUntil: 'networkidle0' }) // esperar cambio de página
-    ]);
+    console.log("📝 Paso 3: Llenando formulario...");
+    await frame.select("#tipoBusquedaPapeletas", "busqPlaca");
+    await frame.waitForSelector("#ctl00_cplPrincipal_txtPlaca", { timeout: 10000 });
+    await frame.type("#ctl00_cplPrincipal_txtPlaca", placa);
 
-    // Esperar datos cargados
-    await page.waitForFunction(() => {
-      const el = document.querySelector('.plate_item_pran');
-      return el && el.innerText.trim() !== '';
+    // CAPTCHA
+    const siteKey = "6Ldy_wsTAAAAAGYM08RRQAMvF96g9O_SNQ9_hFIJ";
+    const pageUrl = "https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8";
+    console.log("🔐 Paso 4: Solicitando captcha a 2Captcha...");
+
+    const captchaStart = await axios.post("https://2captcha.com/in.php", null, {
+      params: {
+        key: process.env.CAPTCHA_API_KEY,
+        method: "userrecaptcha",
+        googlekey: siteKey,
+        pageurl: pageUrl,
+        json: 1,
+        priority: 1,
+        bid: 15
+      }
     });
 
-    // Extraer datos
-    const data = await page.evaluate(() => ({
-      vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
-      vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
-      tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
-      habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
-      tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
-    }));
+    if (captchaStart.data.status !== 1) {
+      throw new Error("Error al enviar captcha a 2Captcha: " + captchaStart.data.request);
+    }
+
+    const captchaId = captchaStart.data.request;
+    let token = null;
+
+    for (let i = 0; i < 90; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const check = await axios.get("https://2captcha.com/res.php", {
+        params: {
+          key: process.env.CAPTCHA_API_KEY,
+          action: "get",
+          id: captchaId,
+          json: 1
+        }
+      });
+      if (check.data.status === 1) {
+        token = check.data.request;
+        break;
+      } else if (check.data.request !== "CAPCHA_NOT_READY") {
+        throw new Error("Error resolviendo captcha: " + check.data.request);
+      }
+    }
+
+    if (!token) throw new Error("Captcha no resuelto dentro del tiempo límite");
+    console.log("✅ CAPTCHA resuelto");
+
+    // Inyectar token
+    await frame.evaluate((token) => {
+      let textarea = document.getElementById("g-recaptcha-response");
+      if (!textarea) {
+        textarea = document.createElement("textarea");
+        textarea.id = "g-recaptcha-response";
+        textarea.name = "g-recaptcha-response";
+        textarea.style = "display: none;";
+        document.body.appendChild(textarea);
+      }
+      textarea.value = token;
+    }, token);
+
+    console.log("📤 Paso 5: Enviando postback...");
+    await frame.evaluate(() => {
+      __doPostBack("ctl00$cplPrincipal$CaptchaContinue", "");
+    });
+
+    await page.waitForTimeout(3000);
+
+    console.log("⏳ Paso 6: Esperando mensaje o resultados...");
+    await Promise.race([
+      frame.waitForSelector("table", { timeout: 15000 }).catch(() => null),
+      frame.waitForSelector("#ctl00_cplPrincipal_lblMensaje", { timeout: 15000 }).catch(() => null)
+    ]);
+
+    const mensaje = await frame.evaluate(() => {
+      const msj = document.querySelector("#ctl00_cplPrincipal_lblMensaje");
+      return msj?.innerText.trim().toLowerCase() || "";
+    });
+
+    if (mensaje.includes("no se encontraron")) {
+      console.log("ℹ️ No se encontraron papeletas.");
+      result.success = true;
+      result.results = [];
+      return result;
+    }
+
+    console.log("📋 Paso 7: Extrayendo datos de tabla...");
+    const tabla = await frame.evaluate(() => {
+      const filas = Array.from(document.querySelectorAll("table tr"));
+      return filas.slice(1).map((fila) => {
+        const celdas = fila.querySelectorAll("td");
+        return {
+          Placa: celdas[1]?.innerText.trim() || "",
+          Reglamento: celdas[2]?.innerText.trim() || "",
+          Falta: celdas[3]?.innerText.trim() || "",
+          Documento: celdas[4]?.innerText.trim() || "",
+          FechaInfraccion: celdas[5]?.innerText.trim() || "",
+          Importe: celdas[6]?.innerText.trim() || "",
+          Gastos: celdas[7]?.innerText.trim() || "",
+          Descuentos: celdas[8]?.innerText.trim() || "",
+          Deuda: celdas[9]?.innerText.trim() || "",
+          Estado: celdas[10]?.innerText.trim() || ""
+        };
+      });
+    });
 
     result.success = true;
-    result.resultados = data;
-    console.log('📦 Datos extraídos correctamente:', data);
-  } catch (error) {
-    console.error('❌ Error en la consulta Infogas:', error.message);
-    result.error = error.message;
+    result.results = tabla;
+    console.log("✅ Consulta completada correctamente.");
+
+  } catch (err) {
+    console.error("❌ Error en consulta Lima:", err.message);
+    result.error = err.message;
   } finally {
     await browser.close();
     return result;
   }
 }
-
- async function consultarLima(placa) {
- const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
-});
-   const page = await browser.newPage();
-   const result = { success: false, results: [] };
- 
-   try {
-     console.log("🚀 Paso 1: Cargando página SAT...");
-     await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
-       waitUntil: "domcontentloaded"
-     });
- console.log("Página cargada.");
-     // Esperar frame con los inputs
-     console.log("🔍 Paso 2: Buscando frame...");
-     let frame;
-     for (let i = 0; i < 40; i++) {
-       await page.waitForTimeout(500);
-       const frames = page.frames();
-       for (const f of frames) {
-         const el = await f.$("#tipoBusquedaPapeletas").catch(() => null);
-         if (el) {
-           frame = f;
-           break;
-         }
-       }
-       if (frame) break;
-     }
-     if (!frame) throw new Error("No se encontró el frame de SAT Lima");
- 
-     console.log("📝 Paso 3: Llenando formulario...");
-     await frame.waitForSelector("#tipoBusquedaPapeletas", { timeout: 10000 });
-     await frame.select("#tipoBusquedaPapeletas", "busqPlaca");
- 
-     await frame.waitForSelector("#ctl00_cplPrincipal_txtPlaca", { timeout: 10000 });
-     await frame.type("#ctl00_cplPrincipal_txtPlaca", placa);
- 
-     // CAPTCHA
-     const siteKey = "6Ldy_wsTAAAAAGYM08RRQAMvF96g9O_SNQ9_hFIJ";
-     const pageUrl = "https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8";
-     console.log("🔐 Paso 4: Solicitando captcha a 2Captcha...");
-     const captchaStart = await axios.post("https://2captcha.com/in.php", null, {
-       params: {
-         key: process.env.CAPTCHA_API_KEY,
-         method: "userrecaptcha",
-         googlekey: siteKey,
-         pageurl: pageUrl,
-         json: 1
-       }
-     });
- 
-     const captchaId = captchaStart.data.request;
-     let token = null;
- 
-     for (let i = 0; i < 40; i++) {
-       await new Promise(r => setTimeout(r, 3000));
-       const check = await axios.get("https://2captcha.com/res.php", {
-         params: {
-           key: process.env.CAPTCHA_API_KEY,
-           action: "get",
-           id: captchaId,
-           json: 1
-         }
-       });
-       if (check.data.status === 1) {
-         token = check.data.request;
-         break;
-       }
-     }
- 
-     if (!token) throw new Error("Captcha Lima no resuelto");
-     console.log("✅ CAPTCHA resuelto");
- 
-     // Inyectar token
-     await frame.evaluate((token) => {
-       let textarea = document.getElementById("g-recaptcha-response");
-       if (!textarea) {
-         textarea = document.createElement("textarea");
-         textarea.id = "g-recaptcha-response";
-         textarea.name = "g-recaptcha-response";
-         textarea.style = "display: none;";
-         document.body.appendChild(textarea);
-       }
-       textarea.value = token;
-     }, token);
- 
-     // Enviar el formulario
-     console.log("📤 Paso 5: Enviando postback...");
-     await frame.evaluate(() => {
-       __doPostBack("ctl00$cplPrincipal$CaptchaContinue", "");
-     });
- 
-     await page.waitForTimeout(3000);
- 
-     console.log("⏳ Paso 6: Esperando mensaje o resultados...");
-     await Promise.race([
-       frame.waitForSelector("table", { timeout: 15000 }).catch(() => null),
-       frame.waitForSelector("#ctl00_cplPrincipal_lblMensaje", { timeout: 15000 }).catch(() => null)
-     ]);
- 
-     const mensaje = await frame.evaluate(() => {
-       const msj = document.querySelector("#ctl00_cplPrincipal_lblMensaje");
-       return msj?.innerText.trim().toLowerCase() || "";
-     });
- 
-     if (mensaje.includes("no se encontraron")) {
-       console.log("ℹ️ No se encontraron papeletas.");
-       result.success = true;
-       result.results = [];
-       return result;
-     }
- 
-     // Extraer tabla
-     console.log("📋 Paso 7: Extrayendo datos de tabla...");
-     const tabla = await frame.evaluate(() => {
-       const filas = Array.from(document.querySelectorAll("table tr"));
-       return filas.slice(1).map((fila) => {
-         const celdas = fila.querySelectorAll("td");
-         return {
-           Placa: celdas[1]?.innerText.trim() || "",
-           Reglamento: celdas[2]?.innerText.trim() || "",
-           Falta: celdas[3]?.innerText.trim() || "",
-           Documento: celdas[4]?.innerText.trim() || "",
-           FechaInfraccion: celdas[5]?.innerText.trim() || "",
-           Importe: celdas[6]?.innerText.trim() || "",
-           Gastos: celdas[7]?.innerText.trim() || "",
-           Descuentos: celdas[8]?.innerText.trim() || "",
-           Deuda: celdas[9]?.innerText.trim() || "",
-           Estado: celdas[10]?.innerText.trim() || ""
-         };
-       });
-     });
- 
-     result.success = true;
-     result.results = tabla;
-     console.log("✅ Consulta completada correctamente.");
-   } catch (err) {
-     console.error("❌ Error en consulta Lima:", err.message);
-     result.error = err.message;
-   } finally {
-     await browser.close();
-     return result;
-   }
- }
 async function consultarCallao(placa) {
 const browser = await puppeteer.launch({
   headless: true,
@@ -772,6 +630,111 @@ const browser = await puppeteer.launch({
   }
 }
 
+async function consultarInfogas(placa) {
+  const browser = await puppeteer.launch({
+    headless: true, // más rápido
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+
+  const page = await browser.newPage();
+  const result = { success: false, resultados: {} };
+
+  try {
+    page.setDefaultTimeout(40000); // reducir timeout general
+
+    console.log('🌐 Cargando página de Infogas...');
+    await page.goto('https://vh.infogas.com.pe/', { waitUntil: 'domcontentloaded' });
+
+    await page.waitForSelector('#inp_ck_plate');
+    await page.type('#inp_ck_plate', placa);
+
+    // 🔐 Captcha
+    const siteKey = '6LctjAQoAAAAAKxodrxo3QPm033HbyDrLf9N7x7P';
+    const pageUrl = 'https://vh.infogas.com.pe/';
+    const API_KEYY = process.env.CAPTCHA_API_KEYY;
+
+    console.log('🔄 Solicitando resolución del captcha...');
+    const { data: request } = await axios.get(`https://2captcha.com/in.php`, {
+      params: {
+        key: API_KEYY,
+        method: "userrecaptcha",
+        googlekey: siteKey,
+        pageurl: pageUrl,
+        json: 1,
+        priority: 1,
+        bid: 15
+      }
+    });
+
+    const requestId = request.request;
+
+    // Esperar token resuelto
+    const waitForCaptcha = async (requestId) => {
+      const maxAttempts = 40; // máx 40 segundos
+      for (let i = 0; i < maxAttempts; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const { data: response } = await axios.get(`https://2captcha.com/res.php`, {
+          params: {
+            key: API_KEYY,
+            action: "get",
+            id: requestId,
+            json: 1
+          }
+        });
+        if (response.status === 1) return response.request;
+        if (response.request !== 'CAPCHA_NOT_READY') throw new Error("❌ Error en captcha: " + response.request);
+      }
+      throw new Error('⏱️ Captcha Infogas no resuelto a tiempo');
+    };
+
+    const token = await waitForCaptcha(requestId);
+    console.log('✅ Captcha resuelto');
+
+    // Inyectar token
+    await page.evaluate((token) => {
+      let textarea = document.getElementById("g-recaptcha-response");
+      if (!textarea) {
+        textarea = document.createElement("textarea");
+        textarea.id = "g-recaptcha-response";
+        textarea.name = "g-recaptcha-response";
+        textarea.style = "display:none;";
+        document.body.appendChild(textarea);
+      }
+      textarea.value = token;
+    }, token);
+
+    // Enviar formulario
+    await Promise.all([
+      page.click('#btn_ck_plate'),
+      page.waitForNavigation({ waitUntil: 'networkidle2' }) // más rápido que networkidle0
+    ]);
+
+    // Esperar datos cargados
+    await page.waitForFunction(() => {
+      const el = document.querySelector('.plate_item_pran');
+      return el && el.innerText.trim() !== '';
+    }, { timeout: 10000 });
+
+    // Extraer datos
+    const data = await page.evaluate(() => ({
+      vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
+      vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
+      tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
+      habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
+      tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
+    }));
+
+    result.success = true;
+    result.resultados = data;
+    console.log('📦 Datos extraídos correctamente:', data);
+  } catch (error) {
+    console.error('❌ Error en la consulta Infogas:', error.message);
+    result.error = error.message;
+  } finally {
+    await browser.close();
+    return result;
+  }
+}
 
 // 🔹 SAT TARAPOTO
 async function consultarTarapoto(browser, placa) {
@@ -1103,10 +1066,21 @@ async function consultarPapeletasPucallpa(placa) {
     tabla += `</tbody></table>`;
     return tabla;
 
-  } catch (error) {
-    await browser.close();
-    return `<p style="color:green;">❌ La pagina de Pucallpa esta en mantenimiento http://servicios.municportillo.gob.pe:85/consultaVehiculo/consulta/ </p>`;
-  }
+  }catch (error) {
+  await browser.close();
+  return `<h2>Resultados SAT Pucallpa</h2>
+    <div class="mensaje-mantenimiento">
+      <div class="icono">⚠️</div>
+      <h2>Página en Mantenimiento</h2>
+      <p>
+        El servicio de <strong>Pucallpa</strong> no está disponible en este momento.<br>
+        <a href="http://servicios.municportillo.gob.pe:85/consultaVehiculo/consulta/" target="_blank">
+           Visitar página oficial
+        </a>
+      </p>
+    </div>
+  `;
+}
 }
 
  async function consultarPapeletasCajamarca(placa) {
