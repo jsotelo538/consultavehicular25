@@ -95,8 +95,8 @@ async function consultarLima(placa) {
     let token = null;
 
     // Espera más agresiva: revisa cada 1.5s y corta a los 80s
-    for (let i = 0; i < 54; i++) {
-      await new Promise(r => setTimeout(r, 1500));
+    for (let i = 0; i < 60; i++) {
+      await new Promise(r => setTimeout(r, 2000));
       const check = await axios.get(`${SATLIMA_API_URL}/res.php`, {
         params: {
           key: SATLIMA_API_KEY,
@@ -128,7 +128,8 @@ async function consultarLima(placa) {
     for (let intentos = 0; intentos < 5; intentos++) {
       console.log(`🔄 Intento ${intentos + 1}: cargando página...`);
       await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
-        waitUntil: "domcontentloaded"
+        waitUntil: "domcontentloaded",
+         timeout: 60000
       });
       await page.waitForTimeout(3000);
 
@@ -299,7 +300,7 @@ app.post('/siniestro', async (req, res) => {
 
     await page.click('#ctl00_MainBodyContent_txtPlaca', { clickCount: 3 });
     await page.type('#ctl00_MainBodyContent_txtPlaca', placa);
-       await page.focus('#ctl00_MainBodyContent_btnIngresarPla');
+       await page.click('#ctl00_MainBodyContent_btnIngresarPla');
 await page.evaluate(() => {
   document.querySelector('#ctl00_MainBodyContent_btnIngresarPla').click();
 });
@@ -309,7 +310,7 @@ await page.evaluate(() => {
     await page.waitForFunction(() => {
       return document.querySelector('#ctl00_MainBodyContent_cantidad') ||
              document.body.innerText.includes('no se encontró');
-    }, { timeout: 15000 });
+    }, { timeout: 35000 });
 
     // Captura
     const resultado = await page.evaluate(() => {
@@ -339,14 +340,17 @@ await page.evaluate(() => {
     res.status(500).json({ error: 'Error consultando siniestros SBS' });
   }
 });
-app.post('/consultar', async (req, res) => {
+app.post('/consultar', async (req, res) => { 
   const placa = req.body.placa;
 
   try {
- const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-});
+    const puppeteer = require('puppeteer');
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
     const page = await browser.newPage();
 
     await page.goto('https://webexterno.sutran.gob.pe/WebExterno/Pages/frmRecordInfracciones.aspx', {
@@ -368,38 +372,40 @@ app.post('/consultar', async (req, res) => {
     const captchaImage = await iframe.$('body > img');
     const captchaBase64 = await captchaImage.screenshot({ encoding: 'base64' });
 
-    // Resolver captcha
+    // Aquí debes implementar tu función para resolver el captcha (o usar tu servicio)
     const captchaTexto = await resolverCaptt(captchaBase64);
     console.log('Captcha resuelto:', captchaTexto);
 
     // Ingresar código resuelto
     await page.type('#TxtCodImagen', captchaTexto);
 
-    // Hacer clic en buscar (simula __doPostBack)
-    await page.evaluate(() => {
-      __doPostBack('BtnBuscar', '');
+    // Hacer clic en buscar (simula __doPostBack) y esperar navegación
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+      page.evaluate(() => {
+        __doPostBack('BtnBuscar', '');
+      }),
+    ]);
+
+    // Extraer resultado después de que la página se recargue
+    const resultado = await page.evaluate(() => {
+      const mensaje = document.querySelector('#LblMensaje');
+      const tabla = document.querySelector('#gvDeudas');
+
+      if (mensaje && mensaje.innerText.includes('No se encontraron infracciones pendientes')) {
+        return 'No se encontraron infracciones pendientes en la SUTRAN.';
+      }
+
+      return tabla ? tabla.outerHTML: 'No se encontraron resultados visibles.';
     });
-
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    // Extraer resultado
-  const resultado = await page.evaluate(() => {
-  const mensaje = document.querySelector('#LblMensaje');
-  const tabla = document.querySelector('#dgRecord');
-
-  if (mensaje && mensaje.innerText.includes('No se encontraron infracciones pendientes')) {
-    return 'No se encontraron infracciones pendientes en la SUTRAN.';
-  }
-
-  return tabla ? tabla.innerText : 'No se encontraron resultados visibles.';
-});
 
     await browser.close();
 
- res.json({ resultado: `Resultado para placa ${placa}:\n${resultado}` });
+    res.json({ resultado: `Resultado para placa ${placa}:\n${resultado}` });
+
   } catch (error) {
     console.error('Error:', error.message);
-    res.send(`<p>Error al consultar: ${error.message}</p><a href="/">Volver</a>`);
+    res.status(500).send(`<p>Error al consultar: ${error.message}</p><a href="/">Volver</a>`);
   }
 });
 
@@ -675,7 +681,7 @@ async function consultarInfogas(placa) {
         googlekey: siteKey,
         pageurl: pageUrl,
         json: 1,
-        priority: 1,
+        priority: 2,
         bid: 15
       }
     });
@@ -683,7 +689,7 @@ async function consultarInfogas(placa) {
     const requestId = request.request;
 
     const waitForCaptcha = async (requestId) => {
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 2000));
         const { data: response } = await axios.get(`https://2captcha.com/res.php`, {
           params: {
@@ -722,33 +728,40 @@ async function consultarInfogas(placa) {
     ]);
 
     // Esperar hasta que haya datos reales o agotar reintentos
-    let data = {};
-    for (let intento = 0; intento < 3; intento++) {
-      await page.waitForTimeout(5000); // esperar 5s entre intentos
+ // Esperar hasta que haya datos reales o agotar reintentos
+let data = {};
+const maxIntentos = 3;      // Puedes aumentar el número de intentos
+const esperaEntreIntentos = 5000; // Tiempo en ms (7 segundos, antes 5s)
 
-      data = await page.evaluate(() => ({
-        vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
-        vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
-        tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
-        habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
-        tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
-      }));
+for (let intento = 0; intento < maxIntentos; intento++) {
+  await page.waitForTimeout(esperaEntreIntentos); // esperar entre intentos
 
-      // Si ya hay algún dato válido, salir del bucle
-      if (Object.values(data).some(v => v && v !== '')) break;
-    }
+  data = await page.evaluate(() => ({
+    vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
+    vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
+    tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
+    habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
+    tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
+  }));
 
-    if (Object.values(data).some(v => v && v !== '')) {
-      result.success = true;
-      result.resultados = data;
-      console.log('📦 Datos extraídos correctamente:', data);
-    } else {
-      result.success = false;
-      result.message = 'No se encontraron datos en Infogas';
-    }
+  // Si ya hay algún dato válido, salir del bucle
+  if (Object.values(data).some(v => v && v !== '')) break;
+
+  console.log(`Intento ${intento + 1} sin datos, esperando más...`);
+}
+
+if (Object.values(data).some(v => v && v !== '')) {
+  result.success = true;
+  result.resultados = data;
+  console.log('📦 Datos extraídos correctamente:', data);
+} else {
+  result.success = false;
+  result.message = 'No se encontraron datos en Infogas';
+  console.warn('⚠️ No se encontraron datos tras varios intentos');
+}
 
   } catch (error) {
-    console.error('❌ Error en la consulta Infogas:', error.message);
+    console.error('No se encontraron datos en Infogas.', error.message);
     result.error = error.message;
   } finally {
     await browser.close();
@@ -847,75 +860,110 @@ async function consultarHuancayo(browser, placa) {
     return '⚠️ Error en Huancayo: ' + err.message;
   }
 }
-// 🔹 Consulta ATU
 app.post("/api/atu", async (req, res) => {
   const { placa } = req.body;
   if (!placa) return res.status(400).json({ error: "Placa requerida" });
 
   const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
-});
+    headless: true, // para ver el navegador y debuguear, puedes poner true en producción
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+
   try {
     const page = await browser.newPage();
     await page.goto("https://sistemas.atu.gob.pe/ConsultaVehiculo/", {
-      waitUntil: "networkidle2"
+      waitUntil: "networkidle2",
+      timeout: 60000,  
     });
 
     // Aceptar cookies
     try {
-      await page.waitForSelector("a.gdpr-cookie-notice-nav-item-accept", { visible: true, timeout: 5000 });
-      await page.click("a.gdpr-cookie-notice-nav-item-accept");
-    } catch {}
+      console.log("⏳ Esperando banner de cookies...");
+      await page.waitForSelector("div.gdpr-cookie-notice-background", {
+        visible: true,
+        timeout: 20000,
+      });
 
-    await page.waitForSelector("#txtNroPlaca");
-    await page.type("#txtNroPlaca", placa);
-    await page.click("#btnConsultar");
+      const btnAceptar = await page.waitForSelector(
+        "a.gdpr-cookie-notice-nav-item-accept",
+        { visible: true, timeout: 20000 }
+      );
 
-    // Esperar respuesta
-    try {
-      await page.waitForSelector("#txtMarca", { timeout: 10000 });
-    } catch {
-      return res.json({ registrado: false, mensaje: "❌ Placa no registrada en ATU" });
+      await btnAceptar.evaluate((btn) => btn.scrollIntoView());
+      await btnAceptar.click();
+      console.log("🍪 Banner cookies aceptado.");
+
+      // Esperar que desaparezca el banner de cookies
+      await page.waitForSelector("div.gdpr-cookie-notice-background", {
+        hidden: true,
+        timeout: 5000,
+      });
+      console.log("✅ Banner cookies desaparecido.");
+    } catch (error) {
+      console.log("⚠️ Banner de cookies no apareció o ya fue aceptado previamente.");
     }
 
-    const data = await page.evaluate(() => {
-     const getVal = id => document.querySelector(`#${id}`)?.value?.trim() || "";
+    // Pequeña espera para estabilizar la página tras cerrar banner
+    await page.waitForTimeout(1500);
 
-      const marca = getVal("txtMarca");
-      if (!marca) return { registrado: false };
+    // Ingresar placa
+    console.log("⏳ Esperando input de placa...");
+    await page.waitForSelector("#txtNroPlaca", { visible: true, timeout: 15000 });
+
+    console.log("✍️ Escribiendo placa...");
+    await page.type("#txtNroPlaca", placa);
+
+    console.log("🖱️ Haciendo click en botón consultar...");
+    await page.click("#btnConsultar");
+
+    // Esperar resultado
+    try {
+      console.log("⏳ Esperando resultado de consulta...");
+      await page.waitForSelector("#txtResultPlaca", { timeout: 15000 });
+    } catch {
+      console.log("ℹ️ Placa no registrada en ATU.");
+      return res.json({ registrado: false, mensaje: "ℹ️ Placa no registrada en ATU" });
+    }
+
+    // Extraer datos con IDs reales según el HTML que diste
+    const data = await page.evaluate(() => {
+      const getVal = (id) => document.querySelector(`#${id}`)?.value?.trim() || "";
+
+      const placa = getVal("txtResultPlaca");
+      if (!placa) return { registrado: false };
 
       return {
         registrado: true,
         vehiculo: {
-          placa: getVal("txtNroPlaca"),
-          modalidad: getVal("txtModalidad"),
-          marca,
-          modelo: getVal("txtModelo"),
-          circulacion: getVal("txtTipoCirculacion"),
-          estado: getVal("txtEstado"),
+          placa,
+          modalidad: getVal("txtResultModalidad"),
+          marca: getVal("txtResultMarca"),
+          modelo: getVal("txtResultModelo"),
+          circulacion: getVal("txtResultOperacion"),
+          estado: getVal("txtResultHabilitacion"),
         },
         tarjeta: {
-          numero: getVal("txtNroConstancia"),
-          fecha_emision: getVal("txtFecEmision"),
-          fecha_vencimiento: getVal("txtFecVcto"),
+          numero: getVal("txtResultCertificado"),
+          fecha_emision: getVal("txtResultFechaEmision"),
+          fecha_vencimiento: getVal("txtResultFechaVcto"),
         },
         titular: {
-          documento: getVal("txtNumDocTitular"),
-          ruta: getVal("txtRuta"),
-          nombre: getVal("txtTitular")
-        }
+          documento: getVal("txtResultRUC"),
+          ruta: getVal("txtResultRUTA"),
+          nombre: getVal("txtResultRazon"),
+        },
       };
     });
 
+    console.log("✅ Consulta ATU completada.");
     res.json(data);
   } catch (err) {
+    console.error("❌ Error en la consulta ATU: ", err.message);
     res.status(500).json({ error: "❌ Error en la consulta ATU: " + err.message });
   } finally {
     await browser.close();
   }
 });
-
 async function consultarPapeletasChiclayo(placa) {
 const browser = await puppeteer.launch({
   headless: true,
@@ -959,15 +1007,21 @@ const browser = await puppeteer.launch({
 async function consultarPapeletasHuanuco(placa) {
   const browser = await puppeteer.launch({
   headless: true, // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+   args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--ignore-certificate-errors" // Ignorar errores SSL
+  ]
 });
 
   const page = await browser.newPage();
 
   try {
     // 1. Cargar página
-    await page.goto('https://www.munihuanuco.gob.pe/gt_consultapapeletas_placa.php', {
-      waitUntil: 'domcontentloaded'
+    await page.goto('http://www.munihuanuco.gob.pe/gt_consultapapeletas_placa.php', {
+      waitUntil: 'domcontentloaded',
+       timeout: 30000,
+  ignoreHTTPSErrors: true // Ignorar errores SSL en la navegación
     });
 
     // 2. Esperar campo de placa y escribir
@@ -1478,8 +1532,8 @@ app.post('/consultarpiura', async (req, res) => {
   try {
     console.log('Lanzando navegador piiiurra...');
 const browser = await puppeteer.launch({
-  headless: 'new', // o true
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  headless: true, // o true
+  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
 });
 
     const page = await browser.newPage(); // ← FALTABA ESTA LÍNEA
@@ -1530,6 +1584,7 @@ const browser = await puppeteer.launch({
 
   } catch (error) {
     console.error('Error al consultar:', error);
+     throw error; 
     res.status(500).json({ error: 'Falló la consulta', detalles: error.message });
   }
 });
