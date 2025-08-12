@@ -58,7 +58,196 @@ app.use(bodyParser.json());
  
 
 // --------- FUNCIONES INDIVIDUALES ---------
+async function consultarLima(placa) {
+  const SATLIMA_API_KEY = "d6fb31ad4bee4d576b69ceacc98c0b25"; // Clave única
+  const SATLIMA_API_URL = "https://2captcha.com";
+  
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+  const page = await browser.newPage();
+  const result = { success: false, results: [] };
 
+  async function resolverCaptchaLima(siteKey, pageUrl) {
+    console.log("🔐 Enviando captcha a 2Captcha (prioridad alta SAT Lima)...");
+    const captchaStart = await axios.post(`${SATLIMA_API_URL}/in.php`, null, {
+      params: {
+        key: SATLIMA_API_KEY,
+        method: "userrecaptcha",
+        googlekey: siteKey,
+        pageurl: pageUrl,
+        json: 1,
+        priority: 2,         // Prioridad más alta
+        soft_id: 123456,     // ID opcional de tu app en 2Captcha
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        recaptchaDataS: "",  // Si el reCAPTCHA tiene data-s
+        invisible: 0,
+        proxy: "",           // Aquí si quieres usar IP dedicada
+      }
+    });
+
+    if (captchaStart.data.status !== 1) {
+      throw new Error("Error al enviar captcha: " + captchaStart.data.request);
+    }
+
+    const captchaId = captchaStart.data.request;
+    let token = null;
+
+    // Espera más agresiva: revisa cada 1.5s y corta a los 80s
+    for (let i = 0; i < 54; i++) {
+      await new Promise(r => setTimeout(r, 1500));
+      const check = await axios.get(`${SATLIMA_API_URL}/res.php`, {
+        params: {
+          key: SATLIMA_API_KEY,
+          action: "get",
+          id: captchaId,
+          json: 1
+        }
+      });
+      if (check.data.status === 1) {
+        token = check.data.request;
+        break;
+      } else if (check.data.request !== "CAPCHA_NOT_READY") {
+        throw new Error("Error resolviendo captcha: " + check.data.request);
+      }
+    }
+
+    if (!token) {
+      console.warn("⚠️ Captcha tardó demasiado, reintentando con nueva key...");
+      return resolverCaptchaLima(siteKey, pageUrl);
+    }
+
+    return token;
+  }
+
+  try {
+    console.log("🚀 Iniciando consulta SAT Lima...");
+
+    let frame, recaptchaOk = false;
+    for (let intentos = 0; intentos < 5; intentos++) {
+      console.log(`🔄 Intento ${intentos + 1}: cargando página...`);
+      await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
+        waitUntil: "domcontentloaded"
+      });
+      await page.waitForTimeout(3000);
+
+      for (let i = 0; i < 20; i++) {
+        await page.waitForTimeout(800);
+        const frames = page.frames();
+        for (const f of frames) {
+          const el = await f.$("#tipoBusquedaPapeletas").catch(() => null);
+          if (el) {
+            frame = f;
+            break;
+          }
+        }
+        if (frame) break;
+      }
+
+      if (!frame) {
+        console.log("❌ No se encontró el frame. Reintentando...");
+        continue;
+      }
+
+      const captchaExists = await frame.$('.g-recaptcha').catch(() => null);
+      if (captchaExists) {
+        console.log("✅ CAPTCHA detectado.");
+        recaptchaOk = true;
+        break;
+      } else {
+        console.warn("⚠️ CAPTCHA no detectado, recargando...");
+        frame = null;
+      }
+    }
+
+    if (!recaptchaOk) throw new Error("No se pudo cargar el CAPTCHA");
+
+    console.log("📝 Llenando formulario...");
+    await frame.select("#tipoBusquedaPapeletas", "busqPlaca");
+    await frame.waitForSelector("#ctl00_cplPrincipal_txtPlaca", { timeout: 10000 });
+    await frame.type("#ctl00_cplPrincipal_txtPlaca", placa);
+
+    const siteKey = "6Ldy_wsTAAAAAGYM08RRQAMvF96g9O_SNQ9_hFIJ";
+    const pageUrl = "https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8";
+
+    const token = await resolverCaptchaLima(siteKey, pageUrl);
+
+    await frame.evaluate((token) => {
+      let textarea = document.getElementById("g-recaptcha-response");
+      if (!textarea) {
+        textarea = document.createElement("textarea");
+        textarea.id = "g-recaptcha-response";
+        textarea.name = "g-recaptcha-response";
+        textarea.style = "display: none;";
+        document.body.appendChild(textarea);
+      }
+      textarea.value = token;
+    }, token);
+
+    console.log("📤 Enviando postback.LM...");
+    await frame.evaluate(() => {
+      __doPostBack("ctl00$cplPrincipal$CaptchaContinue", "");
+    });
+
+    await page.waitForTimeout(3500);
+
+    console.log("⏳ Esperando resultados...");
+    await Promise.race([
+      frame.waitForSelector("table", { timeout: 15000 }).catch(() => null),
+      frame.waitForSelector("#ctl00_cplPrincipal_lblMensaje", { timeout: 15000 }).catch(() => null)
+    ]);
+
+    const mensaje = await frame.evaluate(() => {
+      const msj = document.querySelector("#ctl00_cplPrincipal_lblMensaje");
+      return msj?.innerText.trim().toLowerCase() || "";
+    });
+
+    if (mensaje.includes("no se encontraron")) {
+      console.log("ℹ️ No se encontraron papeletas.");
+      result.success = true;
+      result.results = [];
+      return result;
+    }
+
+    console.log("📋 Extrayendo datos...");
+    const tabla = await frame.evaluate(() => {
+      const filas = Array.from(document.querySelectorAll("table tr"));
+      return filas.slice(1).map((fila) => {
+        const celdas = fila.querySelectorAll("td");
+        return {
+          Placa: celdas[1]?.innerText.trim() || "",
+          Reglamento: celdas[2]?.innerText.trim() || "",
+          Falta: celdas[3]?.innerText.trim() || "",
+          Documento: celdas[4]?.innerText.trim() || "",
+          FechaInfraccion: celdas[5]?.innerText.trim() || "",
+          Importe: celdas[6]?.innerText.trim() || "",
+          Gastos: celdas[7]?.innerText.trim() || "",
+          Descuentos: celdas[8]?.innerText.trim() || "",
+          Deuda: celdas[9]?.innerText.trim() || "",
+          Estado: celdas[10]?.innerText.trim() || ""
+        };
+      });
+    });
+
+    result.success = true;
+    result.results = tabla;
+    console.log("✅ Consulta completada.");
+    
+  } catch (err) {
+    console.error("❌ Error en consulta Lima:", err.message);
+    result.error = err.message;
+  } finally {
+    await browser.close();
+    return result;
+  }
+}// Endpoint API
+app.post("/api/consultar-lima", async (req, res) => {
+  const placa = req.body.placa;
+  if (!placa) return res.json({ success: false, message: "Placa requerida" });
+  const data = await consultarLima(placa);
+  res.json(data);
+});
 
 async function resolverCaptt(base64Image) {
   const form = new FormData();
@@ -306,196 +495,7 @@ async function resolverCao(imageBuffer) {
 });
 
 
-async function consultarLima(placa) {
-  const SATLIMA_API_KEY = "d6fb31ad4bee4d576b69ceacc98c0b25"; // Clave única
-  const SATLIMA_API_URL = "https://2captcha.com";
-  
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-  const page = await browser.newPage();
-  const result = { success: false, results: [] };
-
-  async function resolverCaptchaLima(siteKey, pageUrl) {
-    console.log("🔐 Enviando captcha a 2Captcha (prioridad alta SAT Lima)...");
-    const captchaStart = await axios.post(`${SATLIMA_API_URL}/in.php`, null, {
-      params: {
-        key: SATLIMA_API_KEY,
-        method: "userrecaptcha",
-        googlekey: siteKey,
-        pageurl: pageUrl,
-        json: 1,
-        priority: 2,         // Prioridad más alta
-        soft_id: 123456,     // ID opcional de tu app en 2Captcha
-        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        recaptchaDataS: "",  // Si el reCAPTCHA tiene data-s
-        invisible: 0,
-        proxy: "",           // Aquí si quieres usar IP dedicada
-      }
-    });
-
-    if (captchaStart.data.status !== 1) {
-      throw new Error("Error al enviar captcha: " + captchaStart.data.request);
-    }
-
-    const captchaId = captchaStart.data.request;
-    let token = null;
-
-    // Espera más agresiva: revisa cada 1.5s y corta a los 80s
-    for (let i = 0; i < 54; i++) {
-      await new Promise(r => setTimeout(r, 1500));
-      const check = await axios.get(`${SATLIMA_API_URL}/res.php`, {
-        params: {
-          key: SATLIMA_API_KEY,
-          action: "get",
-          id: captchaId,
-          json: 1
-        }
-      });
-      if (check.data.status === 1) {
-        token = check.data.request;
-        break;
-      } else if (check.data.request !== "CAPCHA_NOT_READY") {
-        throw new Error("Error resolviendo captcha: " + check.data.request);
-      }
-    }
-
-    if (!token) {
-      console.warn("⚠️ Captcha tardó demasiado, reintentando con nueva key...");
-      return resolverCaptchaLima(siteKey, pageUrl);
-    }
-
-    return token;
-  }
-
-  try {
-    console.log("🚀 Iniciando consulta SAT Lima...");
-
-    let frame, recaptchaOk = false;
-    for (let intentos = 0; intentos < 5; intentos++) {
-      console.log(`🔄 Intento ${intentos + 1}: cargando página...`);
-      await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
-        waitUntil: "domcontentloaded"
-      });
-      await page.waitForTimeout(1500);
-
-      for (let i = 0; i < 20; i++) {
-        await page.waitForTimeout(500);
-        const frames = page.frames();
-        for (const f of frames) {
-          const el = await f.$("#tipoBusquedaPapeletas").catch(() => null);
-          if (el) {
-            frame = f;
-            break;
-          }
-        }
-        if (frame) break;
-      }
-
-      if (!frame) {
-        console.log("❌ No se encontró el frame. Reintentando...");
-        continue;
-      }
-
-      const captchaExists = await frame.$('.g-recaptcha').catch(() => null);
-      if (captchaExists) {
-        console.log("✅ CAPTCHA detectado.");
-        recaptchaOk = true;
-        break;
-      } else {
-        console.warn("⚠️ CAPTCHA no detectado, recargando...");
-        frame = null;
-      }
-    }
-
-    if (!recaptchaOk) throw new Error("No se pudo cargar el CAPTCHA");
-
-    console.log("📝 Llenando formulario...");
-    await frame.select("#tipoBusquedaPapeletas", "busqPlaca");
-    await frame.waitForSelector("#ctl00_cplPrincipal_txtPlaca", { timeout: 10000 });
-    await frame.type("#ctl00_cplPrincipal_txtPlaca", placa);
-
-    const siteKey = "6Ldy_wsTAAAAAGYM08RRQAMvF96g9O_SNQ9_hFIJ";
-    const pageUrl = "https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8";
-
-    const token = await resolverCaptchaLima(siteKey, pageUrl);
-
-    await frame.evaluate((token) => {
-      let textarea = document.getElementById("g-recaptcha-response");
-      if (!textarea) {
-        textarea = document.createElement("textarea");
-        textarea.id = "g-recaptcha-response";
-        textarea.name = "g-recaptcha-response";
-        textarea.style = "display: none;";
-        document.body.appendChild(textarea);
-      }
-      textarea.value = token;
-    }, token);
-
-    console.log("📤 Enviando postback...");
-    await frame.evaluate(() => {
-      __doPostBack("ctl00$cplPrincipal$CaptchaContinue", "");
-    });
-
-    await page.waitForTimeout(3000);
-
-    console.log("⏳ Esperando resultados...");
-    await Promise.race([
-      frame.waitForSelector("table", { timeout: 15000 }).catch(() => null),
-      frame.waitForSelector("#ctl00_cplPrincipal_lblMensaje", { timeout: 15000 }).catch(() => null)
-    ]);
-
-    const mensaje = await frame.evaluate(() => {
-      const msj = document.querySelector("#ctl00_cplPrincipal_lblMensaje");
-      return msj?.innerText.trim().toLowerCase() || "";
-    });
-
-    if (mensaje.includes("no se encontraron")) {
-      console.log("ℹ️ No se encontraron papeletas.");
-      result.success = true;
-      result.results = [];
-      return result;
-    }
-
-    console.log("📋 Extrayendo datos...");
-    const tabla = await frame.evaluate(() => {
-      const filas = Array.from(document.querySelectorAll("table tr"));
-      return filas.slice(1).map((fila) => {
-        const celdas = fila.querySelectorAll("td");
-        return {
-          Placa: celdas[1]?.innerText.trim() || "",
-          Reglamento: celdas[2]?.innerText.trim() || "",
-          Falta: celdas[3]?.innerText.trim() || "",
-          Documento: celdas[4]?.innerText.trim() || "",
-          FechaInfraccion: celdas[5]?.innerText.trim() || "",
-          Importe: celdas[6]?.innerText.trim() || "",
-          Gastos: celdas[7]?.innerText.trim() || "",
-          Descuentos: celdas[8]?.innerText.trim() || "",
-          Deuda: celdas[9]?.innerText.trim() || "",
-          Estado: celdas[10]?.innerText.trim() || ""
-        };
-      });
-    });
-
-    result.success = true;
-    result.results = tabla;
-    console.log("✅ Consulta completada.");
-    
-  } catch (err) {
-    console.error("❌ Error en consulta Lima:", err.message);
-    result.error = err.message;
-  } finally {
-    await browser.close();
-    return result;
-  }
-}// Endpoint API
-app.post("/api/consultar-lima", async (req, res) => {
-  const placa = req.body.placa;
-  if (!placa) return res.json({ success: false, message: "Placa requerida" });
-  const data = await consultarLima(placa);
-  res.json(data);
-});
+ 
 async function consultarCallao(placa) {
 const browser = await puppeteer.launch({
   headless: true,
@@ -748,7 +748,13 @@ async function consultarInfogas(placa) {
     await browser.close();
     return result;
   }
-}
+}app.post("/api/consultar-infogas", async (req, res) => {
+  const placa = req.body.placa;
+  if (!placa) return res.json({ success: false, message: "Placa requerida" });
+
+  const data = await consultarInfogas(placa);
+  res.json(data);
+});
 
 // 🔹 SAT TARAPOTO
 async function consultarTarapoto(browser, placa) {
@@ -945,7 +951,7 @@ const browser = await puppeteer.launch({
 }
 async function consultarPapeletasHuanuco(placa) {
   const browser = await puppeteer.launch({
-  headless:false, // para evitar la advertencia de deprecated
+  headless: true, // para evitar la advertencia de deprecated
   args: ["--no-sandbox", "--disable-setuid-sandbox"]
 });
 
@@ -1402,6 +1408,7 @@ app.post('/api/puno', async (req, res) => {
     res.status(500).json({ error: 'Error al consultar papeletas en Puno' });
   }
 });
+ 
  app.post('/api/andahuaylas', async (req, res) => {
   const { placa } = req.body;
   if (!placa) return res.status(400).json({ error: 'Placa requerida' });
@@ -1456,7 +1463,7 @@ app.post('/api/huanuco', async (req, res) => {
   const resultado = await consultarPapeletasHuanuco(placa);
   res.send(resultado);
 });
-
+ 
 app.post('/consultarpiura', async (req, res) => {
   const { placa } = req.body;
   if (!placa) return res.status(400).json({ error: 'Placa requerida' });
@@ -1536,13 +1543,7 @@ app.post("/api/consultar-revision", async (req, res) => {
   const data = await consultarRevisionTecnica(placa);
   res.json(data);
 });
-app.post("/api/consultar-infogas", async (req, res) => {
-  const placa = req.body.placa;
-  if (!placa) return res.json({ success: false, message: "Placa requerida" });
-
-  const data = await consultarInfogas(placa);
-  res.json(data);
-});
+ 
 app.post("/api/consultar", async (req, res) => {
   const { placa } = req.body;
   if (!placa || placa.trim().length < 5) {
