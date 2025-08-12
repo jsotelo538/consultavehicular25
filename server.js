@@ -643,10 +643,10 @@ const browser = await puppeteer.launch({
     await browser.close();
   }
 }
-
+// Backend: Node.js con Puppeteer
 async function consultarInfogas(placa) {
   const browser = await puppeteer.launch({
-    headless: true, // más rápido
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
@@ -654,7 +654,7 @@ async function consultarInfogas(placa) {
   const result = { success: false, resultados: {} };
 
   try {
-    page.setDefaultTimeout(40000); // reducir timeout general
+    page.setDefaultTimeout(60000); // hasta 1 minuto para casos lentos
 
     console.log('🌐 Cargando página de Infogas...');
     await page.goto('https://vh.infogas.com.pe/', { waitUntil: 'domcontentloaded' });
@@ -667,7 +667,7 @@ async function consultarInfogas(placa) {
     const pageUrl = 'https://vh.infogas.com.pe/';
     const API_KEYY = process.env.CAPTCHA_API_KEYY;
 
-    console.log('🔄 Solicitando resolución del captcha...');
+    console.log('🔄 Resolviendo captcha...');
     const { data: request } = await axios.get(`https://2captcha.com/in.php`, {
       params: {
         key: API_KEYY,
@@ -682,10 +682,8 @@ async function consultarInfogas(placa) {
 
     const requestId = request.request;
 
-    // Esperar token resuelto
     const waitForCaptcha = async (requestId) => {
-      const maxAttempts = 40; // máx 40 segundos
-      for (let i = 0; i < maxAttempts; i++) {
+      for (let i = 0; i < 40; i++) {
         await new Promise(r => setTimeout(r, 2000));
         const { data: response } = await axios.get(`https://2captcha.com/res.php`, {
           params: {
@@ -698,7 +696,7 @@ async function consultarInfogas(placa) {
         if (response.status === 1) return response.request;
         if (response.request !== 'CAPCHA_NOT_READY') throw new Error("❌ Error en captcha: " + response.request);
       }
-      throw new Error('⏱️ Captcha Infogas no resuelto a tiempo');
+      throw new Error('⏱️ Captcha no resuelto a tiempo');
     };
 
     const token = await waitForCaptcha(requestId);
@@ -720,27 +718,35 @@ async function consultarInfogas(placa) {
     // Enviar formulario
     await Promise.all([
       page.click('#btn_ck_plate'),
-      page.waitForNavigation({ waitUntil: 'networkidle2' }) // más rápido que networkidle0
+      page.waitForNavigation({ waitUntil: 'networkidle2' })
     ]);
 
-    // Esperar datos cargados
-    await page.waitForFunction(() => {
-      const el = document.querySelector('.plate_item_pran');
-      return el && el.innerText.trim() !== '';
-    }, { timeout: 10000 });
+    // Esperar hasta que haya datos reales o agotar reintentos
+    let data = {};
+    for (let intento = 0; intento < 3; intento++) {
+      await page.waitForTimeout(5000); // esperar 5s entre intentos
 
-    // Extraer datos
-    const data = await page.evaluate(() => ({
-      vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
-      vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
-      tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
-      habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
-      tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
-    }));
+      data = await page.evaluate(() => ({
+        vencimientoRevisionAnual: document.querySelector('.plate_item_pran')?.innerText.trim() || '',
+        vencimientoCilindro: document.querySelector('.plate_item_pvci')?.innerText.trim() || '',
+        tieneCredito: document.querySelector('.plate_item_havc')?.innerText.trim() || '',
+        habilitado: document.querySelector('.plate_item_vhab')?.innerText.trim() || '',
+        tipoCombustible: document.querySelector('.plate_item_esgnv')?.innerText.trim() || ''
+      }));
 
-    result.success = true;
-    result.resultados = data;
-    console.log('📦 Datos extraídos correctamente:', data);
+      // Si ya hay algún dato válido, salir del bucle
+      if (Object.values(data).some(v => v && v !== '')) break;
+    }
+
+    if (Object.values(data).some(v => v && v !== '')) {
+      result.success = true;
+      result.resultados = data;
+      console.log('📦 Datos extraídos correctamente:', data);
+    } else {
+      result.success = false;
+      result.message = 'No se encontraron datos en Infogas';
+    }
+
   } catch (error) {
     console.error('❌ Error en la consulta Infogas:', error.message);
     result.error = error.message;
@@ -748,7 +754,8 @@ async function consultarInfogas(placa) {
     await browser.close();
     return result;
   }
-}app.post("/api/consultar-infogas", async (req, res) => {
+ 
+ }app.post("/api/consultar-infogas", async (req, res) => {
   const placa = req.body.placa;
   if (!placa) return res.json({ success: false, message: "Placa requerida" });
 

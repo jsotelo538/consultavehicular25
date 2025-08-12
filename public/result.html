@@ -785,9 +785,10 @@ async function consultarInfogas(placa) {
   const infogasDiv = document.getElementById("resultado-infogas");
   infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
+  // Aviso de espera prolongada
   setTimeout(() => {
     if (document.querySelector("#resultado-infogas .loader")) {
-      infogasDiv.innerHTML += `<p style="color: #999;">⚠️ La consulta de Infogas está tomando más tiempo de lo habitual. Por favor, espere...</p>`;
+      infogasDiv.innerHTML += `<p style="color: #999;">⏳ Consultando Infogas... puede tardar unos segundos.</p>`;
     }
   }, 10000);
 
@@ -800,30 +801,29 @@ async function consultarInfogas(placa) {
 
     const data = await res.json();
 
-    if (!data.success || !data.resultados) {
-      infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="mensaje-infoo">❌ No se encontraron datos de Infogas.</div>`;
+    if (!data.success || !data.resultados || Object.keys(data.resultados).length === 0) {
+      infogasDiv.innerHTML = `<h2>⛽ Infogas GNV.</h2><div class="mensaje-infoo">❌ No se encontraron datos de Infogas.</div>`;
       return;
     }
 
     const r = data.resultados;
-
-    const html = `
-      <div class="mensaje-info">
-        <strong>🚗 Placa:</strong> ${placa} <br>
-         <strong>⛽ Tipo de Combustible:</strong> ${r.tipoCombustible || '-'} <br>
-         <strong>✅ Habilitado para consumir:</strong> ${r.habilitado || '-'} <br>
-         <strong>📄 ¿Tiene Crédito?:</strong> ${r.tieneCredito || '-'} <br>
-        <strong>📅 Vencimiento Revisión Anual:</strong> ${r.vencimientoRevisionAnual || '-'} <br>
-        <strong>📅 Vencimiento de Cilindro:</strong> ${r.vencimientoCilindro || '-'} 
+    infogasDiv.innerHTML = `
+      <div class="tarjeta">
+        <h2>⛽ Infogas GNV.</h2>
+        <div class="mensaje-info">
+          <strong>🚗 Placa:</strong> ${placa} <br>
+          <strong>⛽ Tipo de Combustible:</strong> ${r.tipoCombustible || '-'} <br>
+          <strong>✅ Habilitado para consumir:</strong> ${r.habilitado || '-'} <br>
+          <strong>📄 ¿Tiene Crédito?:</strong> ${r.tieneCredito || '-'} <br>
+          <strong>📅 Vencimiento Revisión Anual:</strong> ${r.vencimientoRevisionAnual || '-'} <br>
+          <strong>📅 Vencimiento de Cilindro:</strong> ${r.vencimientoCilindro || '-'}
+        </div>
       </div>
     `;
-
-    infogasDiv.innerHTML = `<div class="tarjeta"><h2>⛽ Infogas GNV</h2>${html}</div>`;
   } catch (error) {
-    infogasDiv.innerHTML = `<h2>Infogas GNV</h2><div class="mensaje-infoo">❌ No se encontraron datos de Infogas.</div>`;
+    infogasDiv.innerHTML = `<h2>⛽ Infogas GNV.</h2><div class="mensaje-infoo">❌ Error al consultar Infogas.</div>`;
   }
 }
-
   async function consultarSOATyVehiculo(placa) {
   const soatCont = document.getElementById("soat-info");
   const vehiculoCont = document.getElementById("vehiculo-info");
@@ -1180,57 +1180,7 @@ async function descargarPDF() {
 
    
   
-  async function realizarConsultas() {
-    try {
-      const [lima, callao, revision, infogas, otros] = await Promise.all([
-        fetch("/api/consultar-lima", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placa })
-        }).then(res => res.json()),
-
-        fetch("/api/consultar-callao", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placa })
-        }).then(res => res.json()),
-
-        fetch("/api/consultar-revision", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placa })
-        }).then(res => res.json()),
-
-        fetch("/api/consultar-infogas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placa })
-        }).then(res => res.json()),
-
-        fetch("/api/consultar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placa })
-        }).then(res => res.json())
-      ]);
-
-      const resultadoFinal = {
-        placa,
-        lima,
-        callao,
-        revision,
-        infogas,
-        tarapoto: otros.tarapoto,
-        huancayo: otros.huancayo
-      };
-
-      datosCompletos = JSON.stringify(resultadoFinal, null, 2);
-      document.getElementById("resultados").textContent = "✅ Consulta finalizada:\n\n" + datosCompletos;
-
-    } catch (err) {
-      document.getElementById("resultados").textContent = "❌ Error en la consulta: " + err.message;
-    }
-  }
+   
 
   window.addEventListener("error", function (e) {
     console.error("👉 Error atrapado:", e.error);
