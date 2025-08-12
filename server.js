@@ -307,29 +307,79 @@ async function resolverCao(imageBuffer) {
 
 
 async function consultarLima(placa) {
+  const SATLIMA_API_KEY = "d6fb31ad4bee4d576b69ceacc98c0b25"; // Clave única
+  const SATLIMA_API_URL = "https://2captcha.com";
+  
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
   const result = { success: false, results: [] };
 
+  async function resolverCaptchaLima(siteKey, pageUrl) {
+    console.log("🔐 Enviando captcha a 2Captcha (prioridad alta SAT Lima)...");
+    const captchaStart = await axios.post(`${SATLIMA_API_URL}/in.php`, null, {
+      params: {
+        key: SATLIMA_API_KEY,
+        method: "userrecaptcha",
+        googlekey: siteKey,
+        pageurl: pageUrl,
+        json: 1,
+        priority: 2,         // Prioridad más alta
+        soft_id: 123456,     // ID opcional de tu app en 2Captcha
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        recaptchaDataS: "",  // Si el reCAPTCHA tiene data-s
+        invisible: 0,
+        proxy: "",           // Aquí si quieres usar IP dedicada
+      }
+    });
+
+    if (captchaStart.data.status !== 1) {
+      throw new Error("Error al enviar captcha: " + captchaStart.data.request);
+    }
+
+    const captchaId = captchaStart.data.request;
+    let token = null;
+
+    // Espera más agresiva: revisa cada 1.5s y corta a los 80s
+    for (let i = 0; i < 54; i++) {
+      await new Promise(r => setTimeout(r, 1500));
+      const check = await axios.get(`${SATLIMA_API_URL}/res.php`, {
+        params: {
+          key: SATLIMA_API_KEY,
+          action: "get",
+          id: captchaId,
+          json: 1
+        }
+      });
+      if (check.data.status === 1) {
+        token = check.data.request;
+        break;
+      } else if (check.data.request !== "CAPCHA_NOT_READY") {
+        throw new Error("Error resolviendo captcha: " + check.data.request);
+      }
+    }
+
+    if (!token) {
+      console.warn("⚠️ Captcha tardó demasiado, reintentando con nueva key...");
+      return resolverCaptchaLima(siteKey, pageUrl);
+    }
+
+    return token;
+  }
+
   try {
-    console.log("🚀 Iniciando consulta...");
+    console.log("🚀 Iniciando consulta SAT Lima...");
 
     let frame, recaptchaOk = false;
-
-    // 🔁 REINTENTO para cargar correctamente la página y el CAPTCHA
     for (let intentos = 0; intentos < 5; intentos++) {
-      console.log(`🔄 Intento ${intentos + 1}: cargando página SAT...`);
+      console.log(`🔄 Intento ${intentos + 1}: cargando página...`);
       await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
         waitUntil: "domcontentloaded"
       });
-
-      // Esperar unos milisegundos para que cargue bien
       await page.waitForTimeout(1500);
 
-      // Buscar el frame que contiene el formulario
       for (let i = 0; i < 20; i++) {
         await page.waitForTimeout(500);
         const frames = page.frames();
@@ -348,71 +398,29 @@ async function consultarLima(placa) {
         continue;
       }
 
-      // Verificar que el CAPTCHA esté presente en el frame
       const captchaExists = await frame.$('.g-recaptcha').catch(() => null);
       if (captchaExists) {
-        console.log("✅ CAPTCHA detectado correctamente.");
+        console.log("✅ CAPTCHA detectado.");
         recaptchaOk = true;
         break;
       } else {
         console.warn("⚠️ CAPTCHA no detectado, recargando...");
-        frame = null; // reiniciar frame
+        frame = null;
       }
     }
 
-    if (!recaptchaOk) throw new Error("No se pudo cargar el CAPTCHA después de varios intentos");
+    if (!recaptchaOk) throw new Error("No se pudo cargar el CAPTCHA");
 
-    console.log("📝 Paso 3: Llenando formulario...");
+    console.log("📝 Llenando formulario...");
     await frame.select("#tipoBusquedaPapeletas", "busqPlaca");
     await frame.waitForSelector("#ctl00_cplPrincipal_txtPlaca", { timeout: 10000 });
     await frame.type("#ctl00_cplPrincipal_txtPlaca", placa);
 
-    // CAPTCHA
     const siteKey = "6Ldy_wsTAAAAAGYM08RRQAMvF96g9O_SNQ9_hFIJ";
     const pageUrl = "https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8";
-    console.log("🔐 Paso 4: Solicitando captcha a 2Captcha...");
 
-    const captchaStart = await axios.post("https://2captcha.com/in.php", null, {
-      params: {
-        key: process.env.CAPTCHA_API_KEY,
-        method: "userrecaptcha",
-        googlekey: siteKey,
-        pageurl: pageUrl,
-        json: 1,
-        priority: 1,
-        bid: 15
-      }
-    });
+    const token = await resolverCaptchaLima(siteKey, pageUrl);
 
-    if (captchaStart.data.status !== 1) {
-      throw new Error("Error al enviar captcha a 2Captcha: " + captchaStart.data.request);
-    }
-
-    const captchaId = captchaStart.data.request;
-    let token = null;
-
-    for (let i = 0; i < 90; i++) {
-      await new Promise(r => setTimeout(r, 2000));
-      const check = await axios.get("https://2captcha.com/res.php", {
-        params: {
-          key: process.env.CAPTCHA_API_KEY,
-          action: "get",
-          id: captchaId,
-          json: 1
-        }
-      });
-      if (check.data.status === 1) {
-        token = check.data.request;
-        break;
-      } else if (check.data.request !== "CAPCHA_NOT_READY") {
-        throw new Error("Error resolviendo captcha: " + check.data.request);
-      }
-    }
-
-    if (!token) throw new Error("Captcha no resuelto dentro del tiempo límite");
-    console.log("✅ CAPTCHA resuelto");
-
-    // Inyectar token
     await frame.evaluate((token) => {
       let textarea = document.getElementById("g-recaptcha-response");
       if (!textarea) {
@@ -425,14 +433,14 @@ async function consultarLima(placa) {
       textarea.value = token;
     }, token);
 
-    console.log("📤 Paso 5: Enviando postback...");
+    console.log("📤 Enviando postback...");
     await frame.evaluate(() => {
       __doPostBack("ctl00$cplPrincipal$CaptchaContinue", "");
     });
 
     await page.waitForTimeout(3000);
 
-    console.log("⏳ Paso 6: Esperando mensaje o resultados...");
+    console.log("⏳ Esperando resultados...");
     await Promise.race([
       frame.waitForSelector("table", { timeout: 15000 }).catch(() => null),
       frame.waitForSelector("#ctl00_cplPrincipal_lblMensaje", { timeout: 15000 }).catch(() => null)
@@ -450,7 +458,7 @@ async function consultarLima(placa) {
       return result;
     }
 
-    console.log("📋 Paso 7: Extrayendo datos de tabla...");
+    console.log("📋 Extrayendo datos...");
     const tabla = await frame.evaluate(() => {
       const filas = Array.from(document.querySelectorAll("table tr"));
       return filas.slice(1).map((fila) => {
@@ -472,8 +480,8 @@ async function consultarLima(placa) {
 
     result.success = true;
     result.results = tabla;
-    console.log("✅ Consulta completada correctamente.");
-
+    console.log("✅ Consulta completada.");
+    
   } catch (err) {
     console.error("❌ Error en consulta Lima:", err.message);
     result.error = err.message;
@@ -481,7 +489,13 @@ async function consultarLima(placa) {
     await browser.close();
     return result;
   }
-}
+}// Endpoint API
+app.post("/api/consultar-lima", async (req, res) => {
+  const placa = req.body.placa;
+  if (!placa) return res.json({ success: false, message: "Placa requerida" });
+  const data = await consultarLima(placa);
+  res.json(data);
+});
 async function consultarCallao(placa) {
 const browser = await puppeteer.launch({
   headless: true,
@@ -931,7 +945,7 @@ const browser = await puppeteer.launch({
 }
 async function consultarPapeletasHuanuco(placa) {
   const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
+  headless:false, // para evitar la advertencia de deprecated
   args: ["--no-sandbox", "--disable-setuid-sandbox"]
 });
 
@@ -1508,12 +1522,7 @@ const browser = await puppeteer.launch({
 
 // --------- RUTAS API ---------
 
-app.post("/api/consultar-lima", async (req, res) => {
-  const placa = req.body.placa;
-  if (!placa) return res.json({ success: false, message: "Placa requerida" });
-  const data = await consultarLima(placa);
-  res.json(data);
-});
+ 
 app.post("/api/consultar-callao", async (req, res) => {
   const placa = req.body.placa;
   if (!placa) return res.json({ success: false, message: "Placa requerida" });

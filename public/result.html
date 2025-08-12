@@ -914,7 +914,7 @@ async function consultarInfogas(placa) {
     const data = await res.json();
 
     if (data.error || !data.resultados || data.resultados.length === 0) {
-      revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>Revisión Técnica ()MTC)</h2><div class="mensaje-error">❌ No se encontró información en Revisión Técnica.</div>`;
+      revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>Revisión Técnica (MTC)</h2><div class="mensaje-error">❌ No se encontró información en Revisión Técnica.</div>`;
       return;
     }
 
