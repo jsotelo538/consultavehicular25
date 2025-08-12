@@ -922,7 +922,7 @@ async function consultarInfogas(placa) {
     const estadoColor = (r.resultado || "").toLowerCase().includes("aprobado") ? "green" : "red";
 
     revisionDiv.innerHTML = `
-       <div class="bloque-siniestro"><h2>🔧 Revisión Técnica (MTC)</h2>
+       <div class="bloque-siniestro"><h2>🔧 Revisión Técnica (MTC).</h2>
       <div class="mensaje-info">
          <strong>📄 Certificado:</strong> ${r.placa} <br>
          <strong>🚗 Placa:</strong> ${r.certificado} <br>

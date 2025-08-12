@@ -311,7 +311,7 @@ async function consultarLima(placa) {
   const SATLIMA_API_URL = "https://2captcha.com";
   
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
