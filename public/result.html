@@ -545,18 +545,46 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
  
         
       const placa = document.getElementById("placa").value.trim().toUpperCase();
-       const resultadoSutran = document.getElementById('resultadoSutran');
+         const limaDiv = document.getElementById("resultado-lima");
+      const resultadoSutran = document.getElementById('resultadoSutran');
       const resultadoSiniestro = document.getElementById('resultadoSiniestro');
     const piuraDiv = document.getElementById('resultado-piura');
          
-    const limaDiv = document.getElementById("resultado-lima");
+  
       const callaoDiv = document.getElementById("resultado-callao");
         const resultado = document.getElementById('resultado');
       
         limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class=" mensaje-infoo"><div class="loader"></div></div>';
     callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class=" mensaje-infoo"><div class="loader"></div></div>';
    
-      
+      // SAT Lima
+ 
+  
+      fetch("/api/consultar-lima", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ placa })
+      }).then(res => res.json()).then(data => {
+        if (!data.success || !data.results?.length) {
+     limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</div>';
+          return;
+        }
+ let html = '<h2>Resultados SAT Lima</h2><div class="tabla-responsive"><table><tr>' +
+        '<th>Placa</th><th>Reglamento</th><th>Falta</th><th>Documento</th>' +
+        '<th>Fecha</th><th>Importe</th><th>Gastos</th><th>Descuentos</th>' +
+        '<th>Deuda</th><th>Estado</th></tr>';
+      data.results.forEach(r => {
+        html += `<tr>
+          <td>${r.Placa}</td><td>${r.Reglamento}</td><td>${r.Falta}</td>
+          <td>${r.Documento}</td><td>${r.FechaInfraccion}</td>
+          <td>${r.Importe}</td><td>${r.Gastos}</td><td>${r.Descuentos}</td>
+          <td>${r.Deuda}</td><td>${r.Estado}</td></tr>`;
+      });
+      html += '</table></div>';
+      limaDiv.innerHTML = html;
+    }).catch(() => {
+      limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas..</div>';
+    });
 
  resultadoSutran.textContent = 'Consultando infracciones SUTRAN...';
       resultadoSiniestro.textContent = 'Consultando siniestros SBS...';
@@ -642,34 +670,7 @@ fetch('/orden-captura', {
   resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
   console.error(err);
 });
-// SAT Lima
  
-  
-      fetch("/api/consultar-lima", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ placa })
-      }).then(res => res.json()).then(data => {
-        if (!data.success || !data.results?.length) {
-     limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</div>';
-          return;
-        }
- let html = '<h2>Resultados SAT Lima</h2><div class="tabla-responsive"><table><tr>' +
-        '<th>Placa</th><th>Reglamento</th><th>Falta</th><th>Documento</th>' +
-        '<th>Fecha</th><th>Importe</th><th>Gastos</th><th>Descuentos</th>' +
-        '<th>Deuda</th><th>Estado</th></tr>';
-      data.results.forEach(r => {
-        html += `<tr>
-          <td>${r.Placa}</td><td>${r.Reglamento}</td><td>${r.Falta}</td>
-          <td>${r.Documento}</td><td>${r.FechaInfraccion}</td>
-          <td>${r.Importe}</td><td>${r.Gastos}</td><td>${r.Descuentos}</td>
-          <td>${r.Deuda}</td><td>${r.Estado}</td></tr>`;
-      });
-      html += '</table></div>';
-      limaDiv.innerHTML = html;
-    }).catch(() => {
-      limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas..</div>';
-    });
       // SAT Callao
      fetch("/api/consultar-callao", {
       method: "POST",
@@ -822,7 +823,7 @@ Promise.allSettled(promesas);
       consultarSatProvincias(placa); // Tarapoto y Huancayo
       consultarATU(placa);
         
-      NProgress.done(); // 👉 Detenemos la barra cuando todo ha terminado
+      
   
 } 
 async function consultarInfogas(placa) {
@@ -1038,7 +1039,12 @@ function generarTablaProvincias(datos) {
 }
 async function consultarATU(placa) {
   const atuDiv = document.getElementById("resultado-atu");
-  atuDiv.innerHTML = `<h2>🚌 Consulta ATU<div class="mensaje-infoo"></h2><div class="loader"></div>`;
+  atuDiv.innerHTML = `<h2>🚌 Consulta ATU </h2><div class="tarjeta"><div class="loader"></div>`;
+ 
+
+
+
+
 
   try {
     const res = await fetch("/api/atu", {
@@ -1076,7 +1082,7 @@ async function consultarATU(placa) {
     atuDiv.innerHTML = `<h2>Consulta ATU</h2>${html}`;
 
   } catch (error) {
-    atuDiv.innerHTML = `<h2>Consulta ATU</h2><div class="mensaje-error">❌ Error al consultar ATU.</div>`;
+    atuDiv.innerHTML = `<h2>Consulta ATU</h2><div class="mensaje-error">ℹ️ Placa no registrada en ATU..</div>`;
   }
 }
 function cargarImagenBase64(url) {
