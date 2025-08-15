@@ -13,7 +13,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
  app.use(express.static("public"));
  app.use(express.urlencoded({ extended: false }));
- 
+ app.use(express.json());
  
  const { MercadoPagoConfig, Preference } = require("mercadopago");
  
@@ -280,10 +280,15 @@ app.post('/siniestro', async (req, res) => {
   try {
   const puppeteer = require("puppeteer");
 
- const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-});
+  const browser = await puppeteer.launch({
+    headless: true,               // No abre ventana gráfica
+    args: [
+      '--no-sandbox',             // Evita problemas de permisos en VPS
+      '--disable-gpu',            // Desactiva GPU
+      '--single-process',         // Usa solo un proceso de Chrome
+      '--disable-dev-shm-usage'   // Evita errores de memoria compartida
+    ]
+  });
 
     const page = await browser.newPage();
 
