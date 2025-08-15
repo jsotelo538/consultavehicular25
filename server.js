@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express(); 
- 
+const fs = require('fs'); 
 const puppeteer = require("puppeteer");
 const axios = require("axios");
  
@@ -9,7 +9,7 @@ const FormData = require("form-data");
  
 const bodyParser = require("body-parser");
   const API_KEY = 'd6fb31ad4bee4d576b69ceacc98c0b25';
-  
+ const API_KEY_2CAPTCHA = 'd6fb31ad4bee4d576b69ceacc98c0b25'; 
 app.use(bodyParser.json());
  app.use(express.static("public"));
  app.use(express.urlencoded({ extended: false }));
@@ -1006,7 +1006,7 @@ const browser = await puppeteer.launch({
 }
 async function consultarPapeletasHuanuco(placa) {
   const browser = await puppeteer.launch({
-  headless: true, // para evitar la advertencia de deprecated
+  headless: "new", // para evitar la advertencia de deprecated
    args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -1079,10 +1079,10 @@ const browser = await puppeteer.launch({
     await browser.close();
 
     if (!html || html.includes('no se encontraron')) {
-      return  `<h2>Resultados SAT Chachapoyas</h2><div class="mensaje-infoo">ℹ️ La placa  <strong>${placa}</strong> no tiene papeletas en Chachapoyas.</div>`;
+      return  `<h2>Resultados SAT Chachapoyas</h2><div class="mensaje-infoo">ℹ️ La placa  <strong>${placa}</strong> no tiene papeletas.</div>`;
     }
    
-    return  `<h2>Resultados SAT Chachapoyas</h2><div class="mensaje-infoo">ℹ️ La placa  <strong>${placa}</strong> no tiene papeletas en Chachapoyas.</div>`;
+    return  `<h2>Resultados SAT Chachapoyas</h2><div class="mensaje-infoo">ℹ️ La placa  <strong>${placa}</strong> no tiene papeletas.</div>`;
 
   } catch (error) {
     await browser.close();
@@ -1166,7 +1166,7 @@ async function consultarPapeletasPucallpa(placa) {
 
  async function consultarPapeletasCajamarca(placa) {
  const browser = await puppeteer.launch({
-  headless: true,
+  headless: "new",
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
@@ -1228,7 +1228,7 @@ async function consultarPapeletasPucallpa(placa) {
 }
 async function consultarPapeletasCusco(placa) {
 const browser = await puppeteer.launch({
-  headless: true,
+  headless: "new",
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 });
   const page = await browser.newPage();
@@ -1588,6 +1588,155 @@ const browser = await puppeteer.launch({
     res.status(500).json({ error: 'Falló la consulta', detalles: error.message });
   }
 });
+
+// ---------- RESOLVER CAPTCHA CON 2CAPTCHA ----------
+async function resolverCaptcha(imageBase64) {
+  const formData = new FormData();
+  formData.append("method", "base64");
+  formData.append("key", API_KEY_2CAPTCHA);
+  formData.append("body", imageBase64);
+  formData.append("json", 1);
+
+  const { data: response } = await axios.post("http://2captcha.com/in.php", formData, {
+    headers: formData.getHeaders(),
+  });
+
+  if (response.status !== 1) {
+    throw new Error("Error al enviar captcha a 2Captcha: " + response.request);
+  }
+
+  const captchaId = response.request;
+
+  for (let i = 0; i < 30; i++) {
+    await new Promise((r) => setTimeout(r, 5000));
+
+    const { data: res } = await axios.get(
+      `http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${captchaId}&json=1`
+    );
+
+    if (res.status === 1) {
+      return res.request.toUpperCase(); // Siempre en mayúscula
+    }
+
+    if (res.request === "ERROR_CAPTCHA_UNSOLVABLE") {
+      throw new Error("Captcha no resolvible");
+    }
+  }
+
+  throw new Error("Captcha no resuelto a tiempo");
+}
+
+// ---------- FUNCIÓN PRINCIPAL ----------
+async function consultarPapeletasTacna(placa) {
+  const puppeteer = require("puppeteer");
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
+});
+
+  try {
+    const page = await browser.newPage();
+    console.log("Abriendo página...");
+    await page.goto("https://www.munitacna.gob.pe/pagina/sf/servicios/papeletas", {
+      waitUntil: "networkidle2",
+      timeout: 60000,
+    });
+
+    await page.waitForSelector("#opcion", { visible: true });
+    await page.select("#opcion", "placa");
+    await page.type("#busca", placa);
+
+    // Esperar que el captcha cargue
+    await page.waitForSelector(".img-captcha", { visible: true });
+    await page.waitForFunction(() => {
+      const img = document.querySelector(".img-captcha");
+      return img && img.src && img.src.length > 50 && !img.src.includes("data:image/gif");
+    }, { timeout: 15000 });
+
+    // Capturar imagen en base64
+    const captchaElement = await page.$(".img-captcha");
+    await page.waitForTimeout(2000); // Espera extra por seguridad
+    const base64Captcha = await captchaElement.screenshot({ encoding: "base64" });
+
+    // Guardar para debug
+    fs.writeFileSync("captcha-tacna.png", Buffer.from(base64Captcha, "base64"));
+
+    // Resolver captcha
+    const captchaTexto = await resolverCaptcha(base64Captcha);
+    console.log("Captcha resuelto:", captchaTexto);
+    await page.type("#codigo", captchaTexto);
+
+    // Click en consultar
+    await page.click("button.btn-danger");
+
+    // Esperar resultados o mensaje
+    await page.waitForFunction(() => {
+      const tabla = document.querySelector(".table");
+      const sinDatos = document.querySelector("p");
+      return tabla || (sinDatos && sinDatos.innerText.toUpperCase().includes("NO SE ENCONTRARON DATOS"));
+    }, { timeout: 20000 });
+
+    // Extraer datos
+    const resultado = await page.evaluate(() => {
+      const tabla = document.querySelector(".table");
+      const mensaje = document.querySelector("p");
+
+      if (!tabla && mensaje && mensaje.innerText.toUpperCase().includes("NO SE ENCONTRARON DATOS")) {
+        return { mensaje: "No hay papeletas" };
+      }
+
+      if (tabla) {
+        const filas = Array.from(tabla.querySelectorAll("tbody tr"))
+          .filter(fila => fila.querySelectorAll("td").length > 1);
+
+        if (filas.length === 0) {
+          return { 
+  mensaje: '<h2>Resultados SAT Tacna</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</div>' 
+};
+        }
+
+        return filas.map(fila => {
+          const celdas = Array.from(fila.querySelectorAll("td")).map(td => td.innerText.trim());
+          return {
+            fecha: celdas[0] || "",
+            estado: celdas[1] || "",
+            numeroPapeleta: celdas[2] || "",
+            anio: celdas[3] || "",
+            codInfraccion: celdas[4] || "",
+            propietario: celdas[5] || "",
+            dniPropietario: celdas[6] || "",
+            infractor: celdas[7] || "",
+            dniInfractor: celdas[8] || "",
+            licencia: celdas[9] || "",
+            importe: celdas[10] || "",
+          };
+        });
+      }
+
+      return { mensaje: "No hay papeletas" };
+    });
+
+    return resultado;
+  } catch (err) {
+    throw new Error("Error en el proceso: " + err.message);
+  } finally {
+    await browser.close();
+  }
+}
+
+// ---------- RUTA DE API ----------
+app.post("/consultartacna", async (req, res) => {
+  const { placa } = req.body;
+  if (!placa) return res.status(400).json({ error: "Placa requerida" });
+
+  try {
+    const resultado = await consultarPapeletasTacna(placa);
+    return res.json(resultado);
+  } catch (err) {
+    return res.status(500).json({ error: "Error al consultar: " + err.message });
+  }
+});
+
 
 // --------- RUTAS API ---------
 

@@ -455,6 +455,8 @@ th {
     from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
     to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
+
+  
   </style>
 </head>
 <body>
@@ -509,11 +511,12 @@ th {
     <div id="resultado-infogas" class="section"></div>
      <div id="resultado-lima" class="section"></div>
     <div id="resultado-callao" class="section"></div>
-   <div id="resultado-piura" class="section"></div>
+    
     <div id="resultado-huancayo" class="section"></div>
     <div id="resultado-tarapoto" class="section"></div>
-     <div id="resultado" class="section"></div>
-    
+     <div id="resultado-tacna" class="section"></div> <!-- NUEVA SECCIÓN -->  
+    <div id="resultado" class="section"></div>
+     
   </div>
   
   <div class="footer">
@@ -549,7 +552,7 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
       const resultadoSutran = document.getElementById('resultadoSutran');
       const resultadoSiniestro = document.getElementById('resultadoSiniestro');
     const piuraDiv = document.getElementById('resultado-piura');
-         
+     
   
       const callaoDiv = document.getElementById("resultado-callao");
         const resultado = document.getElementById('resultado');
@@ -557,6 +560,9 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
         limaDiv.innerHTML = '<h2>Resultados SAT Lima</h2><div class=" mensaje-infoo"><div class="loader"></div></div>';
     callaoDiv.innerHTML = '<h2>Resultados SAT Callao</h2><div class=" mensaje-infoo"><div class="loader"></div></div>';
    
+ // SAT tacna
+
+
       // SAT Lima
  
   
@@ -703,7 +709,7 @@ fetch('/orden-captura', {
     });
  
 
-  
+ 
 
      piuraDiv.innerHTML = '<h2>Resultados SAT Piura</h2><div class="mensaje-infoo"><div class="loader"></div></div>';
 
@@ -788,7 +794,7 @@ const promesas = endpoints.map(endpoint =>
   const contenedor = contenedores[endpoint.ciudad];
 
   if (data.tienePapeletas === false) {
-    contenedor.innerHTML = `<h2>Resultados SAT ${endpoint.ciudad}</h2><div class="mensaje-infoo">ℹ️ No tiene papeletas registradas.</p>`;
+    contenedor.innerHTML = `<h2>Resultados SAT ${endpoint.ciudad}</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</p>`;
   } else if (data.tienePapeletas === true) {
     contenedor.innerHTML = `<h2>${endpoint.ciudad}</h2><p style="color: red;">🚨 Tiene papeletas registradas.</p>`;
   } else if (data.html) {
@@ -797,7 +803,7 @@ const promesas = endpoints.map(endpoint =>
       data.html.includes("No hay papeletas") ||
       data.html.includes("no se encontraron resultados")
     ) {
-      contenedor.innerHTML = `<h2>Resultados SAT  ${endpoint.ciudad}</h2><div class="mensaje-infoo">ℹ️ No tiene papeletas registradas.</p>`;
+      contenedor.innerHTML = `<h2>Resultados SAT  ${endpoint.ciudad}</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</p>`;
     } else {
       contenedor.innerHTML = `${data.html}`;
     } 
@@ -822,8 +828,8 @@ Promise.allSettled(promesas);
      
       consultarSatProvincias(placa); // Tarapoto y Huancayo
       consultarATU(placa);
+         consultarTacna(placa);
         
-      
   
 } 
 async function consultarInfogas(placa) {
@@ -867,6 +873,71 @@ async function consultarInfogas(placa) {
     `;
   } catch (error) {
     infogasDiv.innerHTML = `<h2>⛽ Infogas GNV.</h2><div class="mensaje-infoo"> No se encontraron informacion en Infogas..</div>`;
+  }
+}
+
+ async function consultarTacna(placa) {
+  const resultadoDiv = document.getElementById("resultado-tacna");
+ 
+  resultadoDiv.innerHTML = `<h2> Tacna</h2><div class="tarjeta"><div class="loader"></div></div>`;
+
+  try {
+    const res = await fetch("/consultartacna", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ placa }),
+    });
+    const data = await res.json();
+
+    if (data.mensaje) {
+      resultadoDiv.innerHTML = `<p>${data.mensaje}</p>`;
+    } else if (Array.isArray(data) && data.length > 0) {
+      let tablaHTML = `'<h2>Resultados SAT Tacna</h2> ' +
+        <table border="1" cellspacing="0" cellpadding="5">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>N° Papeleta</th>
+              <th>Año</th>
+              <th>Cód. Infracción</th>
+              <th>Propietario</th>
+              <th>DNI Prop.</th>
+              <th>Infractor</th>
+              <th>DNI Infr.</th>
+              <th>Licencia</th>
+              <th>Importe</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+      data.forEach(p => {
+        tablaHTML += `
+          <tr>
+            <td>${p.fecha}</td>
+            <td>${p.estado}</td>
+            <td>${p.numeroPapeleta}</td>
+            <td>${p.anio}</td>
+            <td>${p.codInfraccion}</td>
+            <td>${p.propietario}</td>
+            <td>${p.dniPropietario}</td>
+            <td>${p.infractor}</td>
+            <td>${p.dniInfractor}</td>
+            <td>${p.licencia}</td>
+            <td>${p.importe}</td>
+          </tr>`;
+      });
+
+      tablaHTML += `</tbody></table>`;
+      resultadoDiv.innerHTML = `
+         
+        <div class="tabla-responsive">${tablaHTML}</div>
+      `;
+    } else {
+      resultadoDiv.innerHTML = '<h2>Resultados SAT Tacna</h2><div class="mensaje-infoo">ℹ️ No se encontraron papeletas.</div>';
+    }
+  } catch (error) {
+    resultadoDiv.innerHTML = `<p style="color:red">❌ Error al consultar: ${error.message}</p>`;
   }
 }
   async function consultarSOATyVehiculo(placa) {
@@ -1041,11 +1112,6 @@ async function consultarATU(placa) {
   const atuDiv = document.getElementById("resultado-atu");
   atuDiv.innerHTML = `<h2>🚌 Consulta ATU </h2><div class="tarjeta"><div class="loader"></div>`;
  
-
-
-
-
-
   try {
     const res = await fetch("/api/atu", {
       method: "POST",
