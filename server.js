@@ -281,7 +281,7 @@ app.post('/siniestro', async (req, res) => {
   const puppeteer = require("puppeteer");
 
    const browser = await puppeteer.launch({
-  headless: true, // para evitar la advertencia de deprecated
+  headless: "new", // para evitar la advertencia de deprecated
   args: ["--no-sandbox", "--disable-setuid-sandbox"]
 });
 
@@ -1010,7 +1010,7 @@ async function consultarPapeletasHuanuco(placa) {
    args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    
+    "--ignore-certificate-errors" // Ignorar errores SSL
   ]
 });
 
@@ -1166,15 +1166,13 @@ async function consultarPapeletasPucallpa(placa) {
 
  async function consultarPapeletasCajamarca(placa) {
  const browser = await puppeteer.launch({
-  headless: true,
+  headless: "new",
   args: ['--no-sandbox', '--disable-setuid-sandbox']
-
 });
   const page = await browser.newPage();
 
   try {
-    await page.goto('http://www.satcajamarca.gob.pe/consultas', { waitUntil: 'domcontentloaded',  timeout: 30000,
-  ignoreHTTPSErrors: true   });
+    await page.goto('https://www.satcajamarca.gob.pe/consultas', { waitUntil: 'networkidle2' });
 
     await page.click('a[href="#menu1"]');
     await page.waitForSelector('#opcion_busqueda_record');
