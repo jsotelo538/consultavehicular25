@@ -511,7 +511,7 @@ th {
     <div id="resultado-infogas" class="section"></div>
      <div id="resultado-lima" class="section"></div>
     <div id="resultado-callao" class="section"></div>
-   <div id="resultado-piura" class="section"></div>
+ 
     <div id="resultado-huancayo" class="section"></div>
     <div id="resultado-tarapoto" class="section"></div>
      <div id="resultado-tacna" class="section"></div> <!-- NUEVA SECCIÓN -->  
@@ -551,7 +551,7 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
          const limaDiv = document.getElementById("resultado-lima");
       const resultadoSutran = document.getElementById('resultadoSutran');
       const resultadoSiniestro = document.getElementById('resultadoSiniestro');
-    const piuraDiv = document.getElementById('resultado-piura');
+  
      
   
       const callaoDiv = document.getElementById("resultado-callao");
@@ -711,40 +711,7 @@ fetch('/orden-captura', {
 
  
 
-     piuraDiv.innerHTML = '<h2>Resultados SAT Piura</h2><div class="mensaje-infoo"><div class="loader"></div></div>';
-
-fetch('/consultarpiura', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ placa })
-})
-.then(res => res.json())
-.then(data => {
-  if (data.error) {
-    piuraDiv.innerHTML = `<h2>Resultados SAT Piura</h2><div class="mensaje-error">${data.error}</div>`;
-    return;
-  }
-
-  if (data.sinPapeletas) {
-    piuraDiv.innerHTML = `<h2>Resultados SAT Piura</h2><div class="mensaje-infoo">${data.data}</div>`;
-    return;
-  }
-
-  const encabezados = data.data[0];
-  const filas = data.data.slice(1);
-
-  let tabla = `<h2>Resultados SAT Piura</h2><div class="table-responsive"><table><thead><tr>${encabezados.map(e => `<th>${e}</th>`).join('')}</tr></thead><tbody>`;
-  filas.forEach(fila => {
-    tabla += `<tr>${fila.map(d => `<td>${d}</td>`).join('')}</tr>`;
-  });
-  tabla += `</tbody></table></div>`;
-
-  piuraDiv.innerHTML = tabla;
-})
-.catch(err => {
-  console.error('Error en consulta Piura:', err);
-  piuraDiv.innerHTML = `<h2>Resultados SAT Piura</h2><div class="mensaje-error">❌ Error al consultar Piura.</div>`;
-}); 
+    
 
 
       resultado.innerHTML = 'Consultando...';
