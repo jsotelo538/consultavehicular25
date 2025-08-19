@@ -280,15 +280,10 @@ app.post('/siniestro', async (req, res) => {
   try {
   const puppeteer = require("puppeteer");
 
-  const browser = await puppeteer.launch({
-    headless: true,               // No abre ventana gráfica
-    args: [
-      '--no-sandbox',             // Evita problemas de permisos en VPS
-      '--disable-gpu',            // Desactiva GPU
-      '--single-process',         // Usa solo un proceso de Chrome
-      '--disable-dev-shm-usage'   // Evita errores de memoria compartida
-    ]
-  });
+   const browser = await puppeteer.launch({
+  headless: "new", // para evitar la advertencia de deprecated
+  args: ["--no-sandbox", "--disable-setuid-sandbox"]
+});
 
     const page = await browser.newPage();
 
@@ -1803,6 +1798,6 @@ const browser = await puppeteer.launch({
  
 // --------- INICIO ---------
 const PORT = process.env.PORT || 3000;
-app.listen(3000, '0.0.0.0', () => {
-  console.log('Servidor activo en http://0.0.0.0:3000');
+app.listen(PORT, () => {
+  console.log(`Servidor activo en http://localhost:${PORT}`);
 });
