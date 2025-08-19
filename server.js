@@ -1168,11 +1168,13 @@ async function consultarPapeletasPucallpa(placa) {
  const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox']
+
 });
   const page = await browser.newPage();
 
   try {
-    await page.goto('https://www.satcajamarca.gob.pe/consultas', { waitUntil: 'domcontentloaded' });
+    await page.goto('https://www.satcajamarca.gob.pe/consultas', { waitUntil: 'domcontentloaded',  timeout: 30000,
+  ignoreHTTPSErrors: true   });
 
     await page.click('a[href="#menu1"]');
     await page.waitForSelector('#opcion_busqueda_record');
