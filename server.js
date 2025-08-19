@@ -1172,7 +1172,11 @@ async function consultarPapeletasPucallpa(placa) {
   const page = await browser.newPage();
 
   try {
-    await page.goto('https://www.satcajamarca.gob.pe/consultas', { waitUntil: 'networkidle2' });
+    await page.goto('https://www.satcajamarca.gob.pe/consultas', {
+      waitUntil: 'domcontentloaded',
+       timeout: 30000,
+  ignoreHTTPSErrors: true // Ignorar errores SSL en la navegación
+    });
 
     await page.click('a[href="#menu1"]');
     await page.waitForSelector('#opcion_busqueda_record');
