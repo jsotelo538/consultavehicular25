@@ -1005,12 +1005,15 @@ const browser = await puppeteer.launch({
   }
 }
 async function consultarPapeletasHuanuco(placa) {
-  const browser = await puppeteer.launch({
-  headless: true, // para evitar la advertencia de deprecated
-   args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--ignore-certificate-errors" // Ignorar errores SSL
+const browser = await puppeteer.launch({
+  headless: "new",
+  executablePath: '/usr/bin/chromium-browser',
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+    '--window-size=1920,1080'
   ]
 });
 
