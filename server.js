@@ -1005,15 +1005,12 @@ const browser = await puppeteer.launch({
   }
 }
 async function consultarPapeletasHuanuco(placa) {
-const browser = await puppeteer.launch({
-  headless: "new",
-  executablePath: '/usr/bin/chromium-browser',
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-gpu',
-    '--window-size=1920,1080'
+  const browser = await puppeteer.launch({
+  headless: true, // para evitar la advertencia de deprecated
+   args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--ignore-certificate-errors" // Ignorar errores SSL
   ]
 });
 
@@ -1167,36 +1164,24 @@ async function consultarPapeletasPucallpa(placa) {
 }
 }
 
-async function consultarPapeletasCajamarca(placa) {
-  let browser;
+ async function consultarPapeletasCajamarca(placa) {
+ const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox'  ]
+});
+  const page = await browser.newPage();
+
   try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    await page.goto('https://www.satcajamarca.gob.pe/consultas', { waitUntil: 'networkidle2' });
 
-    const page = await browser.newPage();
-
-    // Logs de debug (para ver qué pasa en el VPS)
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-    page.on('response', resp => console.log('RESPONSE:', resp.url(), resp.status()));
-
-    // Ir a la página con más tiempo de espera
-    await page.goto('https://www.satcajamarca.gob.pe/consultas', {
-      waitUntil: 'networkidle2',
-      timeout: 60000
-    });
-
-    // Interacción con la página
     await page.click('a[href="#menu1"]');
-    await page.waitForSelector('#opcion_busqueda_record', { timeout: 20000 });
+    await page.waitForSelector('#opcion_busqueda_record');
     await page.select('#opcion_busqueda_record', '2');
 
     await page.type('input.form-control.form-control-lg', placa);
     await page.click('button.action-button');
 
-    // Esperar tabla de resultados
-    await page.waitForSelector('table.table', { timeout: 20000 });
+    await page.waitForSelector('table.table', { timeout: 10000 });
 
     const datos = await page.evaluate(() => {
       const filas = Array.from(document.querySelectorAll('table tbody tr'));
@@ -1215,11 +1200,12 @@ async function consultarPapeletasCajamarca(placa) {
       }).filter(p => p.papeleta && p.papeleta.trim() !== '' && p.papeleta.trim().toLowerCase() !== '0.00');
     });
 
+    await browser.close();
+
     if (!datos.length) {
       return `<p style="color:green;"><strong>✅ No hay papeletas registradas para la placa ${placa} en Cajamarca.</strong></p>`;
     }
 
-    // Construir tabla HTML
     let tabla = `<h3>Papeletas Cajamarca - Placa ${placa}</h3><table><thead>
     <tr><th>Item</th><th>Papeleta</th><th>Fecha</th><th>Código</th>
     <th>Conductor</th><th>Infracción</th><th>Importe</th><th>Estado</th></tr>
@@ -1236,11 +1222,8 @@ async function consultarPapeletasCajamarca(placa) {
     return tabla;
 
   } catch (error) {
+    await browser.close();
     return `<p style="color:red;">❌ Error Cajamarca: ${error.message}</p>`;
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
   }
 }
 async function consultarPapeletasCusco(placa) {
