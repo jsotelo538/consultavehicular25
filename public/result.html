@@ -1,6 +1,6 @@
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
@@ -455,8 +455,8 @@ th {
     from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
     to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
-
-  
+  /* pdf provincia */
+ 
   </style>
 </head>
 <body>
@@ -1132,43 +1132,61 @@ async function descargarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-  // Logo
-  const logoUrl = "principal.png";
-  const logo = new Image();
-  logo.src = logoUrl;
-  await new Promise(resolve => logo.onload = resolve);
+  let y = 20;
 
-  doc.addImage(logo, "PNG", 15, 10, 30, 20);
+  // -------- Logo y encabezado ----------
+  const logo = new Image();
+  logo.src = "principal.png";
+  await new Promise(resolve => logo.onload = resolve);
+  doc.addImage(logo, "PNG", 15, y, 30, 20);
+  y += 25;
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.setTextColor(33, 37, 41); // Gris oscuro
-  doc.text("Consulta Vehicular Integral", 105, 20, null, null, "center");
+  doc.setTextColor(33, 37, 41);
+  doc.text("Consulta Vehicular Integral", 105, y, null, null, "center");
+  y += 8;
 
   const fecha = new Date().toLocaleString("es-PE");
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(100);
-  doc.text(`Fecha de consulta: ${fecha}`, 105, 27, null, null, "center");
+  doc.text(`Fecha de consulta: ${fecha}`, 105, y, null, null, "center");
+  y += 5;
 
   doc.setLineWidth(0.3);
   doc.setDrawColor(180);
-  doc.line(10, 32, 200, 32);
+  doc.line(10, y, 200, y);
+  y += 10;
 
-  let y = 40;
-
+  // -------- Funciones internas ----------
   function limpiarTexto(texto) {
     return texto
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/<\/?[^>]+(>|$)/g, "")
-      .replace(/[^\x20-\x7E\n\r]/g, "");
+      .replace(/[^\x20-\x7E\n\r]/g, "")
+      .trim();
+  }
+
+  async function cargarImagenComoBase64(url) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      console.error("Error cargando imagen:", e);
+      return null;
+    }
   }
 
   async function agregarSeccion(titulo, elementoHTML, color = [245, 245, 245]) {
-    const textoPlano = limpiarTexto(elementoHTML.innerHTML.trim());
+    if (!elementoHTML) return;
+    const textoPlano = limpiarTexto(elementoHTML.innerText);
     if (!textoPlano) return;
 
-    // Título de sección
     doc.setFillColor(...color);
     doc.setDrawColor(220);
     doc.roundedRect(10, y, 190, 10, 2, 2, "F");
@@ -1196,6 +1214,7 @@ async function descargarPDF() {
       y += 6;
     }
 
+    // Imágenes dentro
     const imgTag = elementoHTML.querySelector("img");
     if (imgTag) {
       const imgData = await cargarImagenComoBase64(imgTag.src);
@@ -1209,28 +1228,61 @@ async function descargarPDF() {
       }
     }
 
-    // Borde externo de sección
+    // Borde externo
     doc.setDrawColor(220);
     doc.roundedRect(10, startY - 14, 190, y - startY + 24, 2, 2, "S");
 
     y += 10;
   }
 
-  async function cargarImagenComoBase64(url) {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      return await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-    } catch (e) {
-      console.error("Error cargando imagen:", e);
-      return null;
-    }
+  // -------- Función para provincias ----------
+  async function agregarCiudad(ciudad, texto) {
+  if (!texto) return;
+
+  // Limpiar caracteres raros (ahora permite UTF-8 completo con tildes y ñ)
+  texto = texto
+    .normalize("NFC")
+    .replace(/[^\wÁÉÍÓÚáéíóúÑñ.,:;¡!¿?\s-]/g, "")
+    .trim();
+
+  const lineas = doc.splitTextToSize(texto, 180);
+  const alturaLinea = 6;
+  const padding = 4;
+  const alturaTarjeta = lineas.length * alturaLinea + padding * 2;
+
+  if (y + alturaTarjeta > 280) {
+    doc.addPage();
+    y = 20;
   }
 
+  // 🔵 Ahora solo azul/gris, nunca rojo
+  let color = (ciudad.length % 2 === 0) ? [235, 245, 255] : [245, 245, 245]; // azul muy clarito
+  // si quieres alternar entre gris y azul, puedes usar algo así:
+   
+  doc.setFillColor(...color);
+  doc.setDrawColor(200);
+  doc.roundedRect(10, y, 190, alturaTarjeta, 2, 2, "FD");
+
+  // Subtítulo ciudad
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.setTextColor(0, 102, 204);
+  doc.text(`📍 ${ciudad}`, 15, y + 6);
+
+  // Texto de contenido
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(33, 37, 41);
+
+  let textY = y + 12;
+  for (const line of lineas) {
+    doc.text(line, 15, textY);
+    textY += alturaLinea;
+  }
+
+  y += alturaTarjeta + 6;
+}
+  // -------- Secciones fijas ----------
   const secciones = [
     { titulo: "SOAT", id: "soat-info", color: [230, 245, 255] },
     { titulo: "Datos del Vehículo", id: "vehiculo-info", color: [240, 250, 255] },
@@ -1242,29 +1294,48 @@ async function descargarPDF() {
     { titulo: "Revisión Técnica MTC", id: "resultado-revision", color: [235, 245, 255] },
     { titulo: "Infogas GNV", id: "resultado-infogas", color: [240, 250, 255] },
     { titulo: "Resultados SBS (Siniestros)", id: "resultadoSiniestro", color: [240, 250, 255] },
-        { titulo: " Resultados SUTRAN", id: "resultadoSutran", color: [240, 250, 255] },
-     { titulo: " Resultados SAT Órdenes de Captura(Gravamen)", id: "resultadoOrdenCaptura", color: [240, 250, 255] },
+    { titulo: "Resultados SUTRAN", id: "resultadoSutran", color: [240, 250, 255] },
+    { titulo: "Resultados SAT Órdenes de Captura (Gravamen)", id: "resultadoOrdenCaptura", color: [240, 250, 255] },
+    { titulo: "Resultados SAT Piura", id: "resultado-piura", color: [240, 250, 255] },
+    { titulo: "Resultados SAT Tacna", id: "resultado-tacna", color: [240, 250, 255] },
      
-     { titulo: " Resultados SAT Piura", id: "resultado-piura", color: [240, 250, 255] },
-       { titulo: " Resultados SAT Provincia", id: "resultado", color: [240, 250, 255] },
- 
-    ];
+  ];
 
   for (const s of secciones) {
     const el = document.getElementById(s.id);
     if (el) await agregarSeccion(s.titulo, el, s.color);
   }
+// -------- Procesar provincias --------
+const resultadoDiv = document.getElementById("resultado");
+if (resultadoDiv) {
+  const hijos = resultadoDiv.querySelectorAll(".result-box"); // cada provincia que creaste en tu fetch
+  for (const box of hijos) {
+    const titulo = box.querySelector("h2")?.innerText.trim() || "Provincia";
 
+    // Clonar contenido SIN el h2
+    let texto = "";
+    box.childNodes.forEach((nodo) => {
+      if (!(nodo.tagName && nodo.tagName.toLowerCase() === "h2")) {
+        texto += nodo.innerText ? nodo.innerText.trim() + "\n" : "";
+      }
+    });
+
+    // 🔹 Limpieza extra
+    texto = texto
+      .normalize("NFC")
+      .replace(/^[^a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ]+/, "") // 🚀 borra cualquier cosa rara al inicio
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, "") // borra caracteres invisibles
+      .trim();
+
+    // Eliminar espacios múltiples y normalizar saltos de línea
+    texto = texto.replace(/\s{2,}/g, " ").replace(/\n{2,}/g, "\n");
+
+    await agregarCiudad(titulo, texto);
+  }
+}
+  // -------- Descargar PDF ----------
   doc.save("consulta-vehicular.pdf");
 }
-
-
-  
-
-   
-  
-   
-
   window.addEventListener("error", function (e) {
     console.error("👉 Error atrapado:", e.error);
   });
