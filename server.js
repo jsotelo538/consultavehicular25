@@ -4,7 +4,7 @@ const app = express();
 const fs = require('fs'); 
 const puppeteer = require("puppeteer");
 const axios = require("axios");
- 
+const cors = require("cors"); 
 const FormData = require("form-data");
  
 const bodyParser = require("body-parser");
@@ -52,9 +52,423 @@ app.use(bodyParser.json());
     }
   });
   
+
+// --------- PROPIETARIOS ---------
+async function reesolverCaptcha(base64) {
+  const formData = new URLSearchParams();
+  formData.append("method", "base64");
+  formData.append("key", API_KEY_2CAPTCHA);
+  formData.append("body", base64);
+
+  let res = await axios.post("http://2captcha.com/in.php", formData);
+  const captchaId = res.data.split("|")[1];
+
+  let captchaText = "";
+  for (let i = 0; i < 20; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+    let check = await axios.get(
+      `http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${captchaId}`
+    );
+    if (check.data.includes("OK")) {
+      captchaText = check.data.split("|")[1];
+      break;
+    }
+  }
+  return captchaText;
+}
+
+async function obtenerAsientos(placa, ciudad) {
+   const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+  const page = await browser.newPage();
+
+  // 1. Ir al portal
+  await page.goto("https://sprl.sunarp.gob.pe/sprl/ingreso?", {
+    waitUntil: "networkidle2"
+  });
+
+  // 2. Click en el botón inicial "INGRESAR"
+  await page.click("button.login-form-button");
+  await page.waitForSelector('form#l-login input[name="username"]');
+
+  // 3. Login
+  await page.type('form#l-login input[name="username"]', "ISRAEL1234");
+  await page.type('form#l-login input[name="password"]', "israelsq03");
+  await Promise.all([
+    page.click('form#l-login button.btn[type="submit"]'),
+    page.waitForNavigation({ waitUntil: "networkidle2" })
+  ]);
+
+  // 4. Seleccionar ciudad
+  await page.click(".ant-select");
+  await page.waitForSelector(".ant-select-item-option");
+  await page.evaluate((ciudad) => {
+    const opciones = [...document.querySelectorAll(".ant-select-item-option")];
+    const target = opciones.find(opt => opt.innerText.includes(ciudad));
+    if (target) target.click();
+  }, ciudad);
+
+  // 5. Seleccionar área registral
+  await new Promise(r => setTimeout(r, 1000));
+  await page.click(".area_registral .ant-select");
+  await page.waitForSelector(".ant-select-item-option");
+  await page.evaluate(() => {
+    const opciones = [...document.querySelectorAll(".ant-select-item-option")];
+    const vehicular = opciones.find(opt => opt.innerText.includes("Propiedad Vehicular"));
+    if (vehicular) vehicular.click();
+  });
+
+  // 6. Ingresar placa
+  await page.type("#numero", placa);
+
+  // 7. Resolver captcha
+  const captchaElement = await page.$("img.img-captcha");
+  const captchaBase64 = await captchaElement.screenshot({ encoding: "base64" });
+  const captchaTexto = await reesolverCaptcha(captchaBase64);
+  await page.type("input#codigoCaptcha", captchaTexto);
+
+  // 8. Buscar
+  const botones = await page.$$('button.ant-btn-primary');
+  for (const b of botones) {
+    const texto = await page.evaluate(el => el.innerText, b);
+    if (texto.includes("Buscar")) {
+      await b.click();
+      break;
+    }
+  }
+
+  await page.waitForSelector('table', { timeout: 20000 });
+
+  // 9. Abrir asientos
+  const botoness = await page.$$('button.centradoOpciones.ant-btn-primary');
+  const botonCorrecto = botoness[botoness.length - 4];
+  await page.evaluate(el => el.click(), botonCorrecto);
+
+  await page.waitForSelector('.ant-drawer-body .ant-table', { timeout: 20000 });
+  await new Promise(r => setTimeout(r, 2000));
+
+  // 10. Extraer datos principales
+  const resultado = await page.evaluate(() => {
+    // Cabecera
+    const header = {};
+    const thead = document.querySelector(".ant-drawer-body .ant-table thead");
+    if (thead) {
+      const textNodes = [...thead.querySelectorAll("tr")].map(tr => tr.innerText.trim());
+      header.orden = textNodes[0] || "";
+      header.partida = textNodes[1] || "";
+      header.paginas = textNodes[2] || "";
+    }
+
+    // Filas de asientos
+    const filas = [...document.querySelectorAll('.ant-drawer-body .ant-table tbody tr')];
+    const asientos = filas.map(fila => {
+      const celdas = fila.innerText.split("\n").map(txt => txt.trim());
+      return {
+        titulo: celdas[0]?.replace(/^Titulo[:.]?/i, "").trim() || "",
+        nroAsiento: celdas[1]?.replace(/^Nro\.? Asiento[:.]?/i, "").trim() || "",
+        acto: celdas[2]?.replace(/^Acto[:.]?/i, "").trim() || "",
+        anio: celdas[3]?.replace(/^Año[:.]?/i, "").trim() || "",
+        paginas: celdas.slice(4).map(p => p.replace(/^Páginas?[:.]?/i, "").trim())
+      };
+    });
+
+    return { header, asientos };
+  });
+
+const filas = await page.$$('.ant-table tbody tr');
+const total = resultado.asientos.length; // ✅ número de asientos existentes
+
+for (let i = 0; i < filas.length; i++) {
+  const fila = filas[i];
+
+  const icono = await fila.$('.anticon-fund');
+  if (!icono) continue;
+
+  await fila.evaluate(el => el.scrollIntoView({ block: 'center' }));
+
+  const prevCount = await page.$$eval('.ant-modal', els => els.length);
+  await icono.evaluate(el => el.click());
+
+  await page.waitForFunction((cnt) => {
+    return document.querySelectorAll('.ant-modal').length > cnt;
+  }, { timeout: 15000 }, prevCount);
+
+  const detalles = await page.evaluate(() => {
+    const modals = document.querySelectorAll('.ant-modal');
+    const modal = modals[modals.length - 1];
+    const info = {};
+    if (!modal) return info;
+
+    const rows = modal.querySelectorAll('table tr');
+    rows.forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds.length >= 2) {
+        const key = tds[0].innerText.replace(/:\s*$/, '').trim();
+        const val = tds[1].innerText.trim();
+        info[key] = val;
+      }
+    });
+    return info;
+  });
+
+  // ✅ Añadimos detalles al asiento correspondiente
+  if (resultado.asientos[i-2]) {
+    resultado.asientos[i-2].detalles = detalles;
+  }
+
+  await page.evaluate(() => {
+    const modals = document.querySelectorAll('.ant-modal');
+    const modal = modals[modals.length - 1];
+    const btnClose = modal?.querySelector('.ant-modal-close');
+    btnClose?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+
+  await page.waitForFunction((cnt) => {
+    return document.querySelectorAll('.ant-modal').length === cnt;
+  }, { timeout: 15000 }, prevCount);
+
+  await new Promise(r => setTimeout(r, 300));
+}
+  await browser.close();
+  return resultado;
+}
+
+// Endpoint
+app.post("/api/asientos", async (req, res) => {
+  const { placa, ciudad } = req.body;
+  if (!placa || !ciudad) {
+    return res.status(400).json({ error: "Faltan datos: placa o ciudad" });
+  }
+
+  try {
+    const data = await obtenerAsientos(placa, ciudad);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error al obtener asientos");
+  }
+});
+
+ // --------- PAPELETAS AREQUIPA ---------
+
+ app.post("/consultar-arequipa", async (req, res) => {
+   const { placa } = req.body;
  
+   try {
+     const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+     const page = await browser.newPage();
+ 
+     await page.goto("https://www.muniarequipa.gob.pe/oficina-virtual/c0nInfrPermisos/faltas/papeletas.php", {
+       waitUntil: "networkidle2"
+     });
+ 
+     // Ingresar la placa
+     await page.type("#placa", placa);
+ 
+     // Resolver reCAPTCHA con 2Captcha
+     const sitekey = "6LedyH4rAAAAAK05k6YcBRA18_kYqVDKS_1ar06o";
+     const url = page.url();
+ 
+     const captchaId = await axios.get(
+       `http://2captcha.com/in.php?key=${API_KEY_2CAPTCHA}&method=userrecaptcha&googlekey=${sitekey}&pageurl=${url}&json=1`
+     );
+     const requestId = captchaId.data.request;
+ 
+     let captchaCode = null;
+     for (let i = 0; i < 20; i++) {
+       await new Promise(r => setTimeout(r, 5000));
+       const resCaptcha = await axios.get(
+         `http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${requestId}&json=1`
+       );
+       if (resCaptcha.data.status === 1) {
+         captchaCode = resCaptcha.data.request;
+         break;
+       }
+     }
+ 
+     if (!captchaCode) throw new Error("No se pudo resolver el captcha");
+ 
+     // Insertar token en el reCAPTCHA
+     await page.evaluate(`document.getElementById("g-recaptcha-response").style.display = "block"`);
+     await page.evaluate(`document.getElementById("g-recaptcha-response").value = "${captchaCode}"`);
+ 
+     // Clic en consultar
+     await page.click("#btnConsultar");
+ 
+     // Esperar la tabla o fallar rápido si no aparece
+     let datos = null;
+     try {
+       await page.waitForSelector(".col-md-12.table-responsive table", { timeout: 8000 }); // ⏳ max 8s
+       datos = await page.evaluate(() => {
+         const contenedor = document.querySelector(".col-md-12.table-responsive");
+         if (!contenedor) return null;
+ 
+         const encabezados = [...contenedor.querySelectorAll("thead th")].map(th =>
+           th.innerText.trim()
+         );
+ 
+         const filas = [...contenedor.querySelectorAll("tbody tr")].map(tr =>
+           [...tr.querySelectorAll("td")].map(td => td.innerText.trim())
+         );
+ 
+         return { encabezados, filas };
+       });
+     } catch (e) {
+       // No apareció la tabla en el tiempo dado
+       await browser.close();
+       return res.json({ exito: false, mensaje: "No se encontraron papeletas" });
+     }
+ 
+     await browser.close();
+ 
+     if (!datos || datos.filas.length === 0) {
+       res.json({ exito: false, mensaje: "No se encontraron papeletas" });
+     } else {
+       res.json({ exito: true, encabezados: datos.encabezados, resultados: datos.filas });
+     }
+   } catch (err) {
+     console.error(err);
+     res.status(500).json({ error: "Error al consultar" });
+   }
+ });
+// --------- IMpuesto vehicular ---------
+ 
+async function resolverRecaptcha(page, sitekey, url) {
+  console.log("📡 Enviando captcha a 2Captcha...");
+  const res = await axios.post("http://2captcha.com/in.php", null, {
+    params: {
+      key: API_KEY_2CAPTCHA,
+      method: "userrecaptcha",
+      googlekey: sitekey,
+      pageurl: url,
+      json: 1,
+    },
+  });
+
+  if (res.data.status !== 1) throw new Error("❌ Error enviando captcha");
+
+  const requestId = res.data.request;
+  console.log("✅ Captcha enviado. ID:", requestId);
+
+  let respuesta;
+  for (let i = 0; i < 20; i++) {
+    console.log(`⏳ Esperando respuesta captcha... intento ${i + 1}`);
+    await new Promise(r => setTimeout(r, 5000));
+
+    const resCheck = await axios.get("http://2captcha.com/res.php", {
+      params: {
+        key: API_KEY_2CAPTCHA,
+        action: "get",
+        id: requestId,
+        json: 1,
+      },
+    });
+
+    if (resCheck.data.status === 1) {
+      respuesta = resCheck.data.request;
+      console.log("🎉 Captcha resuelto:", respuesta.substring(0, 30) + "...");
+      break;
+    }
+  }
+
+  if (!respuesta) throw new Error("❌ No se resolvió el captcha a tiempo");
+
+  await page.evaluate(
+    `document.getElementById("g-recaptcha-response").value="${respuesta}";`
+  );
+}
+
+app.post("/consultarr", async (req, res) => {
+  const { placa } = req.body;
+  console.log("🔍 Consultando placa:", placa);
+
+   const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+  const page = await browser.newPage();
+
+  console.log("🌐 Abriendo SAT...");
+  await page.goto("https://www.sat.gob.pe/pagosenlinea/", {
+    waitUntil: "networkidle2",
+  });
+
+  // Seleccionar búsqueda por placa
+  await page.select("#strTipDoc", "3");
+  await page.type("#strNumDoc", placa);
+
+  // Resolver captcha
+  await resolverRecaptcha(
+    page,
+    "6Ldy_wsTAAAAAGYM08RRQAMvF96g9O_SNQ9_hFIJ",
+    "https://www.sat.gob.pe/pagosenlinea/"
+  );
+
+  // Click en buscar (sin waitForNavigation, porque es AJAX)
+  console.log("🖱️ Haciendo click en buscar...");
+  await page.click("button.btn.btn-primary");
+
+  // Esperar a que aparezcan los resultados
+  console.log("⏳ Esperando resultados...");
+  await page.waitForSelector("#divimpuestos", { timeout: 30000 });
+
+ 
+// 2. Esperar al modal
+console.log("⏳ Esperando modal de ayuda...");
+await page.waitForSelector("#mensajeayuda .button", { visible: true, timeout: 15000 });
+
+// 3. Forzar click vía JS
+await page.evaluate(() => {
+  document.querySelector("#mensajeayuda .button").click();
+});
+console.log("✅ Modal 'Entendido' cerrado");
+
+// Esperar que desaparezca el modal
+await page.waitForFunction(() => !document.querySelector("#mensajeayuda")?.offsetParent, { timeout: 5000 });
+
+// 4. Expandir los "+"
+const botonesMas = await page.$$("#divPapeletas a .toogle.fa-plus");
+console.log(`Encontrados ${botonesMas.length} botones "+" para expandir`);
+
+for (const boton of botonesMas) {
+  try {
+    await boton.click();
+    await page.waitForTimeout(800);
+  } catch (err) {
+    console.log("⚠️ No se pudo expandir fila:", err.message);
+  }
+}
+// ✅ Extraer deuda y cabecera
+console.log("📊 Extrayendo deuda...");
+const deuda = await page.evaluate(() => {
+  const placa = document.querySelector("#valordoc")?.innerText.trim() || "";
+  const total = document.querySelector("#montototal")?.innerText.trim() || "S/ 0.00";
+
+  const filas = [...document.querySelectorAll("#divPapeletas .row.gridtree-row")].map(row => {
+    const celdas = [...row.querySelectorAll("div")].map(d => d.innerText.trim());
+
+    return {
+      falta: celdas[1] || "",
+    
+      documento: celdas[3] || "",
+      fecha: celdas[4] || "",
+      monto: celdas[5] || "",
+      estado: celdas[6] || "",
+    };
+  });
+
+  return { placa, total, detalle: filas };
+});
  
 
+  await browser.close();
+  res.json(deuda);
+});
  
 
 // --------- FUNCIONES INDIVIDUALES ---------
@@ -70,7 +484,7 @@ async function consultarLima(placa) {
   const result = { success: false, results: [] };
 
   async function resolverCaptchaLima(siteKey, pageUrl) {
-    console.log("🔐 Enviando captcha a 2Captcha (prioridad alta SAT Lima)...");
+    
     const captchaStart = await axios.post(`${SATLIMA_API_URL}/in.php`, null, {
       params: {
         key: SATLIMA_API_KEY,
@@ -122,11 +536,11 @@ async function consultarLima(placa) {
   }
 
   try {
-    console.log("🚀 Iniciando consulta SAT Lima...");
+    
 
     let frame, recaptchaOk = false;
     for (let intentos = 0; intentos < 5; intentos++) {
-      console.log(`🔄 Intento ${intentos + 1}: cargando página...`);
+      
       await page.goto("https://www.sat.gob.pe/websitev8/Popupv2.aspx?t=8", {
         waitUntil: "domcontentloaded",
          timeout: 60000
@@ -147,13 +561,13 @@ async function consultarLima(placa) {
       }
 
       if (!frame) {
-        console.log("❌ No se encontró el frame. Reintentando...");
+        
         continue;
       }
 
       const captchaExists = await frame.$('.g-recaptcha').catch(() => null);
       if (captchaExists) {
-        console.log("✅ CAPTCHA detectado.");
+       
         recaptchaOk = true;
         break;
       } else {
@@ -164,7 +578,7 @@ async function consultarLima(placa) {
 
     if (!recaptchaOk) throw new Error("No se pudo cargar el CAPTCHA");
 
-    console.log("📝 Llenando formulario...");
+   
     await frame.select("#tipoBusquedaPapeletas", "busqPlaca");
     await frame.waitForSelector("#ctl00_cplPrincipal_txtPlaca", { timeout: 10000 });
     await frame.type("#ctl00_cplPrincipal_txtPlaca", placa);
@@ -186,14 +600,14 @@ async function consultarLima(placa) {
       textarea.value = token;
     }, token);
 
-    console.log("📤 Enviando postback.LM...");
+     
     await frame.evaluate(() => {
       __doPostBack("ctl00$cplPrincipal$CaptchaContinue", "");
     });
 
     await page.waitForTimeout(3500);
 
-    console.log("⏳ Esperando resultados...");
+  
     await Promise.race([
       frame.waitForSelector("table", { timeout: 15000 }).catch(() => null),
       frame.waitForSelector("#ctl00_cplPrincipal_lblMensaje", { timeout: 15000 }).catch(() => null)
@@ -233,7 +647,7 @@ async function consultarLima(placa) {
 
     result.success = true;
     result.results = tabla;
-    console.log("✅ Consulta completada.");
+    console.log("✅ Consulta completada Lima.");
     
   } catch (err) {
     console.error("❌ Error en consulta Lima:", err.message);
@@ -662,7 +1076,7 @@ async function consultarInfogas(placa) {
   try {
     page.setDefaultTimeout(60000); // hasta 1 minuto para casos lentos
 
-    console.log('🌐 Cargando página de Infogas...');
+   
     await page.goto('https://vh.infogas.com.pe/', { waitUntil: 'domcontentloaded' });
 
     await page.waitForSelector('#inp_ck_plate');
@@ -673,7 +1087,7 @@ async function consultarInfogas(placa) {
     const pageUrl = 'https://vh.infogas.com.pe/';
     const API_KEYY = process.env.CAPTCHA_API_KEYY;
 
-    console.log('🔄 Resolviendo captcha...');
+    
     const { data: request } = await axios.get(`https://2captcha.com/in.php`, {
       params: {
         key: API_KEYY,
@@ -706,7 +1120,7 @@ async function consultarInfogas(placa) {
     };
 
     const token = await waitForCaptcha(requestId);
-    console.log('✅ Captcha resuelto');
+   
 
     // Inyectar token
     await page.evaluate((token) => {
@@ -753,7 +1167,7 @@ for (let intento = 0; intento < maxIntentos; intento++) {
 if (Object.values(data).some(v => v && v !== '')) {
   result.success = true;
   result.resultados = data;
-  console.log('📦 Datos extraídos correctamente:', data);
+ 
 } else {
   result.success = false;
   result.message = 'No se encontraron datos en Infogas';

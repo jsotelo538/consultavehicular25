@@ -7,457 +7,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
- 
+  <link rel="stylesheet" href="style.css">
   <title>Consulta Vehicular Integral</title>
    
-  <style>
-    * { box-sizing: border-box; }
-
-/* ---------- ESTILO GENERAL ---------- */
-body {
-  font-family: 'Segoe UI', 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #d9f0ff, #f9fbfd);
-  color: #2c3e50;
-  line-height: 1.6;
-}
-
-/* ---------- CONTENEDOR PRINCIPAL ---------- */
-.container {
-  max-width: 1100px;
-  margin: 30px auto;
-  background: #ffffff;
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  animation: fadeIn 0.6s ease;
-}
-
-/* ---------- CABECERA ---------- */
-.header {
-  text-align: center;
-  margin-bottom: 25px;
-}
-.header img {
-  width: 320px;
-}
-    .header h1 {
-      margin: 0;
-      color: #1e2f45;
-    }
-
-    .header p {
-  font-size: 18px;
-  color: #555;
-}
-.input-search {
-  position: relative;
-}
-.input-search input {
-  padding-left: 40px;
-}
-.input-search::before {
-  content: "🔍";
-  position: absolute;
-  left: 8px;
-  top: 38%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  opacity: 0.5;
-}
-/* ---------- INPUTS Y BOTONES ---------- */
-input[type="text"] {
-  width: 100%;
-  padding: 14px 18px;
-  border-color: #3498db;
-  box-shadow: 0 0 8px rgba(52,152,219,0.3);
-  border-radius: 10px;
-  font-size: 16px;
-  margin-bottom: 15px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-input[type="text"]:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 8px rgba(52,152,219,0.3);
-  outline: none;
-}
-
-button {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  font-size: 15px;
-  border-radius: 50px;
-  cursor: pointer;
-  margin: 5px;
-  transition: transform 0.2s ease, background 0.3s ease;
-}
-button:hover {
-  transform: scale(1.05);
-  background: linear-gradient(135deg, #0056b3, #003f88);
-}
-
-    .section {
-      margin-top: 30px;
-    }
-/* ---------- TARJETAS DE RESULTADOS ---------- */
-.tarjeta {
-  background: #f8fbff;
-  border-left: 6px solid #3498db;
-  border-radius: 12px;
-  padding: 18px 22px;
-  margin-top: 18px;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.05);
-  animation: slideUp 0.4s ease;
-}
-.tarjeta:hover {
-  background-color: #eef6ff;
-}
-
-.section h2 {
-  
-  font-size: 22px;
-   
-  padding-left: 10px;
-  margin-top: 30px;
-
-   margin-bottom: 4px;
  
-  color: #2a4d69;
-}
- 
- 
-/* ---------- TABLAS ---------- */
-.tabla-responsive {
-  overflow-x: auto;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-}
-.table-responsive tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-.table-responsive tr:hover {
-  background-color: #eaf4ff;
-  transition: background-color 0.2s ease;
-}
-.table-responsive table {
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-}
-.table-responsive th {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  font-weight: bold;
-  text-transform: uppercase;
-}
-.table-responsive td {
-  text-align: center; /* Para datos cortos */
-}
-
-.table-responsive td:first-child {
-  text-align: left; /* Para la primera columna */
-}
- th {
-  background: #007bff;
-  color: white;
-  padding: 12px;
-}
-td {
-  padding: 12px;
-  border: 1px solid #e6e6e6;
-}
-    .spinner {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-#nprogress .bar {
-  background: #28a745 !important; /* Verde */
-}
-
-#nprogress .peg {
-  box-shadow: 0 0 10px #28a745, 0 0 5px #28a745;
-}
-    .loader {
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #3498db;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-   .mensaje-error {
-  background: #fdecea;
-  color: #e74c3c;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-  .footer {
-  margin-top: 60px;
-  background: linear-gradient(90deg, #007bff, #0056b3);
-  color: white;
-  padding: 25px;
-  text-align: center;
-  border-radius: 0 0 15px 15px;
-  font-size: 15px;
-}
-
-    .footer a {
-      color: #ffe;
-      text-decoration: underline;
-    }
-   .mensaje-info {
-  background-color: #088ff6;
-  color: #007bff;
-   padding: 10px 12px;
-  margin-bottom: 16px;
-  background-color: #f4f4f4;
-  border-left: 4px solid #2a4d69;
-  font-size: 16px;
-  line-height: 1.4;
-  font-weight: 500;
-}
- 
-#btn-whatsapp {
-  background-color: #25d366;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 50px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.3s;
-}
-
-#btn-whatsapp:hover {
-  background-color: #1ebc5c;
-}
-  table {
-  background-color: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-.mensaje-infoo {
-  background: #e8f4fd;
-  color: #007bff;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid #b3daff;
-}
-th {
-  background-color: #007bff;
-  color: white;
-}
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  } to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.tarjeta {
-  animation: fadeInUp 0.4s ease;
-}
-    @media (max-width: 600px) {
-      input[type="text"], button {
-        width: 100%;
-        font-size: 14px;
-        margin-bottom: 10px;
-      }
-
-      table {
-        min-width: unset;
-      }
-    }
-    .whatsapp-float {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #25d366;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  z-index: 1000;
-  transform: scale(1);
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.whatsapp-float:hover {
-  transform: scale(1.1);
-  background-color: #128c7e;
-}
-
-.whatsapp-icon {
-  width: 24px;
-  height: 24px;
-  fill: white;
-}
-
-.whatsapp-content {
-  display: flex;
-  align-items: center;
-}
-.bloque-siniestro {
-  margin-top: 40px;
-  margin-bottom: 40px;
-  
-}
-.mensaje-mantenimiento {
-  text-align: center;
-  padding: 20px;
-  border: 2px dashed #e74c3c;
-  border-radius: 10px;
-  background: #fff3f3;
-  max-width: 500px;
-  margin: 20px auto;
-  font-family: sans-serif;
-}
-.mensaje-mantenimiento .icono {
-  font-size: 50px;
-  color: #e74c3c;
-}
-.mensaje-mantenimiento h2 {
-  color: #e74c3c;
-  margin: 10px 0;
-}
-.mensaje-mantenimiento p {
-  color: #333;
-  font-size: 16px;
-}
-.mensaje-mantenimiento a {
-  color: #2980b9;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-@keyframes zoomFade {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.tarjeta {
-  animation: zoomFade 0.4s ease forwards;
-}
-/* Mayor separación en móviles */
-@media (max-width: 768px) {
-  .bloque-siniestro {
-    margin-top: 60px;
-    margin-bottom: 60px;
-     line-height:    1.3;
-  }
-}button:hover {
-  box-shadow: 0 4px 15px rgba(0, 91, 187, 0.4);
-}.container {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-}
-.badge {
-  display: inline-block;
-  padding: 5px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-.estado-resumen {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8em;
-  font-weight: 600;
-  color: #fff;
-  display: inline-block;
-  white-space: nowrap;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-/* Estados */
-.badge-ok {
-  background: #28a745; /* verde */
-}
-
-.badge-expired {
-  background: #dc3545; /* rojo */
-}
-
-.badge-alert {
-  background: #ffc107; /* amarillo */
-  color: #333;
-}
-
-.badge-clear {
-  background: #007bff; /* azul */
-}
-  /* Fondo semi-transparente para dar efecto modal */
-  #overlayCarga {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4);
-    z-index: 9998;
-  }
-
-  /* Ventana flotante */
-  #ventanaCarga {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 25px 40px;
-    border-radius: 12px;
-    box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
-    font-family: Arial, sans-serif;
-    font-size: 18px;
-    color: #333;
-    text-align: center;
-    z-index: 9999;
-    animation: fadeInScale 0.3s ease-in-out;
-  }
-
-  /* Animación suave */
-  @keyframes fadeInScale {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  }
-  /* pdf provincia */
- 
-  </style>
 </head>
 <body>
   <a href="https://wa.me/51949319753?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular"
@@ -469,6 +22,13 @@ th {
     <span>¿Necesitas ayuda?</span>
   </div>
 </a>
+  <div class="main-content"> 
+<!-- 🔹 Contenedor de Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="openTab(event, 'vehicular')">🚘 Consulta Vehicular</button>
+  <button class="tab-btn" onclick="openTab(event, 'propietario')">👤 Consulta Propietario</button>
+</div>
+<div id="vehicular" class="tab-content active"> 
   <div class="container">
     <div class="header">
       <img src="principal.png" alt="Logo Consulta Vehicular">
@@ -507,18 +67,87 @@ th {
     <div id="resultadoSutran" class="tarjeta"></div>
     
      <div id="resultadoOrdenCaptura" class="tarjeta"></div>
+     <div id="resultado-impuesto" class="tarjeta"></div>
      <div id="resultado-atu" class="section"></div>
     <div id="resultado-infogas" class="section"></div>
      <div id="resultado-lima" class="section"></div>
     <div id="resultado-callao" class="section"></div>
- 
+     <div id="resultado-arequipa" class="section"></div>
     <div id="resultado-huancayo" class="section"></div>
     <div id="resultado-tarapoto" class="section"></div>
      <div id="resultado-tacna" class="section"></div> <!-- NUEVA SECCIÓN -->  
     <div id="resultado" class="section"></div>
      
   </div>
-  
+  </div>
+
+<div id="propietario" class="tab-content">
+
+
+  <h1>Consulta de Asientos SUNARP</h1>
+
+  <form id="formConsulta" class="buscador">
+    <div class="campo">
+      <label for="placa">Placa</label>
+      <input type="text" id="placaa" name="placa" required placeholder="Ej: ABC123">
+    </div>
+    <div class="campo">
+      <label for="ciudad">Oficina Registral</label>
+      <select id="ciudad" name="ciudad" required>
+        <option value="">Seleccione...</option>
+        <option value="ABANCAY">ABANCAY</option>
+       <option value="ANDAHUAYLAS">ANDAHUAYLAS</option>
+       <option value="AREQUIPA">AREQUIPA</option> 
+       <option value="AYACUCHO">AYACUCHO</option>
+       <option value="BAGUA">BAGUA</option>
+      <option value="BARRANCA">BARRANCA</option>
+        <option value="CAJAMARCA">CAJAMARCA</option>
+       <option value="CALLAO">CALLAO</option>
+       <option value="CAMANA">CAMANA</option>
+       <option value="CASMA">CASMA</option>
+       <option value="CASTILLA_APLAO">CASTILLA_APLAO</option>
+       <option value="CAÑETE">CAÑETE</option>
+       <option value="CHACHAPOYAS">CHACHAPOYAS</option>
+       <option value="CHEPEN">CHEPEN</option>
+       <option value="CHICLAYO">CHICLAYO</option>
+       <option value="CHIMBOTE">CHIMBOTE</option>
+       <option value="CHINCHA">CHINCHA</option>
+       <option value="CHOTA">CHOTA</option>
+       <option value="CUSCO">CUSCO</option>
+       <option value="ESPINAR">ESPINAR</option>
+       <option value="HUACHO">HUACHO</option>
+      <option value="HUAMANCHUCO">HUAMANCHUCO</option>
+      <option value="HUANCAVELICA">HUANCAVELICA</option>
+      <option value="HUANCAYO">HUANCAYO</option>
+      <option value="HUANTA">HUANTA</option>
+       <option value="HUANUCO">HUANUCO</option>
+        <option value="HUARAL">HUARAL</option>
+      <option value="HUARAZ">HUARAZ</option>
+      <option value="ICA">ICA</option>
+       <option value="ILO">ILO</option>
+        <option value="LIMA">LIMA</option>
+        <option value="PIURA">PIURA</option>
+        <option value="TRUJILLO">TRUJILLO</option>
+      </select>
+    </div>
+    <button type="submit">🔍 Consultar</button>
+  </form>
+
+  <div id="resultado-PROPIETARIOS"></div>
+
+  <!-- Modal global -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2>Detalles</h2>
+      <div id="modal-body"></div>
+      <button class="modal-close">Cerrar</button>
+    </div>
+  </div>
+
+
+
+</div>
+  </div>
   <div class="footer">
     <p>© 2025 Consulta Vehicular. Todos los derechos reservados By PaginasWebPro.</p>
     <p>Contacto: <a href="https://wa.me/51926838543?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular">israelsq03@gmail.com</a></p>
@@ -792,13 +421,140 @@ Promise.allSettled(promesas);
        consultarInfogas(placa);
       consultarSOATyVehiculo(placa);
       consultarRevisionTecnica(placa);
-     
+      impuestovehicular(placa) ;
+      
       consultarSatProvincias(placa); // Tarapoto y Huancayo
       consultarATU(placa);
+       consultarequipa(placa);
          consultarTacna(placa);
         
   
 } 
+ async function consultarequipa(placa) {
+     
+         
+      document.getElementById("resultado-arequipa").innerHTML = `<h2>SAT Arequipa</h2><div class="tarjeta"><div class="loader"></div></div>`;
+
+      try {
+        const res = await fetch("http://localhost:3000/consultar-arequipa", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ placa })
+        });
+        const data = await res.json();
+
+      if (!data.exito) {
+  document.getElementById("resultado-arequipa").innerHTML =
+    `<p style="color:red;">${data.mensaje}</p>`;
+} else {
+  let html = "<h2>Resultados SAT Arequipa</h2><h4>Las infracciones de la placa consultada son:</h4>";
+  html += "<table><thead><tr>";
+  data.encabezados.forEach(header => {
+    html += `<th>${header}</th>`;
+  });
+  html += "</tr></thead><tbody>";
+
+  data.resultados.forEach(row => {
+    html += "<tr>";
+    row.forEach(col => {
+      html += `<td>${col}</td>`;
+    });
+    html += "</tr>";
+  });
+
+  html += "</tbody></table>";
+  document.getElementById("resultado-arequipa").innerHTML = html;
+}
+      } catch (err) {
+        console.error(err);
+        document.getElementById("resultado-arequipa").innerHTML =
+          "<p style='color:red;'>Error al conectar con el servidor</p>";
+      }
+    }
+
+
+ async function impuestovehicular(placa) {
+       
+      const resultadoDiv = document.getElementById("resultado-impuesto");
+      resultadoDiv.innerHTML = ' <div class="bloque-siniestro"><h2>🚘🪙 Impuesto Vehicular(SAT)</h2><div class="mensaje-info">⏳ Buscando datos...</div>';
+
+      if (!placa) {
+        resultadoDiv.innerHTML = "⚠️ Ingrese una placa.";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/consultarr", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ placa })
+        });
+        const data = await res.json();
+
+        if (!data || !data.total) {
+          resultadoDiv.innerHTML = "⚠️ No se encontraron resultados.";
+          return;
+        }
+
+        // Construir tarjeta
+        resultadoDiv.innerHTML = ` <div class="bloque-siniestro"><h2>🚘🪙Resultados Impuesto Vehicular(SAT)</h2>
+          <div class="card">
+            <div class="placaa">🚗 Placa: ${data.placa || placa}</div>
+            <div class="total">💰 Deuda Total: ${data.total}</div>
+            <button class="toggle-btn">Ver Detalles</button>
+        <div class="detalle">
+  <div class="row gridtree-header" style="margin:8px 0; padding:8px; border:1px solid #ddd; background:#f9f9f9; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+     Papeletas
+    </div>
+    <div>
+      TOTAL:&nbsp;&nbsp;&nbsp;<strong>${data.total}</strong>
+    </div>
+    <div>
+      <a href="#"><i class="toogle fa fa-minus"></i></a>
+    </div>
+  </div><div class="table-container">
+  <table>
+                <thead>
+                  <tr>
+                    <th>Falta</th>
+                    <th>Documento</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Deuda</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${(data.detalle || []).map(d => `
+                    <tr>
+                      <td>${d.falta}</td>
+                      <td>${d.documento}</td>
+                      <td>${d.fecha}</td>
+                      <td>${d.monto}</td>
+                      <td>S/ ${d.estado}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table></div>
+            </div>
+          </div>
+        `;
+
+        // Agregar evento al botón
+        const btn = resultadoDiv.querySelector(".toggle-btn");
+        const detalle = resultadoDiv.querySelector(".detalle");
+
+        btn.addEventListener("click", () => {
+          const visible = detalle.style.display === "block";
+          detalle.style.display = visible ? "none" : "block";
+          btn.textContent = visible ? "Ver Detalles" : "Ocultar Detalles";
+        });
+
+      } catch (error) {
+        resultadoDiv.innerHTML = "❌ Error al consultar. Verifique el backend.";
+      }
+    }
+
 async function consultarInfogas(placa) {
   const infogasDiv = document.getElementById("resultado-infogas");
   infogasDiv.innerHTML = `<h2>⛽ Infogas GNV</h2><div class="tarjeta"><div class="loader"></div></div>`;
@@ -846,7 +602,7 @@ async function consultarInfogas(placa) {
  async function consultarTacna(placa) {
   const resultadoDiv = document.getElementById("resultado-tacna");
  
-  resultadoDiv.innerHTML = `<h2> Tacna</h2><div class="tarjeta"><div class="loader"></div></div>`;
+  resultadoDiv.innerHTML = `<h2>SAT Tacna</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
   try {
     const res = await fetch("/consultartacna", {
@@ -1285,6 +1041,7 @@ async function descargarPDF() {
   // -------- Secciones fijas ----------
   const secciones = [
     { titulo: "SOAT", id: "soat-info", color: [230, 245, 255] },
+        { titulo: "Impuesto Vehicular(SAT)", id: "resultado-impuesto", color: [240, 250, 255] },
     { titulo: "Datos del Vehículo", id: "vehiculo-info", color: [240, 250, 255] },
     { titulo: "SAT Lima", id: "resultado-lima", color: [235, 245, 255] },
     { titulo: "SAT Callao", id: "resultado-callao", color: [240, 250, 255] },
@@ -1298,7 +1055,8 @@ async function descargarPDF() {
     { titulo: "Resultados SAT Órdenes de Captura (Gravamen)", id: "resultadoOrdenCaptura", color: [240, 250, 255] },
     { titulo: "Resultados SAT Piura", id: "resultado-piura", color: [240, 250, 255] },
     { titulo: "Resultados SAT Tacna", id: "resultado-tacna", color: [240, 250, 255] },
-     
+     { titulo: "Resultados SAT Arequipa", id: "resultado-arequipa", color: [240, 250, 255] }
+         
   ];
 
   for (const s of secciones) {
@@ -1336,6 +1094,117 @@ if (resultadoDiv) {
   // -------- Descargar PDF ----------
   doc.save("consulta-vehicular.pdf");
 }
+
+const resultadoo = document.getElementById("resultado-PROPIETARIOS");
+const modal = document.getElementById("modal");
+const modalBody = document.getElementById("modal-body");
+const modalClose = document.querySelector(".modal-close");
+
+function mostrarCargando() {
+  resultadoo.innerHTML = `
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p class="loading-message">Consultando, por favor espere...</p>
+    </div>
+  `;
+  setTimeout(() => {
+    const msg = resultadoo.querySelector(".loading-message");
+    if (msg) msg.textContent = "Ya está casi listo...";
+  }, 9000);
+  setTimeout(() => {
+    const msg = resultadoo.querySelector(".loading-message");
+    if (msg) msg.textContent = "Extrayendo la información...";
+  }, 13000);
+}
+
+document.getElementById("formConsulta").addEventListener("submit", async (e) => {
+  e.preventDefault();
+    if (sessionStorage.getItem("yaConsultado")) {
+  alert("Solo se permite una consulta por sesión. Serás redirigido al inicio.");
+  window.location.href = "index.html"; // Redirige al inicio
+  return;
+}
+sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
+  const placa = document.getElementById("placaa").value.trim();
+  const ciudad = document.getElementById("ciudad").value.trim();
+
+  mostrarCargando();
+
+  try {
+    const res = await fetch("http://localhost:3000/api/asientos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ placa, ciudad })
+    });
+    if (!res.ok) throw new Error("Error en la consulta");
+
+    const data = await res.json();
+    resultadoo.innerHTML = "";
+
+    if (!data || !data.asientos || data.asientos.length === 0) {
+      resultadoo.innerHTML = "<p style='text-align:center;'>❌ No se encontraron asientos.</p>";
+      return;
+    }
+
+    const contenedor = document.createElement("div");
+    contenedor.className = "contenedor-asientos";
+    resultadoo.appendChild(contenedor);
+
+    const headerDiv = document.createElement("div");
+    headerDiv.className = "cabecera";
+    headerDiv.innerHTML = `
+      <h3>${data.header.orden}</h3>
+      <p><strong>${data.header.partida}</strong></p>
+      <p><strong>${data.header.paginas}</strong></p>
+    `;
+    contenedor.appendChild(headerDiv);
+
+    const listaDiv = document.createElement("div");
+    listaDiv.className = "lista-asientos";
+    contenedor.appendChild(listaDiv);
+
+    data.asientos.forEach((a, i) => {
+      const div = document.createElement("div");
+      div.className = "asiento";
+      div.innerHTML = `
+        <p>📌 <strong>Título</strong>: ${a.titulo}</p>
+        <p>🔢 <strong>Nro. Asiento</strong>: ${a.nroAsiento}</p>
+        <p>📋 <strong>Acto</strong>: ${a.acto}</p>
+        <p>📅 <strong>Año</strong>: ${a.anio}</p>
+        <p>📖 <strong>Páginas</strong>: ${a.paginas}</p>
+        <span class="btn-info" data-index="${i}">ℹ️</span>
+      `;
+      listaDiv.appendChild(div);
+    });
+
+    // Evento para abrir modal
+    document.querySelectorAll(".btn-info").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const idx = e.target.dataset.index;
+        const detalles = data.asientos[idx].detalles || {};
+        let html = "<table>";
+        for (let key in detalles) {
+          html += `<tr><td><b>${key}</b></td><td>${detalles[key]}</td></tr>`;
+        }
+        html += "</table>";
+        modalBody.innerHTML = html;
+        modal.style.display = "flex";
+      });
+    });
+
+  } catch (err) {
+    console.error(err);
+    resultadoo.innerHTML = "<p style='text-align:center;'>⚠️ Error al obtener asientos</p>";
+  }
+});
+
+// Cerrar modal
+modalClose.addEventListener("click", () => modal.style.display = "none");
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) modal.style.display = "none";
+});
+
+
   window.addEventListener("error", function (e) {
     console.error("👉 Error atrapado:", e.error);
   });
@@ -1352,6 +1221,29 @@ if (resultadoDiv) {
 
   window.open(url, "_blank");
 }     sessionStorage.removeItem("yaConsultado");
-  </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+function openTab(evt, tabName) {
+  // Ocultar todos los contenidos
+  const contents = document.querySelectorAll(".tab-content");
+  contents.forEach(content => {
+    content.style.display = "none";
+    content.classList.remove("fade-in");
+  });
+
+  // Quitar "active" de todos los botones
+  const tabs = document.querySelectorAll(".tab-btn");
+  tabs.forEach(tab => tab.classList.remove("active"));
+
+  // Mostrar el contenido seleccionado
+  const selected = document.getElementById(tabName);
+  selected.style.display = "block";
+
+  // Animación suave al aparecer
+  setTimeout(() => {
+    selected.classList.add("fade-in");
+  }, 50);
+
+  // Marcar el botón clicado como activo
+  evt.currentTarget.classList.add("active");
+} </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>

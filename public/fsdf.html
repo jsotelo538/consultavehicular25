@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   <style>.tabs {
+  display: flex;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.tablink {
+  flex: 1;
+  padding: 10px;
+  background: #f5f5f5;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.tablink.active {
+  background: #3498db;
+  color: white;
+  font-weight: bold;
+}
+
+.tabcontent {
+  display: none;
+  padding: 15px;
+  background: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}</style>
+  <div class="tabs">
+  <button class="tablink active" onclick="openTab(event, 'papeletas')">🚘 Papeletas</button>
+  <button class="tablink" onclick="openTab(event, 'propietarios')">👤 Propietarios</button>
+</div>
+
+<div id="papeletas" class="tabcontent" style="display:block;">
+  <h2>Consulta Papeletas</h2>
+  <input type="text" placeholder="Ingrese placa">
+  <button>Consultar</button>
+  <div id="resultado-papeletas"></div>
+</div>
+
+<div id="propietarios" class="tabcontent">
+  <h2>Consulta Propietarios</h2>
+  <input type="text" placeholder="Ingrese DNI o placa">
+  <button>Consultar</button>
+  <div id="resultado-propietario"></div>
+</div>
+<script>function openTab(evt, tabId) {
+  document.querySelectorAll(".tabcontent").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".tablink").forEach(el => el.classList.remove("active"));
+
+  document.getElementById(tabId).style.display = "block";
+  evt.currentTarget.classList.add("active");
+}</script>
+</body>
+</html>
