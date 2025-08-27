@@ -4,7 +4,7 @@ const app = express();
 const fs = require('fs'); 
 const puppeteer = require("puppeteer");
 const axios = require("axios");
-const cors = require("cors"); 
+ 
 const FormData = require("form-data");
  
 const bodyParser = require("body-parser");

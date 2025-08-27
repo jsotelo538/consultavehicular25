@@ -436,7 +436,7 @@ Promise.allSettled(promesas);
       document.getElementById("resultado-arequipa").innerHTML = `<h2>SAT Arequipa</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
       try {
-        const res = await fetch("http://localhost:3000/consultar-arequipa", {
+        const res = await fetch("https://www.consultavehicular.services/consultar-arequipa", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ placa })
@@ -484,7 +484,7 @@ Promise.allSettled(promesas);
       }
 
       try {
-        const res = await fetch("http://localhost:3000/consultarr", {
+        const res = await fetch("https://www.consultavehicular.services/consultarr", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ placa })
@@ -1131,7 +1131,7 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
   mostrarCargando();
 
   try {
-    const res = await fetch("http://localhost:3000/api/asientos", {
+    const res = await fetch("https://www.consultavehicular.services/api/asientos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ placa, ciudad })
