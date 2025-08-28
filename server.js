@@ -64,8 +64,8 @@ async function reesolverCaptcha(base64) {
   const captchaId = res.data.split("|")[1];
 
   let captchaText = "";
-  for (let i = 0; i < 20; i++) {
-    await new Promise(r => setTimeout(r, 5000));
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 7000));
     let check = await axios.get(
       `http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${captchaId}`
     );
@@ -79,7 +79,7 @@ async function reesolverCaptcha(base64) {
 
 async function obtenerAsientos(placa, ciudad) {
    const browser = await puppeteer.launch({
-    headless: true,
+    headless:true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
@@ -103,7 +103,7 @@ async function obtenerAsientos(placa, ciudad) {
 
   // 4. Seleccionar ciudad
   await page.click(".ant-select");
-  await page.waitForSelector(".ant-select-item-option");
+await page.waitForSelector(".ant-select-item-option", { visible: true, timeout: 60000 });
   await page.evaluate((ciudad) => {
     const opciones = [...document.querySelectorAll(".ant-select-item-option")];
     const target = opciones.find(opt => opt.innerText.includes(ciudad));
@@ -111,7 +111,7 @@ async function obtenerAsientos(placa, ciudad) {
   }, ciudad);
 
   // 5. Seleccionar área registral
-  await new Promise(r => setTimeout(r, 1000));
+  await new Promise(r => setTimeout(r, 2000));
   await page.click(".area_registral .ant-select");
   await page.waitForSelector(".ant-select-item-option");
   await page.evaluate(() => {
@@ -139,15 +139,15 @@ async function obtenerAsientos(placa, ciudad) {
     }
   }
 
-  await page.waitForSelector('table', { timeout: 20000 });
+  await page.waitForSelector('table', { timeout: 30000 });
 
   // 9. Abrir asientos
   const botoness = await page.$$('button.centradoOpciones.ant-btn-primary');
   const botonCorrecto = botoness[botoness.length - 4];
   await page.evaluate(el => el.click(), botonCorrecto);
 
-  await page.waitForSelector('.ant-drawer-body .ant-table', { timeout: 20000 });
-  await new Promise(r => setTimeout(r, 2000));
+  await page.waitForSelector('.ant-drawer-body .ant-table', { timeout: 30000 });
+  await new Promise(r => setTimeout(r, 3000));
 
   // 10. Extraer datos principales
   const resultado = await page.evaluate(() => {
@@ -356,9 +356,9 @@ async function resolverRecaptcha(page, sitekey, url) {
   console.log("✅ Captcha enviado. ID:", requestId);
 
   let respuesta;
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 25; i++) {
     console.log(`⏳ Esperando respuesta captcha... intento ${i + 1}`);
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise(r => setTimeout(r, 6000));
 
     const resCheck = await axios.get("http://2captcha.com/res.php", {
       params: {

@@ -125,9 +125,30 @@
       <option value="HUARAZ">HUARAZ</option>
       <option value="ICA">ICA</option>
        <option value="ILO">ILO</option>
+        <option value="IZLAY_MOLLENDO">IZLAY_MOLLENDO</option>
+         <option value="JAEN">JAEN</option>
+          <option value="JULIACA">JULIACA</option>
+           <option value="LA MERCED(SELVA CENTRAL)">LA MERCED(SELVA CENTRAL)</option>
         <option value="LIMA">LIMA</option>
-        <option value="PIURA">PIURA</option>
+        <option value="MADRE DE DIOS">MADRE DE DIOS</option>
+        <option value="MAYNAS">MAYNAS</option>
+        <option value="MOQUEGUA">MOQUEGUA</option>
+        <option value="NAZC">NAZCA</option>
+        <option value="OTUZCO">OTUZCO</option>
+        <option value="PASCO">PASCO</option>
+<option value="PISCO">PISCO</option>
+<option value="PIURA">PIURA</option>
+        <option value="PUCALLPA">PUCALLPA</option>
+        <option value="PUNO">PUNO</option>
+        <option value="QUILLABAMBA">QUILLABAMBA</option>
+        <option value="SAN PEDRO">SAN PEDRO</option>
+        <option value="SATIPO">SATIPO</option>
+        <option value="SULLANA">SULLANA</option>
+        <option value="TACNA">TACNA</option>
+        <option value="TARMA">TARMA</option>
+        <option value="TINGO MARIA">TINGO MARIA</option>
         <option value="TRUJILLO">TRUJILLO</option>
+        <option value="TUMBES">TUMBES</option>
       </select>
     </div>
     <button type="submit">🔍 Consultar</button>
@@ -275,7 +296,7 @@ fetch('/consultar', {
 });
 
 // Consultar Órdenes de Captura
-resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">⏳ Consultando...</div>';
+resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura</h2><div class="mensaje-info">⏳ Consultando...</div>';
 
 fetch('/orden-captura', {
   method: 'POST',
@@ -286,7 +307,7 @@ fetch('/orden-captura', {
 .then(data => {
   if (Array.isArray(data.resultado)) {
     resultadoOrdenCaptura.innerHTML = `
-       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
+       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura</h2>
       <div class="mensaje-info">
         ${data.resultado.map(r => `
           <strong>📅 Fecha:</strong> ${r.fecha}<br>
@@ -302,7 +323,7 @@ fetch('/orden-captura', {
   }
 })
 .catch(err => {
-  resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
+  resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura2</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
   console.error(err);
 });
  
@@ -551,7 +572,7 @@ Promise.allSettled(promesas);
         });
 
       } catch (error) {
-        resultadoDiv.innerHTML = "❌ Error al consultar. Verifique el backend.";
+        resultadoDiv.innerHTML = `<h2>🚘🪙 Impuesto Vehicular.</h2><div class="mensaje-infoo">📄 No se encontraron deudas pendientes.</div>`;
       }
     }
 
@@ -1095,6 +1116,9 @@ if (resultadoDiv) {
   doc.save("consulta-vehicular.pdf");
 }
 
+ sessionStorage.removeItem("yaConsultado");
+
+ 
 const resultadoo = document.getElementById("resultado-PROPIETARIOS");
 const modal = document.getElementById("modal");
 const modalBody = document.getElementById("modal-body");
@@ -1110,21 +1134,23 @@ function mostrarCargando() {
   setTimeout(() => {
     const msg = resultadoo.querySelector(".loading-message");
     if (msg) msg.textContent = "Ya está casi listo...";
-  }, 9000);
+  },11000);
   setTimeout(() => {
     const msg = resultadoo.querySelector(".loading-message");
     if (msg) msg.textContent = "Extrayendo la información...";
-  }, 13000);
+  }, 16000);
 }
 
 document.getElementById("formConsulta").addEventListener("submit", async (e) => {
   e.preventDefault();
-    if (sessionStorage.getItem("yaConsultado")) {
-  alert("Solo se permite una consulta por sesión. Serás redirigido al inicio.");
-  window.location.href = "index.html"; // Redirige al inicio
-  return;
-}
-sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
+    
+ 
+  if (sessionStorage.getItem("yaConsultadoPropietario")) {
+    alert("Solo se permite una consulta por sesión en Consulta Propietario.");
+    return;
+  }
+  sessionStorage.setItem("yaConsultadoPropietario", "true");
+
   const placa = document.getElementById("placaa").value.trim();
   const ciudad = document.getElementById("ciudad").value.trim();
 
@@ -1176,7 +1202,85 @@ sessionStorage.setItem("yaConsultado", "true"); // Marca como ya consultado
       `;
       listaDiv.appendChild(div);
     });
+// Después de crear los divs de los asientos
+const descargarBtn = document.createElement("button");
+descargarBtn.textContent = "📄 Descargar PDF";
+descargarBtn.className = "btn-descargar";
+descargarBtn.style.display = "block";
+descargarBtn.style.margin = "20px auto"; // centrar botón
+descargarBtn.addEventListener("click", () => {
+  generarPDF(data);
+});
+resultadoo.appendChild(descargarBtn);
 
+// Función para generar PDF mejorado
+function generarPDF(data) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let y = 20;
+  const margin = 10;
+  const lineHeight = 6;
+
+  // 🔹 Cabecera
+  doc.setFontSize(18);
+  doc.text("Consulta de Asientos SUNARP", pageWidth / 2, y, { align: "center" });
+  y += 8;
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 10;
+
+  // 🔹 Información de cabecera
+  doc.setFontSize(12);
+  doc.text(`Orden: ${data.header.orden}`, margin, y);
+  y += lineHeight;
+  doc.text(`Partida: ${data.header.partida}`, margin, y);
+  y += lineHeight;
+  doc.text(`Páginas: ${data.header.paginas}`, margin, y);
+  y += 10;
+
+  // 🔹 Asientos
+  data.asientos.forEach((a, i) => {
+    // Verificar si caben en la página, si no agregar nueva
+    if (y + 40 > pageHeight - margin) {
+      doc.addPage();
+      y = 20;
+    }
+
+    // Tarjeta asiento
+    const tarjetaHeight = 35;
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, y, pageWidth - 2*margin, tarjetaHeight, 'F');
+
+    doc.setFontSize(14);
+    doc.text(`Asiento ${i + 1}: ${a.titulo}`, margin + 2, y + 8);
+
+    doc.setFontSize(11);
+    doc.text(`Nro: ${a.nroAsiento}`, margin + 2, y + 14);
+    doc.text(`Acto: ${a.acto}`, margin + 2, y + 20);
+    doc.text(`Año: ${a.anio}`, margin + 2, y + 26);
+    doc.text(`Páginas: ${a.paginas}`, pageWidth / 2, y + 14);
+
+    y += tarjetaHeight + 5;
+
+    // 🔹 Detalles en tabla
+    if (a.detalles) {
+      for (let key in a.detalles) {
+        if (y + lineHeight > pageHeight - margin) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(`${key}: ${a.detalles[key]}`, margin + 4, y);
+        y += lineHeight;
+      }
+      y += 4;
+    }
+  });
+
+  // 🔹 Guardar PDF
+  doc.save("consulta_asientos.pdf");
+}
     // Evento para abrir modal
     document.querySelectorAll(".btn-info").forEach(btn => {
       btn.addEventListener("click", (e) => {
@@ -1203,8 +1307,7 @@ modalClose.addEventListener("click", () => modal.style.display = "none");
 modal.addEventListener("click", (e) => {
   if (e.target === modal) modal.style.display = "none";
 });
-
-
+ 
   window.addEventListener("error", function (e) {
     console.error("👉 Error atrapado:", e.error);
   });
@@ -1220,7 +1323,7 @@ modal.addEventListener("click", (e) => {
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
 
   window.open(url, "_blank");
-}     sessionStorage.removeItem("yaConsultado");
+}     
 function openTab(evt, tabName) {
   // Ocultar todos los contenidos
   const contents = document.querySelectorAll(".tab-content");
@@ -1244,6 +1347,10 @@ function openTab(evt, tabName) {
 
   // Marcar el botón clicado como activo
   evt.currentTarget.classList.add("active");
-} </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+} 
+
+
+
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
