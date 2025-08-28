@@ -6,7 +6,8 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
  
 const FormData = require("form-data");
- 
+ const cors = require("cors");
+app.use(cors());
 const bodyParser = require("body-parser");
   const API_KEY = 'd6fb31ad4bee4d576b69ceacc98c0b25';
  const API_KEY_2CAPTCHA = 'd6fb31ad4bee4d576b69ceacc98c0b25'; 
@@ -79,7 +80,7 @@ async function reesolverCaptcha(base64) {
 
 async function obtenerAsientos(placa, ciudad) {
    const browser = await puppeteer.launch({
-    headless:true,
+    headless:false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
@@ -270,32 +271,7 @@ app.post("/api/asientos", async (req, res) => {
      // Ingresar la placa
      await page.type("#placa", placa);
  
-     // Resolver reCAPTCHA con 2Captcha
-     const sitekey = "6LedyH4rAAAAAK05k6YcBRA18_kYqVDKS_1ar06o";
-     const url = page.url();
- 
-     const captchaId = await axios.get(
-       `http://2captcha.com/in.php?key=${API_KEY_2CAPTCHA}&method=userrecaptcha&googlekey=${sitekey}&pageurl=${url}&json=1`
-     );
-     const requestId = captchaId.data.request;
- 
-     let captchaCode = null;
-     for (let i = 0; i < 20; i++) {
-       await new Promise(r => setTimeout(r, 5000));
-       const resCaptcha = await axios.get(
-         `http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${requestId}&json=1`
-       );
-       if (resCaptcha.data.status === 1) {
-         captchaCode = resCaptcha.data.request;
-         break;
-       }
-     }
- 
-     if (!captchaCode) throw new Error("No se pudo resolver el captcha");
- 
-     // Insertar token en el reCAPTCHA
-     await page.evaluate(`document.getElementById("g-recaptcha-response").style.display = "block"`);
-     await page.evaluate(`document.getElementById("g-recaptcha-response").value = "${captchaCode}"`);
+      
  
      // Clic en consultar
      await page.click("#btnConsultar");

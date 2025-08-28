@@ -318,12 +318,12 @@ fetch('/orden-captura', {
       </div>`;
   } else {
     resultadoOrdenCaptura.innerHTML = `
-       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura(Gravamen)</h2>
+       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura</h2>
       <div class="mensaje-info">${data.resultado}</div>`;
   }
 })
 .catch(err => {
-  resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura2</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
+  resultadoOrdenCaptura.innerHTML = ' <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura</h2><div class="mensaje-info">Error al consultar órdenes de captura SAT.</div>';
   console.error(err);
 });
  
@@ -451,48 +451,50 @@ Promise.allSettled(promesas);
         
   
 } 
- async function consultarequipa(placa) {
-     
-         
-      document.getElementById("resultado-arequipa").innerHTML = `<h2>SAT Arequipa</h2><div class="tarjeta"><div class="loader"></div></div>`;
-
-      try {
-        const res = await fetch("https://www.consultavehicular.services/consultar-arequipa", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ placa })
-        });
-        const data = await res.json();
-
-      if (!data.exito) {
+async function consultarequipa(placa) {
   document.getElementById("resultado-arequipa").innerHTML =
-    `<p style="color:red;">${data.mensaje}</p>`;
-} else {
-  let html = "<h2>Resultados SAT Arequipa</h2><h4>Las infracciones de la placa consultada son:</h4>";
-  html += "<table><thead><tr>";
-  data.encabezados.forEach(header => {
-    html += `<th>${header}</th>`;
-  });
-  html += "</tr></thead><tbody>";
+    `<h2>SAT Arequipa</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
-  data.resultados.forEach(row => {
-    html += "<tr>";
-    row.forEach(col => {
-      html += `<td>${col}</td>`;
+  try {
+    const res = await fetch("https://www.consultavehicular.services/consultar-arequipa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ placa })
     });
-    html += "</tr>";
-  });
 
-  html += "</tbody></table>";
-  document.getElementById("resultado-arequipa").innerHTML = html;
-}
-      } catch (err) {
-        console.error(err);
-        document.getElementById("resultado-arequipa").innerHTML =
-          "<p style='color:red;'>Error al conectar con el servidor</p>";
-      }
+    const data = await res.json();
+
+    if (!data.exito) {
+      // 👉 Aquí usamos el mismo estilo que mostraste
+      document.getElementById("resultado-arequipa").innerHTML = `
+        <h2>Resultados SAT Arequipa</h2>
+        <div class="mensaje-infoo">ℹ️ No se encontraron papeletas para la placa <strong>${placa}</strong>.</div>
+      `;
+    } else {
+      let html = "<h2>Resultados SAT Arequipa</h2><h4>Las infracciones de la placa consultada son:</h4>";
+      html += "<table><thead><tr>";
+      data.encabezados.forEach(header => {
+        html += `<th>${header}</th>`;
+      });
+      html += "</tr></thead><tbody>";
+
+      data.resultados.forEach(row => {
+        html += "<tr>";
+        row.forEach(col => {
+          html += `<td>${col}</td>`;
+        });
+        html += "</tr>";
+      });
+
+      html += "</tbody></table>";
+      document.getElementById("resultado-arequipa").innerHTML = html;
     }
-
+  } catch (err) {
+    console.error(err);
+    document.getElementById("resultado-arequipa").innerHTML =
+      "<p style='color:red;'>Error al conectar con el servidor</p>";
+  }
+}
 
  async function impuestovehicular(placa) {
        
