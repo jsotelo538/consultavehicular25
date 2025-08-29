@@ -794,3 +794,11 @@ th {
     50% { opacity: 1; }
     100% { opacity: 0; }
   }
+
+
+  .tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}

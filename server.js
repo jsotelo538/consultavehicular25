@@ -1009,32 +1009,47 @@ const browser = await puppeteer.launch({
     await page.type('#texFiltro', placa);
     await page.type('#texCaptcha', captchaResuelto);
     await page.click('#btnBuscar');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(3000);
 
+     // 🔹 Espera condicional: o aparece tabla o aparece mensaje de error
+    let resultadoSelector;
+    try {
+      resultadoSelector = await Promise.race([
+        page.waitForSelector('.table tbody tr', { timeout: 5000 }), // hay resultados
+        page.waitForSelector('.msgError', { timeout: 5000 })        // error / no encontrado
+      ]);
+    } catch (e) {
+      return { success: false, message: "Sin resultados ni mensajes detectados" };
+    }
+
+    // 🔹 Si hay mensaje de error
     const errorMsg = await page.$eval('.msgError', el => el.innerText).catch(() => null);
-    if (errorMsg) return { error: errorMsg };
+    if (errorMsg) return { success: false, error: errorMsg };
 
+    // 🔹 Procesar tabla
     const resultados = await page.evaluate(() => {
       const rows = document.querySelectorAll('.table tbody tr');
-      for (let i = 0; i < rows.length; i++) {
-        const cols = rows[i].querySelectorAll('td');
-        const item = {
-          certificado: cols[0]?.innerText.trim(),
-          placa: cols[1]?.innerText.trim(),
-          fechaRevision: cols[2]?.innerText.trim(),
-          fechaVencimiento: cols[3]?.innerText.trim(),
-          resultado: cols[4]?.innerText.trim(),
-          planta: cols[5]?.innerText.trim()
+      return Array.from(rows).map(row => {
+        const cols = row.querySelectorAll('td');
+        return {
+          certificado: cols[0]?.innerText.trim() || null,
+          placa: cols[1]?.innerText.trim() || null,
+          fechaRevision: cols[2]?.innerText.trim() || null,
+          fechaVencimiento: cols[3]?.innerText.trim() || null,
+          resultado: cols[4]?.innerText.trim() || null,
+          planta: cols[5]?.innerText.trim() || null
         };
-        const filledFields = Object.values(item).filter(val => val && val !== "-");
-        if (filledFields.length >= 4) return [item];
-      }
-      return [];
+      });
     });
 
+    if (!resultados.length) {
+      return { success: false, message: "No se encontraron registros para esta placa" };
+    }
+
     return { success: true, captcha: captchaResuelto, resultados };
+
   } catch (error) {
-    return { error: error.message };
+    return { success: false, error: error.message };
   } finally {
     await browser.close();
   }

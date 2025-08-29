@@ -776,7 +776,7 @@ async function consultarInfogas(placa) {
     const data = await res.json();
 
     if (data.error || !data.resultados || data.resultados.length === 0) {
-      revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>Revisión Técnica (MTC)</h2><div class="mensaje-error">❌ No se encontró información en Revisión Técnica.</div>`;
+      revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>Revisión Técnica (MTC)</h2><div class="mensaje-info">ℹ️ No se encontró información en Revisión Técnica.</div>`;
       return;
     }
 
@@ -795,7 +795,7 @@ async function consultarInfogas(placa) {
       </div>
     `;
   } catch (err) {
-    revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>🔧 Revisión Técnica MTC</h2><div class="mensaje-error">❌ Error al consultar revisión técnica.</div>`;
+    revisionDiv.innerHTML = ` <div class="bloque-siniestro"><h2>🔧 Revisión Técnica MTC</h2><div class="mensaje-infoo">ℹ️ Error al consultar revisión técnica.</div>`;
     console.error(err);
   }
 }
@@ -1328,29 +1328,25 @@ modal.addEventListener("click", (e) => {
 }     
 function openTab(evt, tabName) {
   // Ocultar todos los contenidos
-  const contents = document.querySelectorAll(".tab-content");
-  contents.forEach(content => {
-    content.style.display = "none";
-    content.classList.remove("fade-in");
-  });
+  const tabcontent = document.getElementsByClassName("tab-content");
+  for (let i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+    tabcontent[i].classList.remove("active");
+  }
 
-  // Quitar "active" de todos los botones
-  const tabs = document.querySelectorAll(".tab-btn");
-  tabs.forEach(tab => tab.classList.remove("active"));
+  // Quitar la clase "active" de los botones
+  const tablinks = document.getElementsByClassName("tab-btn");
+  for (let i = 0; i < tablinks.length; i++) {
+    tablinks[i].classList.remove("active");
+  }
 
-  // Mostrar el contenido seleccionado
-  const selected = document.getElementById(tabName);
-  selected.style.display = "block";
+  // Mostrar el tab seleccionado
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
 
-  // Animación suave al aparecer
-  setTimeout(() => {
-    selected.classList.add("fade-in");
-  }, 50);
-
-  // Marcar el botón clicado como activo
+  // Activar el botón
   evt.currentTarget.classList.add("active");
-} 
-
+}
 
 
 </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
