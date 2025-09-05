@@ -55,27 +55,80 @@ app.use(bodyParser.json());
   
 
 // --------- PROPIETARIOS ---------
-async function reesolverCaptcha(base64) {
-  const formData = new URLSearchParams();
-  formData.append("method", "base64");
-  formData.append("key", API_KEY_2CAPTCHA);
-  formData.append("body", base64);
+// --------- PROPIETARIOS ---------
+async function reesolverCaptchaTurnstile(page) {
+  const API_KEY_2CAPTCHA = process.env.API_KEY_2CAPTCHA;
 
-  let res = await axios.post("http://2captcha.com/in.php", formData);
-  const captchaId = res.data.split("|")[1];
+  // Espera a que el widget esté presente (div o iframe)
+  await page.waitForSelector('.cf-turnstile, iframe[src*="challenges.cloudflare.com"]', { timeout: 60000 });
 
-  let captchaText = "";
-  for (let i = 0; i < 30; i++) {
-    await new Promise(r => setTimeout(r, 7000));
-    let check = await axios.get(
-      `http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${captchaId}`
-    );
-    if (check.data.includes("OK")) {
-      captchaText = check.data.split("|")[1];
-      break;
+  // 1) Obtener la sitekey de forma robusta (data-sitekey o desde el iframe)
+  const sitekey = await page.evaluate(() => {
+    // 1a. Intento directo
+    const hostDiv = document.querySelector('.cf-turnstile');
+    let key = hostDiv?.getAttribute('data-sitekey') || '';
+
+    // 1b. Intento por iframe (k/pk/sitekey en querystring)
+    if (!key) {
+      const ifr = document.querySelector('iframe[src*="challenges.cloudflare.com"]');
+      if (ifr?.src) {
+        try {
+          const u = new URL(ifr.src);
+          key = u.searchParams.get('k') || u.searchParams.get('pk') || u.searchParams.get('sitekey') || '';
+        } catch (_) {}
+      }
     }
+    return key || '';
+  });
+
+  if (!sitekey) throw new Error('No se pudo obtener la sitekey de Cloudflare Turnstile.');
+
+  const pageurl = page.url();
+  const userAgent = await page.evaluate(() => navigator.userAgent);
+
+  // 2) Enviar tarea a 2Captcha
+  const body = new URLSearchParams();
+  body.append('key', API_KEY_2CAPTCHA);
+  body.append('method', 'turnstile');
+  body.append('sitekey', sitekey);
+  body.append('pageurl', pageurl);
+  body.append('userAgent', userAgent); // importante que coincida
+
+  const start = await axios.post('http://2captcha.com/in.php', body);
+  if (!String(start.data).startsWith('OK|')) {
+    throw new Error('2Captcha error (in.php): ' + start.data);
   }
-  return captchaText;
+  const captchaId = String(start.data).split('|')[1];
+
+  // 3) Polling del resultado
+  let token = '';
+  for (let i = 0; i < 24; i++) {          // ~2 min
+    await new Promise(r => setTimeout(r, 5000));
+    const check = await axios.get(`http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${captchaId}`);
+    const txt = String(check.data);
+    if (txt === 'CAPCHA_NOT_READY') continue;
+    if (!txt.startsWith('OK|')) throw new Error('2Captcha error (res.php): ' + txt);
+    token = txt.split('|')[1];
+    break;
+  }
+  if (!token) throw new Error('Tiempo de espera agotado esperando el token Turnstile.');
+
+  // 4) Inyectar token + notificar a la UI
+  await page.evaluate((tk) => {
+    const inputs = Array.from(document.querySelectorAll('input[name="cf-turnstile-response"]'));
+    for (const input of inputs) {
+      input.value = tk;
+      input.dispatchEvent(new Event('input',  { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // Fallback: habilitar botón "Buscar" si la UI no reaccionó
+    const btns = Array.from(document.querySelectorAll('button.ant-btn-primary, button'));
+    const buscar = btns.find(b => /buscar/i.test(b.innerText || ''));
+    if (buscar) buscar.disabled = false;
+  }, token);
+
+  return token;
 }
 
 async function obtenerAsientos(placa, ciudad) {
@@ -125,10 +178,7 @@ await page.waitForSelector(".ant-select-item-option", { visible: true, timeout: 
   await page.type("#numero", placa);
 
   // 7. Resolver captcha
-  const captchaElement = await page.$("img.img-captcha");
-  const captchaBase64 = await captchaElement.screenshot({ encoding: "base64" });
-  const captchaTexto = await reesolverCaptcha(captchaBase64);
-  await page.type("input#codigoCaptcha", captchaTexto);
+  await reesolverCaptchaTurnstile(page);
 
   // 8. Buscar
   const botones = await page.$$('button.ant-btn-primary');
@@ -800,10 +850,10 @@ app.post('/consultar', async (req, res) => {
 });
 
 async function consultarOrdenCapturaSAT(placa) {
-   const browser = await puppeteer.launch({
-  headless: "new", // para evitar la advertencia de deprecated
-  args: ["--no-sandbox", "--disable-setuid-sandbox"]
-});
+  const browser = await puppeteer.launch({
+    headless: "new", // para evitar la advertencia de deprecated
+    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  });
 
   const page = await browser.newPage();
   await page.goto('https://www.sat.gob.pe/VirtualSAT/modulos/Capturas.aspx', { waitUntil: 'networkidle2' });
@@ -828,21 +878,25 @@ async function consultarOrdenCapturaSAT(placa) {
     throw new Error('CAPTCHA incorrecto o error del sistema');
   }
 
-  const rows = await page.$$eval('#ctl00_cplPrincipal_gdvCaptura tr', trs => {
-    return trs.slice(1).map(tr => {
-      const tds = tr.querySelectorAll('td');
-      return Array.from(tds).map(td => td.innerText.trim());
+  const rows = await page.$$eval('#ctl00_cplPrincipal_grdCapturas tr.grillaRows', trs => {
+    return trs.map(tr => {
+      const tds = Array.from(tr.querySelectorAll('td'));
+      return {
+        placa: tds[0]?.innerText.trim(),
+        documento: tds[1]?.innerText.trim(),
+        anio: tds[2]?.innerText.trim(),
+        concepto: tds[3]?.innerText.trim(),
+        placaOriginal: tds[4]?.innerText.trim(),
+        referencia: tds[5]?.innerText.trim(),
+        monto: tds[6]?.innerText.trim()
+      };
     });
   });
 
   await browser.close();
 
-  return rows.map(row => ({
-    fecha: row[0],
-    descripcion: row[1],
-    dependencia: row[2],
-    estado: row[3],
-  }));
+  // 👇 AQUÍ el retorno que faltaba
+  return rows;
 }
 async function resolverCao(imageBuffer) {
   const base64 = imageBuffer.toString('base64');

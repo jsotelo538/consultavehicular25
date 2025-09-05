@@ -305,17 +305,49 @@ fetch('/orden-captura', {
 })
 .then(res => res.json())
 .then(data => {
-  if (Array.isArray(data.resultado)) {
+  if (Array.isArray(data.resultado) && data.resultado.length > 0) {
+    // Mensaje de cabecera
+    const mensajeCabecera = `
+      <p><strong>El vehículo de placa ${data.resultado[0].placa} TIENE ORDEN DE CAPTURA por los siguientes conceptos:</strong></p>
+    `;
+
+    // Tabla de resultados
+    const tablaResultados = `
+      <table border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse; text-align:left;">
+        <thead style="background:#f5f5f5;">
+          <tr>
+            <th>📄 Documento</th>
+            <th>📅 Año</th>
+            <th>📑 Concepto</th>
+            <th>🔄 Placa Original</th>
+            <th>📝 Referencia</th>
+            <th>💰 Monto en Captura (S/)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.resultado.map(r => `
+            <tr>
+              <td>${r.documento}</td>
+              <td>${r.anio || '—'}</td>
+              <td>${r.concepto}</td>
+              <td>${r.placaOriginal}</td>
+              <td>${r.referencia || '—'}</td>
+              <td>${r.monto}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+
     resultadoOrdenCaptura.innerHTML = `
-       <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura</h2>
-      <div class="mensaje-info">
-        ${data.resultado.map(r => `
-          <strong>📅 Fecha:</strong> ${r.fecha}<br>
-          <strong>📄 Descripción:</strong> ${r.descripcion}<br>
-          <strong>🏢 Dependencia:</strong> ${r.dependencia}<br>
-          <strong>🔒 Estado:</strong> ${r.estado}
-        `).join('<hr>')}
-      </div>`;
+      <div class="bloque-siniestro">
+        <h2>🛑 Resultados SAT Órdenes de Captura</h2>
+        <div class="mensaje-info">
+          ${mensajeCabecera}
+          ${tablaResultados}
+        </div>
+      </div>
+    `;
   } else {
     resultadoOrdenCaptura.innerHTML = `
        <div class="bloque-siniestro"><h2>🛑 Resultados SAT Órdenes de Captura</h2>
@@ -1159,7 +1191,7 @@ document.getElementById("formConsulta").addEventListener("submit", async (e) => 
   mostrarCargando();
 
   try {
-    const res = await fetch("https://www.consultavehicular.services/api/asientos", {
+    const res = await fetch("http://localhost:3000/api/asientos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ placa, ciudad })
