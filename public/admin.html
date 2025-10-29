@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f0f2f5;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    /* Tarjetas de resumen */
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 30px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      flex: 1 1 200px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .total { color: #007BFF; }
+    .paid { color: #28a745; }
+    .not-paid { color: #dc3545; }
+
+    /* Tabla de usuarios */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      font-size: 14px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 15px;
+      background: #007BFF;
+      color: #fff;
+      border-radius: 10px 10px 0 0;
+    }
+
+    tbody tr {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    tbody tr:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    td {
+      padding: 12px 15px;
+      color: #555;
+    }
+
+    td.paid { color: #28a745; font-weight: bold; }
+    td.not-paid { color: #dc3545; font-weight: bold; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .cards { flex-direction: column; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { display: none; }
+      tbody tr { margin-bottom: 20px; padding: 15px; }
+      td { padding-left: 50%; position: relative; }
+      td::before { position: absolute; left: 15px; width: 45%; white-space: nowrap; font-weight: 600; }
+      td:nth-of-type(1)::before { content: "ID"; }
+      td:nth-of-type(2)::before { content: "Nombre"; }
+      td:nth-of-type(3)::before { content: "Email"; }
+      td:nth-of-type(4)::before { content: "Pagó"; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Panel de Administración</h1>
+
+  <!-- Tarjetas de resumen -->
+  <div class="cards">
+    <div class="card total">
+      <h3>Total Usuarios</h3>
+      <p id="totalUsers">0</p>
+    </div>
+    <div class="card paid">
+      <h3>Pagaron</h3>
+      <p id="paidUsers">0</p>
+    </div>
+    <div class="card not-paid">
+      <h3>No Pagaron</h3>
+      <p id="notPaidUsers">0</p>
+    </div>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Pagó</th>
+      </tr>
+    </thead>
+    <tbody id="usersTable"></tbody>
+  </table>
+
+  <script>
+    async function cargarUsuarios() {
+      const res = await fetch("/admin/users");
+      const data = await res.json();
+
+      if (data.success) {
+        const tbody = document.getElementById("usersTable");
+        tbody.innerHTML = "";
+
+        let total = data.users.length;
+        let paidCount = 0;
+
+        data.users.forEach(user => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td class="${user.has_paid ? 'paid' : 'not-paid'}">${user.has_paid ? "Sí" : "No"}</td>
+          `;
+          if(user.has_paid) paidCount++;
+          tbody.appendChild(tr);
+        });
+
+        // Actualizar tarjetas
+        document.getElementById("totalUsers").textContent = total;
+        document.getElementById("paidUsers").textContent = paidCount;
+        document.getElementById("notPaidUsers").textContent = total - paidCount;
+      } else {
+        alert(data.message);
+      }
+    }
+
+    cargarUsuarios();
+  </script>
+</body>
+</html>

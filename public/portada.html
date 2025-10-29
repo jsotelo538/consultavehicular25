@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portada con Banners</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+  }
+
+   .portada {
+    position: relative;
+    width: 100%;
+    height: 85vh; /* altura controlada */
+    overflow: hidden;
+  }
+
+  /* ===== CONTENEDOR DE BANNERS ===== */
+   .banners {
+    display: flex;
+    transition: transform 0.8s ease;
+    width: 200%;
+    height: 100%; /* fuerza el alto uniforme */
+  }
+
+  .banner {
+    flex: 0 0 50%;
+    position: relative;
+    height: 100%;
+  }
+
+  .banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* recorta sin deformar */
+    display: block;
+  }
+  /* ===== BOTONES ===== */
+  .botones {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+
+  .boton {
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 10px 18px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.3s;
+  }
+
+  .boton:hover {
+    background: rgba(0,0,0,0.7);
+  }
+
+  /* ===== PUNTOS ===== */
+  .puntos {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .punto {
+    width: 12px;
+    height: 12px;
+    background: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .punto.activo {
+    background: #4a7c59;
+  }
+
+  /* ===== RESPONSIVO ===== */
+  @media (max-width: 768px) {
+    .banner img {
+      max-height: 55vh;
+    }
+    .boton {
+      font-size: 1.5rem;
+      padding: 6px 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <section class="portada">
+    <div class="banners" id="banners">
+      <div class="banner">
+        <img src="img/portadacorrejida.png" alt="Banner 1">
+      </div>
+      <div class="banner">
+        <img src="img/portada2.png" alt="Banner 2">
+      </div>
+    </div>
+
+    <div class="botones">
+      <button class="boton" id="anterior">❮</button>
+      <button class="boton" id="siguiente">❯</button>
+    </div>
+
+    <div class="puntos">
+      <span class="punto activo" data-index="0"></span>
+      <span class="punto" data-index="1"></span>
+    </div>
+  </section>
+
+<script>
+  const banners = document.getElementById('banners');
+  const puntos = document.querySelectorAll('.punto');
+  const btnAnt = document.getElementById('anterior');
+  const btnSig = document.getElementById('siguiente');
+  let index = 0;
+
+  function mostrarBanner(n) {
+    banners.style.transform = `translateX(-${n * 50}%)`;
+    puntos.forEach(p => p.classList.remove('activo'));
+    puntos[n].classList.add('activo');
+  }
+
+  btnSig.addEventListener('click', () => {
+    index = (index + 1) % 2;
+    mostrarBanner(index);
+  });
+
+  btnAnt.addEventListener('click', () => {
+    index = (index - 1 + 2) % 2;
+    mostrarBanner(index);
+  });
+
+  puntos.forEach(p => {
+    p.addEventListener('click', () => {
+      index = parseInt(p.dataset.index);
+      mostrarBanner(index);
+    });
+  });
+
+  setInterval(() => {
+    index = (index + 1) % 2;
+    mostrarBanner(index);
+  }, 5000);
+</script>
+
+</body>
+</html>
