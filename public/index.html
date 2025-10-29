@@ -1220,6 +1220,49 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
 .destacada .precio {
   color: #0056b3;
 }
+.planes-hero {
+  margin: 20px 0;
+  background: #f8f9f9;
+  border-radius: 10px;
+  padding: 15px 20px;
+}
+
+.planes-hero h3 {
+  margin-bottom: 10px;
+  color: #2b4a2f;
+  font-weight: 600;
+}
+
+.lista-planes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista-planes li {
+  display: flex;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #c8d8b5;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lista-planes li:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.nombre-plan {
+  font-weight: bold;
+  color: #4a7c59;
+}
+
+.detalle-plan {
+  color: #333;
+}
   </style>
 </head>
 <body>
@@ -1275,21 +1318,43 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
       <span class="punto" data-index="2"></span>
     </div>
   </section>
-  <section class="hero-informe">
+<section class="hero-informe">
   <div class="container-hero">
     <div class="hero-card">
       <div class="hero-left">
         <h1>Solicita tu Informe Vehicular</h1>
         <p class="descripcion-hero">
-          Recibe un informe completo y detallado al instante desde fuentes oficiales: papeletas lima y provincia, SOAT, revisión técnica, y más. Contamos con mas de 18 consultas. 
+          Recibe un informe completo y detallado al instante desde fuentes oficiales: papeletas Lima y provincia, SOAT, revisión técnica, y más. Contamos con más de 18 consultas.
         </p>
+
+        <div class="planes-hero">
+          <h3>Tenemos estos planes solicita tu informe :</h3>
+          <ul class="lista-planes">
+            <li>
+              <span class="nombre-plan">PLAN 1</span>
+              <span class="detalle-plan">1 consulta - <strong>S/10.00</strong></span>
+            </li>
+            <li>
+              <span class="nombre-plan">PLAN 3</span>
+              <span class="detalle-plan">3 consultas - <strong>S/25.00</strong></span>
+            </li>
+            <li>
+              <span class="nombre-plan">PLAN 5</span>
+              <span class="detalle-plan">5 consultas - <strong>S/35.00</strong></span>
+            </li>
+          </ul>
+        </div>
+
         <ul class="pasos-hero">
-          <li><span>1.</span> Paga S/10.00</li>
-          <li><span>2.</span> Llena tus datos</li>
-          <li><span>3.</span> Visualiza o descarga tu informe en PDF</li>
+          <li><span>1.</span> solicita tu informe </li>
+          <li><span>2.</span> Registrate</li>
+          <li><span>3.</span> escoge tu plan y realiza tus consultas</li>
+          <li><span>4.</span> Visualiza o descarga tu informe en PDF</li>
         </ul>
-        <button class="btn-navbar   btn-navbarr" id="btn-consulta"   >Solicitar Informe - S/ 10.00</button>
+
+        <button class="btn-navbar btn-navbarr" id="btn-consulta">Solicitar Informe</button>
       </div>
+
       <div class="hero-right">
         <img src="image-consultas-soat.png" alt="Informe vehicular" class="img-informe">
       </div>
@@ -1297,40 +1362,7 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
   </div>
 </section>
 <!-- SECCIÓN DE TARIFAS -->
-<section class="tarifas-section">
-  <h2 class="tarifas-titulo">Tarifas de Consultas Vehiculares</h2>
-  <div class="tarifas-grid">
-    <div class="tarifa-card">
-      <h3>1 Consulta</h3>
-      <p class="precio">S/ 12</p>
-      <ul>
-        <li>Informe completo del vehículo</li>
-        <li>Consulta válida por 1 uso</li>
-      </ul>
-      <a href="#" class="btn-comprar btn-navbarr" id="btn-consulta">Comprar</a>
-    </div>
-
-    <div class="tarifa-card destacada">
-      <h3>3 Consultas</h3>
-      <p class="precio">S/ 30</p>
-      <ul>
-        <li>3 informes vehiculares detallados</li>
-        <li>Válido por 7 días</li>
-      </ul>
-      <a href="#" class="btn-comprar">Comprar</a>
-    </div>
-
-    <div class="tarifa-card">
-      <h3>5 Consultas</h3>
-      <p class="precio">S/ 40</p>
-      <ul>
-        <li>5 informes vehiculares</li>
-        <li>Mayor ahorro por consulta</li>
-      </ul>
-      <a href="#" class="btn-comprar">Comprar</a>
-    </div>
-  </div>
-</section>
+ 
 
 <section class="beneficios">
   <h2>¿Por qué elegirnos?</h2>
