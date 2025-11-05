@@ -12,7 +12,7 @@ const app = express();
 
 // Conexión MySQL
 const db = mysql.createPool({
-  host: "localhost",
+  host: "38.242.248.121",
   user: "root",
   password: "1234",
   database: "consultavehicular"
@@ -182,7 +182,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-  const resetUrl = `http://localhost:3000/reset-password.html?token=${token}`;
+  const resetUrl = `https://www.consultavehicular.services/reset-password.html?token=${token}`;
   
  await transporter.sendMail({
   from: `"Soporte Consultas" <${process.env.EMAIL_USER}>`,
