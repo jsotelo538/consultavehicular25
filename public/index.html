@@ -40,7 +40,7 @@
       <a href="#servi">Informe</a>
       <a href="#pre">Preguntas</a>
     </nav>
-    <a class="btn-navbar  btn-navbarrr" href="#" id="btnLoginOpen">Pedir Informe</a>
+    <a class="btn-navbar  btn-navbarrr" href="result.html" id="btnInforme">Pedir Informe</a>
   </div>
 </div>
 </header>
@@ -986,7 +986,7 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
   justify-content: center; align-items: center;
 }
 
-/* Contenido del modal */
+/* CONTENIDO DEL MODAL */
 .modal-content {
   background: #fff;
   padding: 25px;
@@ -1028,7 +1028,9 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
   font-weight: bold;
   cursor: pointer;
 }
-  </style>
+
+ 
+</style>
 </head>
 <body>
   <!-- MODAL LOGIN -->
@@ -1053,6 +1055,8 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
     <span>¿Necesitas ayuda?</span>
   </div>
 </a>
+ 
+ 
 
 <div id="preloader">
   <div class="loader-logo">
@@ -1070,11 +1074,11 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
           Recibe un informe completo y detallado al instante desde fuentes oficiales: papeletas lima y provincia, SOAT, revisión técnica, y más. Contamos con mas de 18 consultas. 
         </p>
         <ul class="pasos-hero">
-          <li><span>1.</span> Paga S/18.00</li>
+          <li><span>1.</span> Paga S/10.00</li>
           <li><span>2.</span> Llena tus datos</li>
           <li><span>3.</span> Visualiza o descarga tu informe en PDF</li>
         </ul>
-        <button class="btn-navbar   btn-navbarr" id="btn-pagar"  >Solicitar Informe - S/ 18.00</button>
+        <button class="btn-navbar   btn-navbarr" id="btn-pagar"   >Solicitar Informe - S/ 10.00</button>
       </div>
       <div class="hero-right">
         <img src="image-consultas-soat.png" alt="Informe vehicular" class="img-informe">
@@ -1272,6 +1276,7 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
   </div>
 </div>
   <script>
+  
    const MIN_DISPLAY_TIME = 2500; // en milisegundos = 2.5 segundos
   const preloader = document.getElementById('preloader');
   const startTime = Date.now();
@@ -1383,7 +1388,19 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
       sidebarMenu.classList.remove('open');
     });
   });
+document.getElementById("btnInforme").addEventListener("click", async (e) => {
+  e.preventDefault();
+  const res = await fetch("/check-acceso");
+  const data = await res.json();
 
+  if (!data.logueado) {
+    window.location.href = "login.html";
+  } else if (!data.pagado) {
+    window.location.href = "pago.html";
+  } else {
+    window.location.href = "result.html";
+  }
+});
 
 // Referencias
 const modall = document.getElementById("loginModal");
@@ -1409,21 +1426,7 @@ window.onclick = function(event) {
   }
 }
 
-// Procesar login
-form.onsubmit = function(e) {
-  e.preventDefault();
-
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-
-  // Aquí validas datos reales, por ejemplo con AJAX al servidor
-  if (user === "admin" && pass === "1234") {
-    window.location.href = "https://www.consultavehicular.services/result.html";
-  } else {
-    alert("Usuario o contraseña incorrectos");
-  }
-}
-
+ 
   
   </script>
 </body>

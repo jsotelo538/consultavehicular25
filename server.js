@@ -33,7 +33,7 @@ app.use(bodyParser.json());
             {
               title: "Consulta vehicular",
               quantity: 1,
-              unit_price:18,
+              unit_price:10,
               currency_id: "PEN",
             },
           ],
@@ -54,86 +54,29 @@ app.use(bodyParser.json());
   });
   
 
-// --------- PROPIETARIOS ---------
-// --------- PROPIETARIOS ---------
-async function reesolverCaptchaTurnstile(page) {
-  const API_KEY_2CAPTCHA = process.env.API_KEY_2CAPTCHA;
+// --------- RESOLVER TURNSTILE ---------
+async function resolverTurnstile(page) {
+  console.log("⏳ Esperando a que cargue Cloudflare Turnstile...");
 
-  // Espera a que el widget esté presente (div o iframe)
-  await page.waitForSelector('.cf-turnstile, iframe[src*="challenges.cloudflare.com"]', { timeout: 60000 });
+  // Aseguramos que el widget existe
+  await page.waitForSelector(".cf-turnstile", { visible: true, timeout: 60000 });
+  console.log("✅ Widget encontrado");
 
-  // 1) Obtener la sitekey de forma robusta (data-sitekey o desde el iframe)
-  const sitekey = await page.evaluate(() => {
-    // 1a. Intento directo
-    const hostDiv = document.querySelector('.cf-turnstile');
-    let key = hostDiv?.getAttribute('data-sitekey') || '';
+  // Ahora simplemente esperamos a que el token aparezca
+  try {
+    await page.waitForFunction(() => {
+      const el = document.querySelector('input[name="cf-turnstile-response"]');
+      return el && el.value.length > 0;
+    }, { timeout: 45000 });
 
-    // 1b. Intento por iframe (k/pk/sitekey en querystring)
-    if (!key) {
-      const ifr = document.querySelector('iframe[src*="challenges.cloudflare.com"]');
-      if (ifr?.src) {
-        try {
-          const u = new URL(ifr.src);
-          key = u.searchParams.get('k') || u.searchParams.get('pk') || u.searchParams.get('sitekey') || '';
-        } catch (_) {}
-      }
-    }
-    return key || '';
-  });
-
-  if (!sitekey) throw new Error('No se pudo obtener la sitekey de Cloudflare Turnstile.');
-
-  const pageurl = page.url();
-  const userAgent = await page.evaluate(() => navigator.userAgent);
-
-  // 2) Enviar tarea a 2Captcha
-  const body = new URLSearchParams();
-  body.append('key', API_KEY_2CAPTCHA);
-  body.append('method', 'turnstile');
-  body.append('sitekey', sitekey);
-  body.append('pageurl', pageurl);
-  body.append('userAgent', userAgent); // importante que coincida
-
-  const start = await axios.post('http://2captcha.com/in.php', body);
-  if (!String(start.data).startsWith('OK|')) {
-    throw new Error('2Captcha error (in.php): ' + start.data);
+    console.log("🎉 Turnstile resuelto automáticamente (token generado).");
+  } catch (err) {
+    throw new Error("⚠️ El Turnstile no generó un token en el tiempo esperado.");
   }
-  const captchaId = String(start.data).split('|')[1];
-
-  // 3) Polling del resultado
-  let token = '';
-  for (let i = 0; i < 24; i++) {          // ~2 min
-    await new Promise(r => setTimeout(r, 5000));
-    const check = await axios.get(`http://2captcha.com/res.php?key=${API_KEY_2CAPTCHA}&action=get&id=${captchaId}`);
-    const txt = String(check.data);
-    if (txt === 'CAPCHA_NOT_READY') continue;
-    if (!txt.startsWith('OK|')) throw new Error('2Captcha error (res.php): ' + txt);
-    token = txt.split('|')[1];
-    break;
-  }
-  if (!token) throw new Error('Tiempo de espera agotado esperando el token Turnstile.');
-
-  // 4) Inyectar token + notificar a la UI
-  await page.evaluate((tk) => {
-    const inputs = Array.from(document.querySelectorAll('input[name="cf-turnstile-response"]'));
-    for (const input of inputs) {
-      input.value = tk;
-      input.dispatchEvent(new Event('input',  { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    // Fallback: habilitar botón "Buscar" si la UI no reaccionó
-    const btns = Array.from(document.querySelectorAll('button.ant-btn-primary, button'));
-    const buscar = btns.find(b => /buscar/i.test(b.innerText || ''));
-    if (buscar) buscar.disabled = false;
-  }, token);
-
-  return token;
 }
-
 async function obtenerAsientos(placa, ciudad) {
    const browser = await puppeteer.launch({
-    headless:true,
+    headless:false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
@@ -178,7 +121,7 @@ await page.waitForSelector(".ant-select-item-option", { visible: true, timeout: 
   await page.type("#numero", placa);
 
   // 7. Resolver captcha
-  await reesolverCaptchaTurnstile(page);
+
 
   // 8. Buscar
   const botones = await page.$$('button.ant-btn-primary');
@@ -190,7 +133,7 @@ await page.waitForSelector(".ant-select-item-option", { visible: true, timeout: 
     }
   }
 
-  await page.waitForSelector('table', { timeout: 30000 });
+  await page.waitForSelector('table', { timeout: 60000 });
 
   // 9. Abrir asientos
   const botoness = await page.$$('button.centradoOpciones.ant-btn-primary');
