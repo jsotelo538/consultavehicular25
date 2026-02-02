@@ -1,1301 +1,801 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consulta Vehicular</title>
-  <header class="navbar">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
- <div class="navbar-container">
-  <!-- Logo visible siempre -->
-  <a href="#"><img class="prin" src="principal.png" alt="Logo"></a>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información Vehicular Perú</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Botón de hamburguesa -->
-  <div class="menu-toggle" id="menuToggle">&#9776;</div>
+<style>
+/* ======================
+   VARIABLES Y RESET
+====================== */
+:root {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --primary: #2563eb;
+  --secondary: #22c55e;
+  --text: #0f172a;
+  --muted: #475569;
+  --radius: 16px;
+}
 
-  <!-- Menú lateral para móviles -->
-  <div class="sidebar-menu" id="sidebarMenu">
-    <button class="close-btn" id="closeMenu">&times;</button>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <!-- Logo centrado -->
-    <div class="sidebar-logo">
-      <img src="principal.png" alt="Logo">
-    </div>
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 40%, #ffffff 100%);
+  color: var(--text);
+  line-height: 1.6;
+}
 
-    <!-- Navegación lateral -->
-    <nav class="sidebar-nav">
-      <a href="#">Inicio</a>
-      <a href="#quienes-somos">Quiénes Somos</a>
-      <a href="#servi">Informe</a>
-      <a href="#pre">Preguntas</a>
-    </nav>
-  </div>
+a { color: inherit; text-decoration: none; }
 
-  <!-- Menú escritorio -->
-  <div class="menu-y-boton">
-    <nav class="desktop-menu">
-      <a href="#">Inicio</a>
-      <a href="#quienes-somos">Quiénes Somos</a>
-      <a href="#servi">Informe</a>
-      <a href="#pre">Preguntas</a>
-    </nav>
-    <a class="btn-navbar  btn-navbarrr" href="result.html" id="btnInforme">Pedir Informe</a>
-  </div>
-</div>
-</header>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9fbff;
-      color: #002d5f;
-    }
-    .menu-y-boton {
+header{
+   position: sticky;
+   top: 0;
+   background: rgba(255, 255, 255, 0.8);
+   border-bottom: 1px solid #e5e7eb;
+   backdrop-filter: blur(10px);
+   z-index: 50;
+}
+
+.nav{
   display: flex;
-  align-items: center;
-  gap: 15px; /* separa solo un poco el botón de los enlaces */
-}
-
-.menu-y-boton nav a {
-  margin-left: 15px;
-}
-    .btn-navbar {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-left: 20px;
-  white-space: nowrap;
-}
-
-.btn-navbar:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-    .prin{
-      width: 250px;
-    }
-.navbar {
-  background: linear-gradient(90deg, #e1f0ff, #bcdfff);
-  color: rgb(255, 255, 255);
-  padding: 15px 0;
-  border-radius: 0 0 15px 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.navbar-container {
-  max-width: 1000px;
-  margin: 0 auto;
-   position: relative;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
   justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  align-items: center;
+  padding: 16px 24px;
   flex-wrap: wrap;
 }
 
-.navbar .logo {
-  font-size: 20px;
-  font-weight: bold;
+.logo{
+   font-size: 1.2rem;
+   font-weight: 800;
+   background: linear-gradient(135deg, #2F80ED, #27AE60);
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   display: flex;
+   align-items: center;
+   gap:5px;
 }
 
-.navbar nav a {
- position: relative;
-  color: #003366;
-  text-decoration: none;
-  margin-left: 20px;
-  font-size: 16px;
-  font-weight: 600;
-  transition: color 0.3s ease;
+.nav-ul{
+  display: flex;
+  gap: 20px;
+  list-style: none;
 }
 
-.navbar nav a::after {
+.nav-ul li{
+  animation-name:barramenu ;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.nav-ul-txt{
+  color: var(--muted); 
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-ul-txt::before{
   content: "";
   position: absolute;
+  top: 20px;
   left: 0;
-  bottom: -5px; /* distancia debajo del texto */
-  width: 0;
-  height: 2px;
-  background-color: #0056b3; /* color de la barra */
-  transition: width 0.3s ease;
+  width: 0px;
+  height: 3px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  transition: width 0.4s ease;
 }
 
-.navbar nav a:hover::after {
+.nav-ul-txt:hover::before{
   width: 100%;
+} 
+
+.btn{
+   background: linear-gradient(135deg, var(--primary), var(--secondary));
+   border: none;
+   border-radius: 999px;
+   padding: 12px 20px;
+   color: var(--card);
+   cursor: pointer;
+   box-shadow: 0 10px 25px rgba(37,99,235,0.25) ;
+   font-weight: 700;
+   transition: transform 0.15s ease, box-shadow 0.15s ease;
+   animation-name: desliza;
+   animation-duration: 1.1s;
+   animation-delay: 0.9s;
+   animation-timing-function: ease-out;
+   animation-fill-mode: both;
 }
 
-@media (max-width: 600px) {
-  .navbar-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .navbar nav a {
-    margin: 10px 0;
-  }
+@keyframes barramenu {
+  from{ transform: translateY(-100%); opacity: 0; }
+  to{ transform: translateY(0); opacity: 1; }
 }
-    .titu {
-      background-color: #ffffff;
-      padding: 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
 
-   .asv {
-      
-      font-size: 2rem;
-      color: #002d5f;
-       
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 20px;
-      gap: 40px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .form-box {
-      background-color: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      max-width: 350px;
-      flex: 1;
-    }
-
-    .form-box input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      font-size: 1rem;
-    }
-
-    .form-box button {
-      width: 100%;
-       background-color: #007bff;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-        font-weight: bold;
-          box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
-    }
-
-    .form-box button:hover {
-       background-color: #0056b3;
-    }
-
-    .info-box {
-      flex: 1;
-      max-width: 500px;
-      background: linear-gradient(135deg, #cfe2f3, #eaf7e9);
-      padding: 30px;
-      border-radius: 12px;
-      color: #003366;
-    }
-
-    .info-box h2 {
-      margin-top: 0;
-      font-size: 1.8rem;
-    }
-
-    .info-item {
-      margin-top: 20px;
-    }
-
-    .info-item strong {
-      display: block;
-      margin-bottom: 5px;
-      color: #002d5f;
-    }
-    .section-quienes-somos {
-  background: linear-gradient(135deg, #f0f8ff, #e6f0ff);
-  padding: 60px 20px;
-  color: #1e2f45;
-
-   position: relative;
-  background: url('2.png') no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed; /* opcional para efecto parallax */
-  z-index: 1;
+@keyframes desliza {
+  from{ transform: translateY(150%); opacity: 0; }
+  to{ transform: translateY(0%); opacity: 1; }
 }
-.section-quienes-somos::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
+
+.btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(37,99,235,0.35);
+}
+
+.hero{
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  margin: auto;
+  gap: 40px;
+  padding:80px 24px 60px;
+}
+
+h1{
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  animation-name: desli;
+  animation-duration: 1.8s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes desli {
+  from{ transform: translateX(-100%); opacity: 0; }
+  to{ transform: translateX(0); opacity: 1; }
+}
+
+.hero p{
+  font-size:  1.05rem;  
+  margin-bottom: 28px;
+  max-width: 560px;
+  color: var(--muted);
+  animation-name: desli;
+  animation-duration: 1.7s;
+  animation-delay: 0.9s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  animation-name: carru;
+  animation-duration: 1.7s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes carru {
+  from{ transform: translateX(100%); opacity: 0; }
+  to{ transform: translate(0); opacity: 1; }
+}
+
+.carousel img {
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.85); /* suaviza el fondo si es muy notorio */
-  z-index: 2;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1s;
 }
 
-.section-quienes-somos .container,
-.section-quienes-somos .bloques-info {
-  position: relative;
-  z-index: 3;
-}
-.section-quienes-somos .container {
-  max-width: 1100px;
-  margin: auto;
-}
-.quienes-grid {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 40px;
-  margin-bottom: 50px;
-}
-.quienes-imagen img {
-    max-width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.titulo-seccion {
-  font-size: 28px;
-  color: #007bff;
-  border-left: 5px solid #007bff;
-  padding-left: 15px;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-.quienes-texto p {
-  font-size: 16px;
-  color: #444;
-  line-height: 1.7;
-  margin-bottom: 15px;
-}
-.section-quienes-somos p {
- font-size: 17px;
-  line-height: 1.7;
-  margin-bottom: 20px;
-}
+.carousel img.active { opacity: 1; }
 
-.section-quienes-somos .bloque h3 {
-  color: #0056b3;
-  font-size: 22px;
-  margin-bottom: 10px;
-  position: relative;
-}
-.bloque {
-  flex: 1;
-  min-width: 250px;
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
- 
-.section-quienes-somos .bloque p {
-  margin-top: 10px;
-    font-size: 16px;
-}
-.bloque h3 {
-  color: #004a8f;
-  margin-bottom: 10px;
-}
-
-.bloque p {
-  color: #555;
-  font-size: 15px;
-  line-height: 1.6;
-}
-.bloques-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between;
-}
-
-.footer {
-  margin-top: 60px;
-  background: linear-gradient(90deg, #007bff, #0056b3);
-  color: white;
-  padding: 25px;
+.info-card{
+  max-width: 1200px;
   text-align: center;
-  border-radius: 0 0 15px 15px;
-  font-size: 15px;
-}
-
-    .footer a {
-      color: #ffe;
-      text-decoration: underline;
-    }
-   .mensaje-info {
-  background-color: #e8f4fd;
-  color: #007bff;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 8px;
-  text-align: center;
-  border: 1px solid #b3daff;
-  font-weight: 500;
-}
-.quienes-grid {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 40px;
-}
-
-.quienes-imagen {
-  flex: 1;
-  min-width: 280px;
-}
-
-.quienes-imagen img {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.quienes-texto {
-  flex: 2;
-  min-width: 300px;
-}
-.faq-answer ol {
-  padding-left: 20px;
-  margin-top: 10px;
-  line-height: 1.6;
-}
-.faq-item.active .faq-answer {
-  max-height: 1000px; /* o más si la lista es más larga */
-  padding: 20px;
-}
-@media (max-width: 768px) {
-  .quienes-grid {
-    flex-direction: column;
-  }
-
-  .quienes-imagen,
-  .quienes-texto {
-    width: 100%;
-  }
-}
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        padding: 20px;
-      }
-
-      .info-box {
-        max-width: 100%;
-      }
-
-      .form-box {
-        max-width: 100%;
-      }
-    }
- .faq-section {
-  background: #f8fbff;
-  padding: 60px 20px;
-  color: #002d5f;
-  border-top: 1px solid #d0e3ff;
-}
-
-.faq-section .container {
-  max-width: 800px;
-  margin: auto;
-}
-
-.faq-list {
   display: flex;
   flex-direction: column;
+  margin: auto;
+  margin-top: 60px;
+}
+
+.info-card h2{
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.info-card p{
+  color: var(--muted);
+}
+
+.card p{ color: var(--text); }
+
+.card{
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius);
+  max-width: 200px;
+  background: var(--card);
+  padding: 24px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+/* Cuando la card es visible en pantalla */
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Opcional: retraso secuencial */
+.card.visible:nth-child(1) { transition-delay: 0.1s; }
+.card.visible:nth-child(2) { transition-delay: 0.2s; }
+.card.visible:nth-child(3) { transition-delay: 0.3s; }
+.card.visible:nth-child(4) { transition-delay: 0.4s; }
+.card.visible:nth-child(5) { transition-delay: 0.5s; }
+.card.visible:nth-child(6) { transition-delay: 0.6s; }
+.card.visible:nth-child(7) { transition-delay: 0.7s; }
+.card.visible:nth-child(8) { transition-delay: 0.8s; }
+.card.visible:nth-child(9) { transition-delay: 0.9s; }
+.card h4{ font-size: 18px; }
+
+.card-primary{
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px, 1fr));
+  gap: 22px;
+  justify-content: center;
+  padding: 30px;
+}
+
+.card img{ margin-bottom: 10px; height: 48px; }
+
+.card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.funcion, .entidades{
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+
+.funcion h2, .entidades h2{
+  margin-top: 65px;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.funcion .descrip, .entidades .descrip{
+  margin-bottom:40px;
+  color: var(--muted);
+}
+
+.funcion p{ color: var(--text); }
+
+.card-funcion{
+  display: grid;
+  padding: 15px 24px;
+  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
   gap: 15px;
 }
 
-.faq-item {
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
+ 
+.card-funcion-info {
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 25px;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root); /* enlaza la animación al scroll */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.faq-question {
-  width: 100%;
-  padding: 15px 20px;
-  background-color: #fff;
-  border: none;
-  font-size: 17px;
-  font-weight: 600;
-  text-align: left;
-  color: #0056b3;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+/* Primera card: de izquierda a derecha */
+.card-funcion-info:nth-child(1) {
+    animation-name: slideLeftToRight;
+    animation-duration: 1s;
 }
 
-.faq-question:hover {
-  background-color: #f0f4ff;
+@keyframes slideLeftToRight {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0%);
+        opacity: 1;
+    }
 }
 
-.faq-answer {
-  max-height: 0;
-    
- overflow: hidden;
-  padding: 0 20px;
-  background-color: #f9fcff;
-  color: #333;
-  font-size: 15px;
-  line-height: 1.6;
-  transition: max-height 0.4s ease, padding 0.4s ease;
+/* Segunda card: de arriba hacia abajo */
+.card-funcion-info:nth-child(2) {
+    animation-name: slideTopToBottom;
+    animation-duration: 1s;
 }
 
-.faq-item.active .faq-answer {
-  max-height: 300px;
-  padding: 15px 20px;
+@keyframes slideTopToBottom {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0%);
+        opacity: 1;
+    }
 }
 
-    #preloader {
-background: linear-gradient(135deg, #d6eaff, #eaf4ff);
-      position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #ffffff;
-  z-index: 9999;
+/* Tercera card: de derecha a izquierda */
+.card-funcion-info:nth-child(3) {
+    animation-name: slideRightToLeft;
+    animation-duration: 1s;
+}
+
+@keyframes slideRightToLeft {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}
+.card-funcion-info:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.card-funcion-info h4{
+  font-weight: 700;
+  font-size: 18px;  
+}
+
+.descrip-entidades{
   display: flex;
-  align-items: center;
   justify-content: center;
-  transition: opacity 0.5s ease;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
-.loader-logo img {
-  width: 210px;
-  animation: pulse 1.5s infinite ease-in-out;
+.descrip-img img{
+  width: 100%;
+  max-width: 120px;
+  object-fit: cover;
+  filter:grayscale(100%);
+  opacity: 0.8;
+  transition: all 0.3s;
+  
 }
-.loader-logo {
-  animation: zoomIn 1s ease forwards;
+
+.descrip-img img:hover{
+  opacity: 1;
+  filter:grayscale(0%);
+  transform: scale(1.05);
+}
+/* Animación inicial para todas las imágenes */
+.descrip-img {
   opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
-.logo{
-  width: 300px;
-  margin: auto;
+
+/* Cuando la imagen entra en pantalla */
+.descrip-img.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
-.titu img{
-  width: 280px;
+
+/* Retrasos secuenciales para efecto cascade */
+.descrip-img.visible:nth-child(1) { transition-delay: 0.1s; }
+.descrip-img.visible:nth-child(2) { transition-delay: 0.2s; }
+.descrip-img.visible:nth-child(3) { transition-delay: 0.3s; }
+.descrip-img.visible:nth-child(4) { transition-delay: 0.4s; }
+.descrip-img.visible:nth-child(5) { transition-delay: 0.5s; }
+.descrip-img.visible:nth-child(6) { transition-delay: 0.6s; }
+.descrip-img.visible:nth-child(7) { transition-delay: 0.7s; }
+.descrip-img.visible:nth-child(8) { transition-delay: 0.8s; }
+footer{
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  margin-top: 75px;
 }
-@keyframes zoomIn {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+
+.footer{
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content:center;
+  text-align: start;
 }
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
+
+.footer-card{
+  margin: 45px;
 }
+
+.footer-card li{ list-style: none; }
+
+.footer-card a,.footer-card p{
+  color: var(--muted) !important;
+  font-size: 14px;
+}
+
+.footer-card p{ max-width: 280px; }
+
+.coorporat{
+  color: var(--muted) !important;
+  font-size: 14px;
+  text-align: center;
+}
+
 .whatsapp-float {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #25d366;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  z-index: 1000;
-  transform: scale(1);
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.whatsapp-float:hover {
-  transform: scale(1.1);
-  background-color: #128c7e;
-}
-
-.whatsapp-icon {
-  width: 24px;
-  height: 24px;
-  fill: white;
-}
-
-.whatsapp-content {
-  display: flex;
-  align-items: center;
-}
- 
-.seccion-servicios {
-  background: #f0f6ff;
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.servicios-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 30px;
-  margin-top: 40px;
-}
-
-.servicio-box {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-  padding: 25px;
-  transition: transform 0.3s ease;
-}
-
-.servicio-box:hover {
-  transform: translateY(-5px);
-}
-
-.servicio-box img {
-  width: 130px;
-  height: 130px;
-  object-fit: contain;
-  margin-bottom: 10px;
-}
-
-.servicio-box h3 {
-  color: #0056b3;
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.servicio-box p {
-  font-size: 15px;
-  color: #333;
-}
-
-
-.hero-informe {
-  background: linear-gradient(135deg, #f1f8ff, #eaf4ff);
-  padding: 80px 20px;
-}
-
-.container-hero {
-  max-width: 1100px;
-  margin: auto;
-}
-
-.hero-card {
-  display: flex;
-  flex-wrap: wrap;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-  padding: 40px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-}
-
-.hero-left {
-  flex: 1;
-  min-width: 280px;
-}
-
-.hero-left h1 {
-  font-size: 32px;
-  color: #004b99;
-  margin-bottom: 15px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
-
-.descripcion-hero {
-    font-family: 'Poppins', sans-serif;
-  font-size: 17px;
-  color: #444;
-  margin-bottom: 20px;
-  line-height: 1.7;
-}
-
-.pasos-hero {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 25px;
-}
-
-.pasos-hero li {
-   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #0056b3;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pasos-hero li span {
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  padding: 4px 10px;
+  width: 56px;
+  height: 56px;
+  background-color: #25D366;
   border-radius: 50%;
-  font-size: 15px;
-}
-
-.hero-right {
-  flex: 1;
-  min-width: 250px;
-  text-align: center;
-}
-
-.img-informe {
-  width: 100%;
-  max-width: 400px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-/* Menú móvil */
-.menu-toggle {
-  font-size: 28px;
-  cursor: pointer;
-  display: none;
-  margin-left: auto;
-   color: #007bff;
-}
-
-/* Sidebar lateral */
-.sidebar-menu {
-  position: fixed;
-  top: 0;
-  right: -100%;
-   width: 280px;
-  max-width: 280px;
-  height: 100vh;
- background: rgba(255, 255, 255, 0.9);
-  transition: right 0.3s ease;
-  z-index: 2000;
-  padding: 20px;
-  box-shadow: -2px 0 5px rgba(0,0,0,0.2);
-}
-
-.sidebar-menu.open {
-  right: 0;
-}
-
-.sidebar-logo {
-    text-align: center;
-  margin-top: 40px;
-  margin-bottom: 20px;
- 
-}
-
-.sidebar-logo img {
-  max-width: 150px;
-  
-}
-
-.sidebar-nav {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  z-index: 999;
+  transition: transform 0.2s ease;
 }
 
-.sidebar-nav a {
-  color: #333;
-  font-size: 18px;
-  text-decoration: none;
-  text-align: center;
-}
+.whatsapp-float:hover { transform: scale(1.08); }
 
-.close-btn {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  font-size: 25px;
+.whatsapp-float img { width: 32px; height: 32px; }
+.funcion2{
+   animation-name: desli;
+  animation-duration: 1.8s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  background-image: url("camio.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  width: 100%;
+  padding: 30px;
+   display: flex;
+  justify-content: center;
+}
+ .consult{
+  background-color: rgba(255, 255, 255, 0.4); /* ligero blanco */
+  backdrop-filter: blur(10px); /* desenfoque del fondo detrás */
+  -webkit-backdrop-filter: blur(10px); /* para Safari */
+  padding: 10px;
+  width: 100%;
+  max-width: 480px; 
+  border-radius: 8px;
+ }
+
+ 
+/* ======================
+   MENÚ HAMBURGUESA
+====================== */
+.menu-toggle{
+  display: none;
+  font-size: 1.8rem;
   background: none;
   border: none;
   cursor: pointer;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-  .desktop-menu,
-  .btn-navbarrr {
+  .menu-toggle { display: block; }
+  .nav-ul {
+    flex-direction: column;
+    width: 100%;
+    display: none;
+    margin-top: 10px;
+  }
+  .nav-ul.show { display: flex; }
+  .btn { width: 100%; text-align: center; }
+  .btnp{
     display: none;
   }
+}
 
-  .menu-toggle {
-    display: block;
+/* ======================
+   MEDIA QUERIES RESPONSIVE
+====================== */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; gap: 30px; padding: 60px 16px 40px; }
+  .card-primary { gap: 16px; margin: auto;}
+  .card-funcion { grid-template-columns: 1fr; }
+  .descrip-img img { max-width: 80px; }
+  .whatsapp-float{
+    right: 10px;
   }
 }
-@media (max-width: 768px) {
-  .hero-card {
-    flex-direction: column-reverse;
-    text-align: center;
-  }
-  .hero-left h1 {
-    font-size: 26px;
-  }
-}
 
-.beneficios-section {
-  padding: 60px 20px;
-  background: #ffffff;
-}
-
-.beneficios-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 30px;
-  max-width: 1100px;
-  margin: auto;
-}
-
-.beneficio {
-  background: #f4f9ff;
-  border-radius: 12px;
-  padding: 25px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
-}
-
-.beneficio:hover {
-  transform: translateY(-5px);
-}
-
-.beneficio img {
-  width: 50px;
-  margin-bottom: 15px;
-}
-
-.beneficio h4 {
-  font-size: 17px;
-  color: #0056b3;
-  margin-bottom: 10px;
-}
-
-.beneficio p {
-  font-size: 14px;
-  color: #333;
-  font-family: 'Poppins', sans-serif;
-}
-.beneficios {
-  text-align: center;
-  padding: 2rem 1rem;
-  background: #f1f5f9;
-  font-family: 'Poppins', sans-serif;
-}
-.beneficios h2 {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #003366;
-  font-family: 'Poppins', sans-serif;
-}
-.beneficios-lista {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-}
-.beneficio {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 300px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-.beneficio img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 1rem;
-}
-.beneficio h3 {
-  font-size: 1.2rem;
-  color: #2563eb;
-  margin-bottom: 0.5rem;
-}
-.beneficio p {
-  font-size: 0.95rem;
-  color: #333;
-}
-/* Barra flotante lateral */
-.barra-redes-flotante {
-  position: fixed;
-  top: 40%;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 999;
-}
-
-.barra-redes-flotante a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 45px;
-  height: 45px;
-  margin: 5px 0;
-  color: #fff;
-  font-size: 20px;
-  transition: all 0.3s ease;
-  border-radius: 0 8px 8px 0;
-}
-
-.barra-redes-flotante a.facebook {
-  background-color: #3b5998;
-}
-
-.barra-redes-flotante a.instagram {
-  background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-}
-
-.barra-redes-flotante a.tiktok {
-  background-color: #010101;
-}
-
-.barra-redes-flotante a:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-.modal {
-  display: none; /* Oculto por defecto */
-  position: fixed;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-contenido {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-  animation: zoomIn 0.3s ease;
-}
-
-.modal-contenido img {
-  width: 60%;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.cerrar {
-  position: absolute;
-  top: -10px;
-  right: 180px;
-  background: #fff;
-  border: none;
-  font-size: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 5px 10px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-}
 @media (max-width: 480px) {
-  .modal-contenido {
-    max-width: 100%;
-    padding: 10px;
-  }
-
-  .modal-contenido img {
-    width: 100%;
-    max-height: 75vh;
-  }
-
-  .cerrar {
-    font-size: 16px;
-    padding: 5px 10px;
-     right: 10px;
-       top: -20px;
-  }
+  .hero { padding: 40px 12px 30px; }
+  .card-primary { grid-template-columns: 1fr;  }
+  .card-funcion { gap: 12px; }
+  .footer { flex-direction: column; text-align: center; }
+  .footer-card { margin: 20px 0; }
 }
-@keyframes zoomIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-.video-tutorial {
-  background: linear-gradient(135deg, #f0f8ff, #e6f0ff);
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.video-tutorial .container {
-  max-width: 1000px; /* Ajuste para que siga el mismo ancho que tu contenido */
-  margin: auto;
-}
-
-.video-tutorial p {
-  font-size: 16px;
-  color: #444;
-  max-width: 700px;
-  margin: 10px auto 30px;
-}
-
-.video-wrapper {
-  width: 100%;
-  max-width: 800px; /* Limita el ancho máximo del video */
-  margin: auto;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.video-wrapper video {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.modall {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  justify-content: center; align-items: center;
-}
-
-/* CONTENIDO DEL MODAL */
-.modal-content {
-  background: #fff;
-  padding: 25px;
-  border-radius: 10px;
-  max-width: 350px;
-  width: 90%;
-  text-align: center;
-}
-
-.modal-content h2 {
-  margin-bottom: 15px;
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.modal-content button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.modal-content button:hover {
-  background-color: #45a049;
-}
-
-.close {
-  float: right;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
- 
 </style>
 </head>
 <body>
-  <!-- MODAL LOGIN -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Iniciar Sesión</h2>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Usuario" required>
-      <input type="password" id="password" placeholder="Contraseña" required>
-      <button type="submit">Ingresar</button>
-    </form>
-  </div>
-</div>
-
-<a href="https://wa.me/51949319753?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular"
-   class="whatsapp-float" target="_blank" title="¿Necesitas ayuda?">
-  <div class="whatsapp-content">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="whatsapp-icon">
-      <path fill="white" d="M380.9 97.1C339.3 55.5 282.4 32 222.6 32c-121.1 0-219.6 98.5-219.6 219.6 0 38.6 10 76.3 29 109.3L4.4 480l123.4-32.4c31.9 17.5 67.8 26.8 104.8 26.8h.1c121.1 0 219.6-98.5 219.6-219.6 0-59.8-23.5-116.7-66.4-158.7zM222.6 438.6c-30.2 0-59.9-8.1-85.7-23.4l-6.1-3.6-73.2 19.2 19.5-71.1-4.5-7c-17.8-27.7-27.1-59.9-27.1-93 0-94.2 76.6-170.8 170.8-170.8 45.7 0 88.7 17.8 121 50.1s50.1 75.3 50.1 121c0 94.1-76.6 170.6-170.8 170.6zm101.2-130.1c-5.5-2.8-32.7-16.1-37.8-17.9-5.1-1.9-8.8-2.8-12.5 2.8s-14.4 17.9-17.7 21.6c-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66.1-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7s-12.5-30-17.1-41.1c-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2s-9.7 1.4-14.8 6.9c-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.7 57.4c2.8 3.7 39.2 60 95.1 84.2 13.3 5.7 23.7 9.1 31.8 11.6 13.4 4.3 25.6 3.7 35.2 2.2 10.7-1.6 32.7-13.4 37.3-26.4 4.6-13.1 4.6-24.3 3.2-26.3-1.3-2.1-5-3.3-10.5-6.1z"/>
-    </svg>
-    <span>¿Necesitas ayuda?</span>
-  </div>
+<a href="https://wa.me/51926838543?text=Hola%20quiero%20hacer%20una%20consulta%20vehicular" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
 </a>
- 
- 
 
-<div id="preloader">
-  <div class="loader-logo">
-    <img src="principal.png" alt="Logo de VALHAR">
+<header>
+  <nav class="nav">
+    <div class="logo"><img src="data:image/svg+xml;utf8,...(svg)" alt=""> Informacion Vehicular </div>
+    
+    <!-- BOTÓN HAMBURGUESA -->
+    <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
+    
+    <ul class="nav-ul">
+        <li><a href="#" class="nav-ul-txt">Servicios</a></li>
+        <li><a href="#" class="nav-ul-txt">Cómo funciona</a></li>
+        <li><a href="#" class="nav-ul-txt">Entidades</a></li>
+        <li><a href="#" class="nav-ul-txt">Beneficios</a></li>
+    </ul>
+    <button class="btn btnp"  >Ir a pagar</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="fade-in">
+    <h1>Consulta vehicular completa en segundos</h1>
+    <p>Accede a más de <strong>27 consultas oficiales</strong> en un solo lugar: SUNAT, SUNARP, SOAT, revisión técnica, Infogas, papeletas de Lima y Callao, historial de propietarios y mucho más.</p>
+    <button class="btn" id="btn-pagar">Pagar y consultar - S/ 10.00</button>
+  </div>
+  <div class="carousel fade-in">
+    <img src="Sin título-111111.jpg" alt="Consulta vehicular" class="active">
+    <img src="Portada1.png" alt="Reporte vehicular">
+    <img src="portada12.png" alt="Datos del vehículo">
   </div>
 </div>
-  
- 
-  <section class="hero-informe">
-  <div class="container-hero">
-    <div class="hero-card">
-      <div class="hero-left">
-        <h1>Solicita tu Informe Vehicular</h1>
-        <p class="descripcion-hero">
-          Recibe un informe completo y detallado al instante desde fuentes oficiales: papeletas lima y provincia, SOAT, revisión técnica, y más. Contamos con mas de 18 consultas. 
-        </p>
-        <ul class="pasos-hero">
-          <li><span>1.</span> Paga S/10.00</li>
-          <li><span>2.</span> Llena tus datos</li>
-          <li><span>3.</span> Visualiza o descarga tu informe en PDF</li>
-        </ul>
-        <button class="btn-navbar   btn-navbarr" id="btn-pagar"   >Solicitar Informe - S/ 10.00</button>
-      </div>
-      <div class="hero-right">
-        <img src="image-consultas-soat.png" alt="Informe vehicular" class="img-informe">
-      </div>
-    </div>
-  </div>
-</section>
-<section class="beneficios">
-  <h2>¿Por qué elegirnos?</h2>
-  <div class="beneficios-lista">
-    <div class="beneficio">
-      <img src="https://cdn-icons-png.flaticon.com/512/2936/2936885.png" alt="Rápido">
-      <h3>Rápido y en línea</h3>
-      <p>Recibe tu informe al instante, sin papeleo.</p>
-    </div>
-    <div class="beneficio">
-      <img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png"  alt="Completo">
-      <h3>Fuentes oficiales</h3>
-      <p>Incluye papeletas SAT, SOAT ,ATU , Revisión técnica, SUNARP y más.</p>
-    </div>
-    <div class="beneficio">
-      <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="Confiable">
-      <h3>Formato PDF</h3>
-      <p>Descarga o revisa el informe desde cualquier dispositivo.</p>
-    </div>
-    <div class="beneficio">
-      <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Confiable">
-      <h3>Seguro y confidencial</h3>
-      <p>Tu información está protegida con protocolos seguros.</p>
-    </div>
-  </div>
- 
-  <section class="section-quienes-somos" id="quienes-somos">
-  <div class="container quienes-grid">
-    <div class="quienes-imagen">
-      <img src="principal.png" alt="Quiénes Somos - VALHAR">
-    </div>
-    <div class="quienes-texto">
-      <h2 class="titulo-seccion">¿Quiénes Somos?</h2>
-      <p>
-        En <strong>Consulta Vehiculares</strong> no solo te ofrecemos un informe vehicular detallado, sino también la seguridad y tranquilidad que necesitas para tomar decisiones inteligentes al comprar un vehículo usado.
-      </p>
-      <p>
-        Sabemos que adquirir un auto es una inversión importante, y por eso nos dedicamos a brindarte información veraz, actualizada y confiable para que puedas evitar riesgos y elegir con total confianza.
-      </p>
-      <p>
-        Desde nuestros inicios, nos hemos comprometido con la transparencia y honestidad en el mercado automotriz peruano, ayudando a miles de clientes a identificar autos con papeletas, deudas o antecedentes.
-      </p>
-    </div>
-  </div>
 
-  <div class="container bloques-info">
-    <div class="bloque">
-      <h3>Misión</h3>
-      <p>Brindar informes vehiculares detallados, precisos y confiables, para que nuestros clientes puedan tomar decisiones de compra seguras y bien informadas.</p>
-    </div>
-    <div class="bloque">
-      <h3>Visión</h3>
-      <p>Ser el referente líder en historial vehicular en Perú, reconocidos por nuestra exactitud, transparencia y tecnología.</p>
-    </div>
-    <div class="bloque">
-      <h3>Filosofía</h3>
-      <p>Nos regimos por principios de transparencia, precisión y compromiso. Entregamos reportes respaldados por datos oficiales con un enfoque ético y personalizado.</p>
-    </div>
-  </div>
-</section>
-
-<!-- Sección Video Tutorial -->
-<section class="video-tutorial" id="video-tutorial">
-  <div class="container">
-    <h2 class="titulo-seccion">Video Tutorial</h2>
-    <p>Mira este video para aprender cómo usar nuestra plataforma de consulta vehicular.</p>
-    <div class="video-wrapper">
-      <video controls>
-        <source src="Video de WhatsApp 2025-08-06 a las 18.41.51_fe76a799.mp4" type="video/mp4">
-        Tu navegador no soporta la reproducción de video.
-      </video>
-    </div>
-  </div>
-</section>
-
-
-<section class="seccion-servicios" id="servi">
-  <div class="container">
-    <h2 class="titulo-seccion">¿Qué contiene el informe vehicular?</h2>
-    <div class="servicios-grid">
-      <div class="servicio-box">
-        <img src="proy/satlima.webp" alt="Papeletas">
-        <h3>Papeletas</h3>
-        <p>Consulta de infracciones pendientes en Lima, Callao y otras ciudades.</p>
-      </div>
-      <div class="servicio-box">
-        <img src="proy/soat.jpg" alt="SOAT">
-        <h3>SOAT</h3>
-        <p>Verifica si el vehículo cuenta con un SOAT vigente, compañía y vigencia.</p>
-      </div>
-      <div class="servicio-box">
-        <img src="proy/revision.png" alt="Revisión Técnica">
-        <h3>Revisión Técnica</h3>
-        <p>Revisa si el vehículo pasó la revisión técnica obligatoria del MTC.</p>
-      </div>
-      <div class="servicio-box">
-        <img src="proy/sunarp.jpg" alt="Datos del vehículo">
-        <h3>Datos SUNARP</h3>
-        <p>Incluye información del propietario, placa, modelo, VIN, motor y más.</p>
-      </div>
-      
-    </div>
-  </div>
-</section>
-<section class="mensaje-info">
-  ¿Tienes dudas? Haz clic en el botón de WhatsApp o contáctanos para más información. ¡Estamos para ayudarte!
-</section>
-<section class="faq-section" id="pre">
-  <div class="container">
-    <h2 class="titulo-seccion">Preguntas Frecuentes</h2>
-
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-question">¿Qué incluye el informe vehicular?</button>
-        <div class="faq-answer">
-<ol>
-        <li>SOAT</li>
-        <li>ORDEN DE CAPTURA POR GRAVAMEN</li>
-        <li>SINIESTROS</li>
-        <li>REVISION TECNICA MTC</li>
-        <li>INFOGAS GNV</li>
-        <li>SUTRAN</li>
-        <li>ATU</li>
-        <li>SAT A NIVEL NACIONAL</li>
-        <li>SAT LIMA</li>
-        <li>SAT CALLAO</li>
-        <li>SAT CHICLAYO</li>
-        <li>SAT TRUJILLO</li>
-        <li>SAT TACNA</li>
-        <li>SAT AREQUIPA</li>
-        <li>SAT PIURA</li>
-        <li>SAT ICA</li>
-        <li>SAT CUSCO</li>
-        <li>SAT PUNO</li>
-        <li>SAT CAJAMARCA</li>
-        <li>SAT ANDAHUAYLAS</li>
-        <li>SAT PUCALLPA</li>
-        <li>SAT CHACHAPOYAS</li>
-        <li>SAT HUANUCO</li>
-        <li>SAT TARAPOTO</li>
-        <li>SAT HUANCAYO</li>
-      </ol>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question">¿Cuánto demora en llegar el informe?</button>
-        <div class="faq-answer">
-          <p>El trámite solicitado es rápido y sencillo, con un tiempo máximo de procesamiento de 3 minutos. Agradecemos su paciencia mientras completamos el proceso.</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question">¿Qué formas de pago aceptan?</button>
-        <div class="faq-answer">
-          <p>Puedes realizar tu pago de manera segura y rápida a través de los siguientes medios: tarjeta Débito, tarjeta de Crédito o Yape. Elige la opción que más te convenga y completa tu compra sin complicaciones.</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question">¿Cómo recibo el informe?</button>
-        <div class="faq-answer">
-          <p>Puedes visualizar el informe directamente en esta página, además de tener la opción de descargarlo en tu dispositivo o compartirlo fácilmente por WhatsApp con solo un clic.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-  <div class="footer">
-    <p>© 2025 Consulta Vehicular. Todos los derechos reservados.</p>
-    <p>Contacto: <a href="mailto:soporte@consultavehicular.pe">soporte@consultavehicular.pe</a></p>
-  </div>
- <div class="barra-redes-flotante">
-  <a href="https://www.facebook.com/share/16yd9ytkYQ/" target="_blank" class="facebook" title="Facebook">
-    <i class="fab fa-facebook-f"></i>
-  </a>
-  <a href="https://www.instagram.com/consulta_vehicular_peru?igsh=MWxyeXFpcGQ2dzY4cA==" target="_blank" class="instagram" title="Instagram">
-    <i class="fab fa-instagram"></i>
-  </a>
-  <a href="https://www.tiktok.com/@consulta.vehicula?_t=ZS-8yWGxK3ENZx&_r=1" target="_blank" class="tiktok" title="TikTok">
-    <i class="fab fa-tiktok"></i>
-  </a>
+<div class="info-card">
+    <h2>¿Qué puedes consultar?</h2>
+    <p>Toda la información legal y técnica del vehículo antes de comprar o vender.</p>
+ <div class="card-primary">
+<div class="card">
+    <img src="img/sunat.png" alt="Sunat">
+    <h4>SUNAT</h4>
+    <P>Estado tributario y datos fiscales.</P>
 </div>
-<!-- Modal -->
-<div id="modalImagen" class="modall">
-  <div class="modal-contenido">
-    <img src="proy/Sin título-111111.jpg" alt="Imagen Modal">
-    <button class="cerrar" onclick="cerrarModal()">✖</button>
-  </div>
+
+<div class="card">
+    <img src="img/sunarp.jpg" alt="Sunarp">
+    <h4>SUNARP</h4>
+    <P>Propietarios, gravámenes y cargas.</P>
 </div>
+<div class="card">
+    <img src="img/soat.jpg" alt="Soat">
+    <h4>SOAT</h4>
+    <P>Vigencia del seguro obligatorio.</P>
+</div>
+<div class="card">
+    <img src="img/revision.png" alt="Revisión técnica">
+    <h4>Revisión técnica</h4>
+    <P>Certificados y vencimientos.</P>
+</div>
+<div class="card">
+    <img src="img/Infogas-Logo.webp" alt="Infogas">
+    <h4>Infogas</h4>
+    <P>Instalaciones de GLP y GNV.</P>
+</div>
+<div class="card">
+    <img src="img/sat.png" alt="Papeletas">
+    <h4>Papeletas</h4>
+    <P>Multas Lima, Callao y provincia.</P>
+</div>
+<div class="card">
+    <img src="img/registro.png" alt="Historial">
+    <h4>Historial</h4>
+    <P>Registros relevantes.</P>
+</div>
+<div class="card">
+    <img src="img/propietarios.png" alt="Propietarios">
+    <h4>Propietarios</h4>
+    <P>Dueños anteriores.</P>
+</div>
+
+<div class="card">
+    <img src="img/consulta.png" alt="Más consultas">
+    <h4>+27 consultas</h4>
+    <P>Reporte completo.</P>
+</div>
+
+ </div>
+
+</div>
+
+<div class="funcion">
+ <h2>¿Cómo funciona?</h2>
+ <p class="descrip">Proceso rápido, simple y 100% online.</p>
+ 
+ <div class="card-funcion">
+   <div class="card-funcion-info">
+    <h3>1. Click al botom pagar</h3>
+    <p>click para acceder al pago.</p>
+   </div>
+
+   <div class="card-funcion-info">
+    <h3>2. Realiza el pago</h3>
+    <p>Paga de forma segura tarjeta o yape.</p>
+   </div>
+
+   <div class="card-funcion-info">
+    <h3>3. Ingresa la placa</h3>
+    <p>Coloca el número de placa y listo tendra  </p>
+   </div></div>
+ </div>
+ <div class="entidades">
+     <h2>Entidades que consultamos</h2>
+ <p class="descrip">Fuentes oficiales del Estado Peruano.</p>
+<div class="descrip-entidades"> <div class="descrip-img"><img src="img/sunat-hechado.jpg" alt="SUNAT"></div>
+  <div class="descrip-img"><img src="img/sunarp.jpg" alt="SUNARP"></div>
+   <div class="descrip-img"><img src="img/apeseg.png" alt="SOAT"></div>
+    <div class="descrip-img"><img src="img/Mtc.webp" alt="MTC"></div>
+     <div class="descrip-img"><img src="img/Infogas-Logo.webp" alt="INFOGAS"></div>
+      <div class="descrip-img"><img src="img/sutran.png" alt="PNP"></div>
+       <div class="descrip-img"><img src="img/SAT_LOGO - 2023_Logo oficial.webp" alt="SAT"></div>
+        <div class="descrip-img"><img src="img/atun.png" alt="ATU"></div>
+ </div></div>
+
+ <div class="funcion">
+ <h2>¿Por qué usar nuestro servicio?</h2>
+ <p class="descrip">Evita estafas y compra con total seguridad.</p>
+ 
+ <div class="card-funcion">
+   <div class="card-funcion-info">
+    <h3>Todo en uno</h3>
+    <p>+27 fuentes oficiales.</p>
+   </div>
+
+   <div class="card-funcion-info">
+    <h3>Rápido</h3>
+    <p>Resultados en segundos.</p>
+   </div>
+
+   <div class="card-funcion-info">
+    <h3>Confiable</h3>
+    <p>Datos actualizados.</p>
+   </div>
+   <div class="card-funcion-info">
+    <h3>Seguro</h3>
+    <p>Pagos protegidos.</p>
+   </div>
+</div>
+ </div>
+
+ <div class="funcion funcion2">
+ <div class="consult"> <h2>Empieza tu consulta ahora</h2>
+ <p class="descrip">Paga una sola vez y accede al reporte completo.</p>
+  <button class="btn">Ir a pagar</button></div> </div>
+
+  <footer>
+    <div class="footer">
+        <div class="footer-card">
+            <h4>ConsultaVehicular.pe</h4>
+            <p>Plataforma de consultas vehiculares en Perú.</p>
+        </div>
+        <div class="footer-card">
+            <h4>Servicios</h4>
+            <ul>
+                <li><a href="">Consulta SUNAT</a></li>
+                <li><a href="">Consulta SUNARP</a></li>
+                <li><a href="">SOAT</a></li>
+                <li><a href="">Revisión técnica</a></li>
+            </ul>
+        </div>
+
+         <div class="footer-card">
+            <h4>Legal</h4>
+            <ul>
+                <li><a href="">Términos y condiciones</a></li>
+                <li><a href="">Política de privacidad</a></li>
+               
+            </ul>
+        </div>
+
+          <div class="footer-card">
+            <h4>Soporte</h4>
+            <ul>
+                <li><a href="">Contacto</a></li>
+                <li><a href="">Preguntas frecuentes</a></li>
+               
+            </ul>
+        </div>
+       
+    </div> <p class="coorporat">  © 2026 ConsultaVehicular.pe - Todos los derechos reservados</p>
+  </footer>
+
   <script>
-  
-   const MIN_DISPLAY_TIME = 2500; // en milisegundos = 2.5 segundos
-  const preloader = document.getElementById('preloader');
-  const startTime = Date.now();
+/* ======================
+   CARRUSEL
+====================== */
+const slides = document.querySelectorAll('.carousel img');
+let index = 0;
 
-  window.addEventListener('load', () => {
-    const elapsed = Date.now() - startTime;
-    const remaining = MIN_DISPLAY_TIME - elapsed;
+if (slides.length) {
+  setInterval(() => {
+    slides[index].classList.remove('active');
+    index = (index + 1) % slides.length;
+    slides[index].classList.add('active');
+  }, 3000);
+}
 
-    setTimeout(() => {
-      preloader.style.opacity = '0';
-      setTimeout(() => {
-        preloader.style.display = 'none';
-      }, 500); // Esperar la transición
-    }, remaining > 0 ? remaining : 0);
+/* ======================
+   ANIMACIONES SCROLL
+====================== */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
   });
+}, { threshold: 0.2 });
 
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
+/* ======================
+   MENÚ HAMBURGUESA
+====================== */
+const toggleBtn = document.querySelector('.menu-toggle');
+const navUl = document.querySelector('.nav-ul');
 
-    document.getElementById("btn-pagar").addEventListener("click", async () => {
+toggleBtn.addEventListener('click', () => {
+  navUl.classList.toggle('show');
+});
+// Seleccionamos todas las cards
+const cards = document.querySelectorAll('.card');
+
+function showCardsOnScroll() {
+  const triggerBottom = window.innerHeight * 0.85;
+
+  cards.forEach(card => {
+    const cardTop = card.getBoundingClientRect().top;
+
+    if (cardTop < triggerBottom) {
+      card.classList.add('visible');
+    }
+  });
+}
+
+// Ejecutamos al hacer scroll y al cargar
+window.addEventListener('scroll', showCardsOnScroll);
+window.addEventListener('load', showCardsOnScroll);
+
+const entidadesImgs = document.querySelectorAll('.descrip-img');
+
+function showEntidadesOnScroll() {
+  const triggerBottom = window.innerHeight * 0.85;
+
+  entidadesImgs.forEach(img => {
+    const imgTop = img.getBoundingClientRect().top;
+
+    if (imgTop < triggerBottom) {
+      img.classList.add('visible');
+    }
+  });
+}
+
+// Ejecutar al cargar y al hacer scroll
+window.addEventListener('scroll', showEntidadesOnScroll);
+window.addEventListener('load', showEntidadesOnScroll);
+
+   document.getElementById("btn-pagar").addEventListener("click", async () => {
       try {
         const response = await fetch("/crear-preferencia", {
           method: "POST",
@@ -1315,119 +815,6 @@ background: linear-gradient(135deg, #d6eaff, #eaf4ff);
         alert("Hubo un problema al procesar el pago");
       }
     });
-
-     document.querySelectorAll(".faq-question").forEach(button => {
-    button.addEventListener("click", () => {
-      const faqItem = button.parentElement;
-      const answer = faqItem.querySelector(".faq-answer");
-
-      const isActive = faqItem.classList.contains("active");
-
-      // Cierra todos
-      document.querySelectorAll(".faq-item").forEach(item => {
-        item.classList.remove("active");
-        item.querySelector(".faq-answer").style.maxHeight = null;
-        item.querySelector(".faq-answer").style.paddingTop = "0";
-        item.querySelector(".faq-answer").style.paddingBottom = "0";
-      });
-
-      if (!isActive) {
-        faqItem.classList.add("active");
-        answer.style.maxHeight = answer.scrollHeight + "px";
-        answer.style.paddingTop = "20px";
-        answer.style.paddingBottom = "20px";
-      }
-    });
-  });
-
-
- const modal = document.getElementById("modalImagen");
-
-  function abrirModal() {
-    modal.style.display = "flex";
-  }
-
-  function cerrarModal() {
-    modal.style.display = "none";
-  }
-
-  // Cerrar si se hace clic fuera del contenido
-  window.addEventListener("click", function (e) {
-    if (e.target === modal) {
-      cerrarModal();
-    }
-  });
-
-  // Mostrar solo una vez por sesión
-  document.addEventListener("DOMContentLoaded", () => {
-    const yaMostrado = sessionStorage.getItem("modalMostrado");
-
-    if (!yaMostrado) {
-      setTimeout(() => {
-        abrirModal();
-        sessionStorage.setItem("modalMostrado", "true");
-      }, 3000);
-    }
-  });
-   // Menu 
-   const menuToggle = document.getElementById('menuToggle');
-  const sidebarMenu = document.getElementById('sidebarMenu');
-  const closeMenu = document.getElementById('closeMenu');
-  const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
-
-  menuToggle.addEventListener('click', () => {
-    sidebarMenu.classList.add('open');
-  });
-
-  closeMenu.addEventListener('click', () => {
-    sidebarMenu.classList.remove('open');
-  });
-
-  sidebarLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      sidebarMenu.classList.remove('open');
-    });
-  });
-document.getElementById("btnInforme").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const res = await fetch("/check-acceso");
-  const data = await res.json();
-
-  if (!data.logueado) {
-    window.location.href = "login.html";
-  } else if (!data.pagado) {
-    window.location.href = "pago.html";
-  } else {
-    window.location.href = "result.html";
-  }
-});
-
-// Referencias
-const modall = document.getElementById("loginModal");
-const btnOpen = document.getElementById("btnLoginOpen");
-const spanClose = document.querySelector(".close");
-const form = document.getElementById("loginForm");
-
-// Abrir modal
-btnOpen.onclick = function(e) {
-  e.preventDefault();
-  modall.style.display = "flex";
-}
-
-// Cerrar modal
-spanClose.onclick = function() {
-  modall.style.display = "none";
-}
-
-// Cerrar al hacer click fuera
-window.onclick = function(event) {
-  if (event.target == modall) {
-    modall.style.display = "none";
-  }
-}
-
- 
-  
-  </script>
+</script>
 </body>
 </html>

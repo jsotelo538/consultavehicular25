@@ -38,7 +38,7 @@ app.use(bodyParser.json());
             },
           ],
           back_urls: {
-            success: "https://www.consultavehicular.services/result.html",
+            success: "https://www.consultavehicular.services/resu.html",
             failure: "https://www.consultavehicular.services",
             pending: "https://www.consultavehicular.services/pendiente",
           },
@@ -91,8 +91,8 @@ async function obtenerAsientos(placa, ciudad) {
   await page.waitForSelector('form#l-login input[name="username"]');
 
   // 3. Login
-  await page.type('form#l-login input[name="username"]', "ISRAEL1234");
-  await page.type('form#l-login input[name="password"]', "israelsq03");
+  await page.type('form#l-login input[name="username"]', "USUARIO");
+  await page.type('form#l-login input[name="password"]', "CONTRASEÑA");
   await Promise.all([
     page.click('form#l-login button.btn[type="submit"]'),
     page.waitForNavigation({ waitUntil: "networkidle2" })
@@ -1373,7 +1373,7 @@ const browser = await puppeteer.launch({
       page.click('button[type="submit"]'),
       page.waitForNavigation({ waitUntil: 'domcontentloaded' })
     ]);
-
+   
     // Paso 4: Obtener el HTML del resultado
     const content = await page.content();
     await browser.close();
@@ -1400,7 +1400,7 @@ async function consultarPapeletasHuanuco(placa) {
     "--ignore-certificate-errors" // Ignorar errores SSL
   ]
 });
-
+  
   const page = await browser.newPage();
 
   try {
@@ -1410,7 +1410,7 @@ async function consultarPapeletasHuanuco(placa) {
        timeout: 30000,
   ignoreHTTPSErrors: true // Ignorar errores SSL en la navegación
     });
-
+  
     // 2. Esperar campo de placa y escribir
     await page.waitForSelector('#placa', { timeout: 10000 });
     await page.type('#placa', placa);
@@ -1550,7 +1550,7 @@ async function consultarPapeletasPucallpa(placa) {
   `;
 }
 }
-
+  
  async function consultarPapeletasCajamarca(placa) {
  const browser = await puppeteer.launch({
   headless: true,
@@ -1729,9 +1729,7 @@ async function resolverCapt(imageBase64) {
 
   throw new Error('Captcha no resuelto a tiempo');
 }
-
  
-
  async function consultarAndahuaylas(placa) {
 const browser = await puppeteer.launch({
   headless: true,
@@ -1792,9 +1790,7 @@ if (tablaHTML) {
      return { success: false, error: err.message };
    }
  }
-
-
-  
+ 
 async function consultarPapeletasPuno(placa) {
 const browser = await puppeteer.launch({
   headless: true,
@@ -2123,8 +2119,7 @@ app.post("/consultartacna", async (req, res) => {
     return res.status(500).json({ error: "Error al consultar: " + err.message });
   }
 });
-
-
+ 
 // --------- RUTAS API ---------
 
  
@@ -2172,15 +2167,6 @@ const browser = await puppeteer.launch({
   }
 });
 // 🔹 piura
-
-   
-
-
- 
-
-// ✅ Ruta para procesar pagos
-  
- 
 
  
 // --------- INICIO ---------
