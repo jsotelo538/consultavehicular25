@@ -38,9 +38,9 @@ app.use(bodyParser.json());
             },
           ],
           back_urls: {
-            success: "https://www.consultavehicular.services/resu.html",
-            failure: "https://www.consultavehicular.services",
-            pending: "https://www.consultavehicular.services/pendiente",
+            success: "https://www.informacionvehicular.online/resu.html",
+            failure: "https://www.informacionvehicular.online",
+            pending: "https://www.informacionvehicular.online/pendiente",
           },
           auto_return: "approved",
         },
@@ -369,7 +369,7 @@ app.post("/consultarr", async (req, res) => {
 
   // Seleccionar búsqueda por placa
   await page.select("#strTipDoc", "3");
-  await page.type("#strNumDoc", placa);
+  await page.type("#strNumDoc", placa);f
 
   // Resolver captcha
   await resolverRecaptcha(

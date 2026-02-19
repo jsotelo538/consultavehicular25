@@ -8,13 +8,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="stylesheet" href="style.css">
-   <link rel="icon" type="image/png" href="favicon3.png">
   <title>Consulta Vehicular Integral</title>
    
  
 </head>
 <body>
-  <button id="btn-top" title="Subir al inicio">↑</button>
   <a href="https://wa.me/51949319753?text=Hola%2C%20necesito%20ayuda%20con%20el%20informe%20vehicular"
    class="whatsapp-float" target="_blank" title="¿Necesitas ayuda?">
   <div class="whatsapp-content">
@@ -45,7 +43,19 @@
 <button onclick="descargarPDF()">📄 Descargar PDF</button>
 <button id="btn-whatsapp" onclick="compartirWhatsApp()" style="background-color: #25d366;">
   📲 Compartir por WhatsApp
-</button> 
+</button><div class="estado-resumen">
+  <!-- SOAT -->
+  <span class="badge badge-ok">SOAT Vigente</span>
+  <span class="badge badge-expired">SOAT Vencido</span>
+
+  <!-- Revisión Técnica -->
+  <span class="badge badge-ok">Revisión Vigente</span>
+  <span class="badge badge-expired">Revisión Vencida</span>
+
+  <!-- Papeletas -->
+  <span class="badge badge-alert">Multas Pendientes</span>
+  <span class="badge badge-clear">Sin Multas</span>
+</div>
      <div id="soat-vehiculo"   style="display:none;">
        
       <div id="soat-info" class="tarjeta"></div>
@@ -478,7 +488,7 @@ async function consultarequipa(placa) {
     `<h2>SAT Arequipa</h2><div class="tarjeta"><div class="loader"></div></div>`;
 
   try {
-    const res = await fetch("https://www.informacionvehicular.online/consultar-arequipa", {
+    const res = await fetch("https://www.consultavehicular.services/consultar-arequipa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ placa })
@@ -529,7 +539,7 @@ async function consultarequipa(placa) {
       }
 
       try {
-        const res = await fetch("https://www.informacionvehicular.online/consultarr", {
+        const res = await fetch("https://www.consultavehicular.services/consultarr", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ placa })
@@ -1343,7 +1353,7 @@ modal.addEventListener("click", (e) => {
     return;
   }
 
-  const mensaje = `Hola, consulta vehicular para la placa *${placa}*: https://www.informacionvehicular.online/?placa=${placa}`;
+  const mensaje = `Hola, consulta vehicular para la placa *${placa}*: https://www.consultavehicular.services/?placa=${placa}`;
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
 
   window.open(url, "_blank");
@@ -1370,24 +1380,7 @@ function openTab(evt, tabName) {
   evt.currentTarget.classList.add("active");
 }
 
- 
-  const btnTop = document.getElementById("btn-top");
 
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-      btnTop.style.display = "block";
-    } else {
-      btnTop.style.display = "none";
-    }
-  });
-
-  btnTop.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  });
- 
 </script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>

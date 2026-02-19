@@ -2,15 +2,11 @@
     * { box-sizing: border-box; }
 
 /* ---------- ESTILO GENERAL ---------- */
-body {
-  font-family: 'Segoe UI', 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #d9f0ff, #f9fbfd);
-  color: #2c3e50;
-  line-height: 1.6;
-}
 html, body {
   height: 100%;
-  margin: 0;
+  font-family: 'Segoe UI', 'Inter', sans-serif;
+  background: linear-gradient(135deg, #eaf4ff, #f9fbfd);
+  color: #1f2937;
   display: flex;
   flex-direction: column;
 }
@@ -23,29 +19,32 @@ html, body {
 /* ---------- CONTENEDOR PRINCIPAL ---------- */
 .container {
   max-width: 1100px;
-  margin: 30px auto;
-  background: #ffffff;
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  animation: fadeIn 0.6s ease;
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
 }
 
 /* ---------- CABECERA ---------- */
 .header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
-.header img {
-  width: 320px;
-}
-    .header h1 {
-      margin: 0;
-      color: #1e2f45;
-    }
 
-    .header p {
-  font-size: 18px;
+.header img {
+  width: 260px;
+  margin-bottom: 10px;
+}
+
+.header h1 {
+  color: #1e40af;
+  margin-bottom: 6px;
+}
+
+.header p {
+  font-size: 16px;
   color: #555;
 }
 .input-search {
@@ -81,48 +80,47 @@ input[type="text"]:focus {
 }
 
 button {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #2563eb, #1e40af);
   color: white;
   border: none;
-  padding: 12px 28px;
-  font-size: 15px;
-  border-radius: 50px;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
-  margin: 5px;
-  transition: transform 0.2s ease, background 0.3s ease;
-}
-button:hover {
-  transform: scale(1.05);
-  background: linear-gradient(135deg, #0056b3, #003f88);
+  transition: 0.3s ease;
 }
 
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+}
     .section {
-      margin-top: 30px;
+      margin-top: 40px;
     }
 /* ---------- TARJETAS DE RESULTADOS ---------- */
 .tarjeta {
-  background: #f8fbff;
-  border-left: 6px solid #3498db;
-  border-radius: 12px;
-  padding: 18px 22px;
-  margin-top: 18px;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.05);
-  animation: slideUp 0.4s ease;
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  margin-top: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .tarjeta:hover {
-  background-color: #eef6ff;
+  transform: translateY(-4px);
 }
 
 .section h2 {
-  
-  font-size: 22px;
-   
+  font-size: 20px;
+  margin-bottom: 15px;
   padding-left: 10px;
-  margin-top: 30px;
-
-   margin-bottom: 4px;
- 
-  color: #2a4d69;
+  border-left: 4px solid #2563eb;
+  color: #1e40af;
 }
  
  
@@ -134,7 +132,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
 }
 .table-responsive tr:nth-child(even) {
@@ -216,16 +214,12 @@ td {
       color: #ffe;
       text-decoration: underline;
     }
-   .mensaje-info {
-  background-color: #088ff6;
-  color: #007bff;
-   padding: 10px 12px;
-  margin-bottom: 16px;
-  background-color: #f4f4f4;
-  border-left: 4px solid #2a4d69;
-  font-size: 16px;
-  line-height: 1.4;
-  font-weight: 500;
+.mensaje-info {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #0284c7;
 }
  
 #btn-whatsapp {
@@ -390,33 +384,18 @@ th {
 }
 
 .badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8em;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
   font-weight: 600;
-  color: #fff;
+  color: white;
   display: inline-block;
-  white-space: nowrap;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Estados */
-.badge-ok {
-  background: #28a745; /* verde */
-}
-
-.badge-expired {
-  background: #dc3545; /* rojo */
-}
-
-.badge-alert {
-  background: #ffc107; /* amarillo */
-  color: #333;
-}
-
-.badge-clear {
-  background: #007bff; /* azul */
-}
+.badge-ok { background: #16a34a; }
+.badge-expired { background: #dc2626; }
+.badge-alert { background: #f59e0b; color: #000; }
+.badge-clear { background: #2563eb; }
   /* Fondo semi-transparente para dar efecto modal */
   #overlayCarga {
     display: none;
@@ -577,19 +556,18 @@ th {
     color: #1e40af;
     margin-bottom: 20px;
   }
-
-  form.buscador {
-    background: #fff;
-    padding: 12px 16px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    max-width: 700px;
-    margin: 0 auto 25px;
-    display: flex;
-    gap: 15px;
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
+form.buscador {
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  max-width: 750px;
+  margin: 0 auto 30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
   .campo {
     flex: 1;
     display: flex;
@@ -601,13 +579,14 @@ th {
     margin-bottom: 4px;
   }
   
-  .campo input,
-  .campo select {
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-  }
+ .campo input,
+.campo select {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: 0.3s;
+}
    
   form.buscador button {
     background: #2563eb;
@@ -695,20 +674,19 @@ th {
   /* Modal */
   .modal {
     display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
   }
   .modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    max-width: 500px;
-    width: 90%;
+     background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  max-width: 500px;
+  width: 90%;
   }
   .modal-content h2 {
     margin-top: 0;
@@ -733,30 +711,24 @@ th {
   }
   /* --- Loading animado --- */
   
-    .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-  }
+ .loading-container {
+  text-align: center;
+  padding: 20px;
+}
 
-  /* Spinner */
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #ddd;
-    border-top: 4px solid #007BFF; /* Color principal */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
-  }
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
   .loading-message {
     font-size: 18px;
@@ -801,4 +773,37 @@ th {
 }
 .tab-content.active {
   display: block;
+}
+/* ============================= */
+/* BOTÓN SCROLL TO TOP */
+/* ============================= */
+#btn-top {
+  position: fixed;
+  bottom: 90px; /* arriba del botón de WhatsApp */
+  right: 55px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  font-size: 18px;
+ 
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  display: none;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+#btn-top:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(37,99,235,0.4);
+}
+@media (max-width: 600px) {
+#btn-top{
+  right: 35px;
+  bottom: 80px;
+}
+
 }
